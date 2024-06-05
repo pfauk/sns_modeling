@@ -21,6 +21,8 @@ setup(
     maintainer="Kevin Pfau",
     maintainer_email="kpfau@andrew.cmu.edu",
     license="BSD 3-Clause",
-    long_description="""temp.""",
+    long_description="""Package provides deterministic optimization models of thermally coupled
+    separation networks for zeotropic mixtures formulated as a generalized disjunctive program. Models
+    are built in the Pyomo modeling language with the Pyomo.GDP modeling extension""",
     **setuptools_kwargs
 )
