@@ -11,7 +11,7 @@ def output_model(mdl, file_name):
     Returns:
     -None: creates .txt file
     """
-    # use utf-8 encoding, standard Windows cp1252 does not support logical characters 
+    # use utf-8 encoding, standard Windows cp1252 does not support logical characters
     with open(file_name + '.txt', 'w', encoding='utf-8') as f:
         # Redirect stdout to file
         sys.stdout = f
