@@ -25,7 +25,7 @@ import numpy as np
 import pyomo.environ as pyo
 from pyomo.util.infeasible import log_infeasible_constraints, log_infeasible_bounds, find_infeasible_constraints
 from pyomo.gdp import Disjunction, Disjunct
-from utils import pprint_network, pprint_column, output_model
+from utils import pprint_network, pprint_network_to_file, pprint_column, output_model, IntHeatExchanger, FinalHeatExchanger
 
 
 # MODEL DECLARATION
@@ -89,10 +89,11 @@ C_h = 5.0e3 / 1e6  # cost of heating utilities [$/kJ]
 op_time = 24 * 360  # assumed hours per year of column operating given some maintenance time
 
 # for use in calculating total annualized cost
-i = 0.08  # discount rate
-N = 30  # estimated lifetime of equipment in year
+i = 0.08  # discount rate (interest rate)
+N = 30  # estimated lifetime of equipment in years
 
-CRF = (i * (1 + i)**N) / ((1 + i)**N - 1)  # capital recovery factor
+# capital recovery factor: function of interest rate and lifetime of equipment
+CRF = (i * (1 + i)**N) / ((1 + i)**N - 1)  
 
 # INDEX SETS
 # ================================================
@@ -258,17 +259,41 @@ m.column_cost = pyo.Var(
     bounds=(0, 10000000)
 )
 
-m.final_heat_exchanger_cost = pyo.Var(
-    m.TASKS,
-    doc='Capital cost of heat exchanger associated with final product i',
+m.area_final_exchanger = pyo.Var(
+    m.COMP,
+    doc='heat exchange area of heat exchanger associated with final product [m^2]',
     within=pyo.NonNegativeReals,
-    bounds=(0, 10000000)
+    bounds=(0, 10000)
 )
 
-m.intermedaite_heat_exchanger_cost = pyo.Var(
+m.area_intermediate_exchanger = pyo.Var(
+    m.COMP,
+    doc='heat exchange area of heat exchanger associated with intermedaite product [m^2]',
+    within=pyo.NonNegativeReals,
+    bounds=(0, 10000)
+)
+
+m.final_condenser_cost = pyo.Var(
+    m.COMP,
+    doc='Capital cost of heat exchanger associated with final product i',
+    within=pyo.NonNegativeReals,
+    initialize=0,
+    bounds=(0, 100000000)
+)
+
+m.final_reboiler_cost = pyo.Var(
+    m.COMP,
+    doc='Capital cost of heat exchanger associated with final product i',
+    within=pyo.NonNegativeReals,
+    initialize=0,
+    bounds=(0, 100000000)
+)
+
+m.intermedaite_condenser_cost = pyo.Var(
     m.ISTATE,
     doc='Capital cost of heat exchanger associated with intermediate state s',
     within=pyo.NonNegativeReals,
+    initialize=0,
     bounds=(0, 10000000)
 )
 
@@ -827,8 +852,8 @@ def _build_column_cost(m, k, column, no_column):
     def no_column_cost(_):
         return m.column_cost[k] == 0
 
-# # building out constraints with functions
-# # =================================================================
+# building out constraints for columns with functions
+# =================================================================
 
 for t in m.TASKS:
     _build_mass_balance_column(m, t, m.column[t])
@@ -854,15 +879,79 @@ def final_heat_exchange_no_final_heat_exchange(m, i):
     return [m.final_heat_exchanger[i], m.no_final_heat_exchanger[i]]
 
 def _build_final_product_heat_exchanger(m, i, heat_exchanger, no_heat_exchanger):
-    """Function to build constraints for disjuncts of final product heat exchangers"""
+    """Function to build constraints for disjuncts of final product heat exchangers
 
+    Args:
+        m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            and expressions for distillation network
+        i (str): index from the set COMP a final product (A, B, C, etc.)
+        heat_exchanger (pyomo.gdp.disjunct): Pyomo Disjunct representing an active heat exchanger for a final product
+        no_heat_exchanger (pyomo.gdp.disjunct): Pyomo Disjunct representing an inactive heat exchanger for a final product
+
+    Constraints:
+        -condenser_heat_duty: Qcond is a function of species vaporization enthalpy and vapor flow rates
+        -reboiler_heat_duty: Qreb is a function of species vaporization enthalpy and vapor flow rates
+        inactive_final_condenser: Qcond = 0 if the final state is not produced by a rectifying section
+        inactive_final_reboiler: Qreb = 0 if the final state is not produced by a stripping section
+
+    Return:
+        None. Function adds constraints to the model but does not return a value
+    """
+
+    # Constraints for heat exchangers associated with final states produced by a rectifying section (reobilers)
+    if i in m.PRE_i:
+        rect_tasks = m.PRE_i[i]
+
+        @heat_exchanger.Constraint(rect_tasks)
+        def condenser_heat_duty(_, t):
+            """Task reboiler heat duty based on enthalpy of vaporization and stripping section vapor flow rate"""
+            return m.Qcond[t] * m.DT[t] == sum(m.Hvap[j] * m.D[(j, t)] * m.Vr[t] for j in m.COMP)
+
+        @no_heat_exchanger.Constraint(rect_tasks)
+        def inactive_final_condenser(_, t):
+            """final product heat exchange for a stream from a rectifying section is not selected"""
+            return m.Qcond[t] == 0
+
+    # Constraints for heat exchangers associated with final states produced by a stripping section (condensers)
+    if i in m.PST_i:
+        strip_tasks = m.PST_i[i]
+
+        @heat_exchanger.Constraint(strip_tasks)
+        def reboiler_heat_duty(_, t):
+            """Task condenser heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
+            return m.Qreb[t] * m.BT[t] == sum(m.Hvap[j] * m.B[(j, t)] * m.Vr[t] for j in m.COMP)
+
+        @no_heat_exchanger.Constraint(strip_tasks)
+        def inactive_final_reboiler(_, t):
+            """final product heat exchange for a stream from a stripping section is not selected"""
+            return m.Qreb[t] == 0
+
+def _final_heat_exchanger_cost(m, i, heat_exchanger):
+    """Function to build constraints for capital cost of active final product heat exchanger
+
+    Args:
+        m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            and expressions for distillation network
+        i (str): index from the set COMP a final product (A, B, C, etc.)
+        heat_exchanger (pyomo.gdp.disjunct): Pyomo Disjunct representing an active heat exchanger for a final product
+
+    Constraints:
+        -final_excahnger_area: 
+        -final_excahnger_cost:
+
+    Return:
+        None. Function adds constraints to the model but does not return a value
+    """
     # Data for cost correlation
+    # Chemical Engineering Plant Cost Index values for selected years
     CEPCI_2004 = 400
     CEPCI_2020 = 596.2
     inflation_ratio = CEPCI_2020 / CEPCI_2004
 
     n = 0.6  # cost relation exponent
 
+    # for heat exchangers with 100 [m^2] of exchange area; Carbon steel construction
+    # source: Ulrich et al 5.36
     Reboiler_base_price_2004 = 20000
     Shell_tube_base_price_2004 = 15000
 
@@ -881,59 +970,33 @@ def _build_final_product_heat_exchanger(m, i, heat_exchanger, no_heat_exchanger)
     delta_LM_T_cond = 50
     delta_LM_T_reb = 270
 
-    # Constraints for heat exchangers associated with final states produced by a rectifying section (reobilers)
+    # if the final state is produced by a rectifying section, will have assocaited condenser
     if i in m.PRE_i:
-        rect_tasks = m.PRE_i[i]
 
-        @heat_exchanger.Constraint(rect_tasks)
-        def condenser_heat_duty(_, t):
-            """Task reboiler heat duty based on enthalpy of vaporization and stripping section vapor flow rate"""
-            return m.Qcond[t] * m.DT[t] == sum(m.Hvap[j] * m.D[(j, t)] * m.Vr[t] for j in m.COMP)
+        @heat_exchanger.Constraint()
+        def condenser_area(_):
+            Qcon_inter = sum(m.Qcond[t] for t in m.PRE_i[i]) * 1000  # multiply by 1000 for unit conversion to [J/se0c]
+            return m.area_final_exchanger[i] == Qcon_inter / (Ucond * delta_LM_T_cond)
 
-        @heat_exchanger.Constraint(rect_tasks)
-        def condenser_capital_cost(_, t):
-            """Captial cost of reboiler based on data from Ulrich et al"""
-            exchanger_area = m.Qcond[t] / (Ucond * delta_LM_T_cond)
-            return m.final_heat_exchanger_cost[t] == K_shell_tube * exchanger_area**n
+        @heat_exchanger.Constraint()
+        def condenser_cost(_):
+            return m.final_condenser_cost[i] == K_shell_tube * m.area_final_exchanger[i]**n
 
-        @no_heat_exchanger.Constraint(rect_tasks)
-        def inactive_final_condenser(_, t):
-            """final product heat exchange for a stream from a rectifying section is not selected"""
-            return m.Qcond[t] == 0
-
-        @no_heat_exchanger.Constraint(rect_tasks)
-        def inactive_final_condenser_cost(_, t):
-            """Capital cost of condenser set to zero"""
-            return m.final_heat_exchanger_cost[t] == 0
-
-    # Constraints for heat exchangers associated with final states produced by a stripping section (condensers)
+    # if the final state is produced by a stripping section, will have assocaited reboiler
     if i in m.PST_i:
-        strip_tasks = m.PST_i[i]
 
-        @heat_exchanger.Constraint(strip_tasks)
-        def reboiler_heat_duty(_, t):
-            """Task condenser heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
-            return m.Qreb[t] * m.BT[t] == sum(m.Hvap[j] * m.B[(j, t)] * m.Vr[t] for j in m.COMP)
+        @heat_exchanger.Constraint()
+        def reboiler_area(_):
+            Qreb_inter = sum(m.Qreb[t] for t in m.PST_i[i]) * 1000  # multiply by 1000 for unit conversion to [J/se0c]
+            return m.area_final_exchanger[i] == Qreb_inter / (Ureb * delta_LM_T_reb)
 
-        # @heat_exchanger.Constraint(strip_tasks)
-        # def reboiler_capital_cost(_, t):
-        #     """Captial cost of condenser based on data from Ulrich et al"""
-        #     exchanger_area = m.Qreb[t] / (Ureb * delta_LM_T_reb)
-        #     return m.final_heat_exchanger_cost[t] == K_reb * exchanger_area**n
+        @heat_exchanger.Constraint()
+        def reboiler_cost(_):
+            return m.final_reboiler_cost[i] == K_reb * m.area_final_exchanger[i]**n
 
-        @no_heat_exchanger.Constraint(strip_tasks)
-        def inactive_final_reboiler(_, t):
-            """final product heat exchange for a stream from a stripping section is not selected"""
-            return m.Qreb[t] == 0
-
-        @no_heat_exchanger.Constraint(strip_tasks)
-        def inactive_final_reboiler_cost(_, t):
-            """Capital cost of condenser set to zero"""
-            return m.final_heat_exchanger_cost[t] == 0
-
-# function calls for final product heat exchangers
 for i in m.COMP:
     _build_final_product_heat_exchanger(m, i, m.final_heat_exchanger[i], m.no_final_heat_exchanger[i])
+    _final_heat_exchanger_cost(m, i, m.final_heat_exchanger[i])
 
 # DISJUNCTS FOR INTERMEDIATE PRODUCT HEAT EXCHANGERS
 # ================================================
@@ -948,14 +1011,23 @@ def int_heat_exchange_no_final_heat_exchange(m, i):
     return [m.int_heat_exchanger[i], m.no_int_heat_exchanger[i]]
 
 def _build_intermediate_product_heat_exchanger(m, s, heat_exchanger):
-    """Function to build constraitns for disjuncts of final product heat exchangers"""
+    """Function to build constraints for disjuncts of active intermediate product heat exchangers
 
-    tasks = m.TS_s[s]
+    Args:
+        m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            and expressions for distillation network
+        i (str): index from the set COMP a final product (A, B, C, etc.)
+        heat_exchanger (pyomo.gdp.disjunct): Pyomo Disjunct representing an active heat exchanger for a final product
 
-    @heat_exchanger.Constraint()
-    def heat_exchanger_cost_int(_):
-        return m.intermedaite_heat_exchanger_cost[s] == 100
+    Constraints:
+        -int_condenser_heat_duty: Qcond is a function of species vaporization enthalpy and vapor flow rates
+        -int_reboiler_heat_duty: Qreb is a function of species vaporization enthalpy and vapor flow rates
 
+    Return:
+        None. Function adds constraints to the model but does not return a value
+    """
+
+    # if intermediate state is produced by a rectifying section and it has a heat exchanger, it will be a condenser
     if s in m.IREC_m:
         rect_tasks = m.IREC_m[s]
 
@@ -964,16 +1036,51 @@ def _build_intermediate_product_heat_exchanger(m, s, heat_exchanger):
             """Task reboiler heat duty based on enthalpy of vaporization and stripping section vapor flow rate"""
             return m.Qcond[t] * m.DT[t] == sum(m.Hvap[i] * m.D[(i, t)] * m.Vr[t] for i in m.COMP)
 
+    # if intermediate state is produced by a stripping section and it has a heat exchanger, it will be a reboiler
     if s in m.ISTRIP_m:
         strip_tasks = m.ISTRIP_m[s]
 
         @heat_exchanger.Constraint(strip_tasks)
-        def reboiler_heat_duty(_, t):
+        def int_reboiler_heat_duty(_, t):
             """Task condenser heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
             return m.Qreb[t] * m.BT[t] == sum(m.Hvap[i] * m.B[(i, t)] * m.Vs[t] for i in m.COMP)
 
+def _build_intermediate_heat_exchanger_cost(m, s, heat_exchanger):
+    """Function to build constrait to define the capital cost of heat exchanger
+
+    Args:
+        m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            and expressions for distillation network
+        s (str): index from the set COMP a final product (A, B, C, etc.)
+        heat_exchanger (pyomo.gdp.disjunct): Pyomo Disjunct representing an active heat exchanger for a final product
+
+    Constraints:
+        -int_condenser_heat_duty: Qcond is a function of species vaporization enthalpy and vapor flow rates
+        -int_reboiler_heat_duty: Qreb is a function of species vaporization enthalpy and vapor flow rates
+
+    Return:
+        None. Function adds constraints to the model but does not return a value
+    """
+
 def _build_inactive_intermediate_product_heat_exchanger(m, s, no_heat_exchanger):
-    """Function to build constraitns for disjuncts of intermediate product heat exchangers"""
+    """Function to build constraints for disjuncts of inactive intermediate product heat exchangers
+
+    Args:
+        m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            and expressions for distillation network
+        i (str): index from the set COMP a final product (A, B, C, etc.)
+        heat_exchanger (pyomo.gdp.disjunct): Pyomo Disjunct representing an active heat exchanger for a final product
+
+    Constraints:
+        -inactive_intermediate_condenser: Qcond = 0
+        -inactive_intermediate_reboiler: Qreb = 0
+        -heat_exchanger_mb_vapor: mass balance relation for flow through of vapor streams for inactive heat exchanger
+        -heat_exchanger_mb_liquid: mass balance relation for flow through of liquid streams for inactive heat exchanger
+        -no_heat_exchanger_cost: Cost[s] = 0
+
+    Return:
+        None. Function adds constraints to the model but does not return a value
+    """
 
     if s in m.IREC_m:
         rect_tasks = m.IREC_m[s]
@@ -1148,11 +1255,10 @@ def logic12(m, s, t):
 
 
 # CONSTRAINTS FOR DEFINING OBJECTIVE FUNCTION
+# ================================================
 @m.Constraint()
 def capex_def(m):
-    return (m.CAPEX == sum(m.column_cost[k] for k in m.TASKS) +
-            sum(m.intermedaite_heat_exchanger_cost[t] for t in m.ISTATE) +
-            sum(m.final_heat_exchanger_cost[t] for t in m.TASKS))
+    return (m.CAPEX == sum(m.column_cost[k] for k in m.TASKS))
 
 @m.Constraint()
 def opex_def(m):
@@ -1175,17 +1281,13 @@ mbigm.apply_to(m)
 
 
 solver = pyo.SolverFactory('gams:baron')
-status = solver.solve(m)
-
-# # # =================================================================
-# # # solution of GDP with L-bOA
-# # results = pyo.SolverFactory('gdpopt.loa').solve(m, nlp_solver='gams:conopt', mip_solver='gurobi', tee=True)
-print(f'Objective value: {m.obj()}')
-
-# m.liquid_internal_mb.pprint()
-
+status = solver.solve(m, tee=True)
 
 # # =================================================================
+# # solution of GDP with L-bOA
+# results = pyo.SolverFactory('gdpopt.loa').solve(m, nlp_solver='gams:conopt', mip_solver='gurobi', tee=True)
+
+# =================================================================
 pprint_network(m)
 
 print()
@@ -1207,8 +1309,22 @@ for t in m.TASKS:
 for t in m.TASKS:
     print(f'Qreb {t}: {pyo.value(m.Qreb[t])}')
     print(f'Qcond {t}: {pyo.value(m.Qcond[t])}')
-    print(f'Heat Exchanger cost: $ {pyo.value(m.final_heat_exchanger_cost[t])}')
+   # print(f'Heat Exchanger cost: $ {pyo.value(m.final_heat_exchanger_cost[t])}')
 
 
 # uncomment the line below if you want to output the Pyomo model to a text file
-# output_model(m, '3_Component_GDP_Model')
+output_model(m, '3_Component_GDP_Model')
+
+#pprint_network_to_file(m, 'temp_file')
+
+
+print()
+print('Exchanger area')
+for i in m.COMP:
+    print(f'{i} {pyo.value(m.area_final_exchanger[i])}')
+
+print()
+print('Exchanger cost')
+for i in m.COMP:
+    print(f'{i} {pyo.value(m.final_reboiler_cost[i])}')
+    print(f'{i} {pyo.value(m.final_condenser_cost[i])}')
