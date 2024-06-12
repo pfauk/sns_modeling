@@ -1,5 +1,7 @@
 # sns_modeling
 
+![pytest](https://https://github.com/pfauk/sns_modeling/actions/workflows/pytest.yml/badge.svg) <br> 
+
 Repo contains modeling files for solving optimal separation network synthesis problems for zeotropic mixtures. Models are formualted in Pyomom using Pyomo.GDP and solved using BARON. 
 
 # Installation
