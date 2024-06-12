@@ -109,6 +109,7 @@ class stn:
         self.LK = None
         self.HK = None
         self.r = None
+        self.RUA = None
 
     def _generate_initial_mixture(self, n):
         """
@@ -574,6 +575,23 @@ class stn:
 
         return roots
 
+    def _generate_active_roots(self, tasks, roots):
+        task_roots = {}
+
+        # Create a dictionary that maps upper case letters to array indices
+        species = string.ascii_uppercase
+        sepecies_to_index = {letter: index for index, letter in enumerate(species)}
+
+        for task in tasks:
+            # Calculate the number of letters excluding the '/' to determine the number of splits
+            num_splits = len(task.replace('/', '')) - 1
+            light_species = task[0]
+            light_index = sepecies_to_index[light_species]
+
+            # Assign the corresponding roots to the task
+            task_roots[task] = tuple(roots[light_index:light_index + num_splits])
+        return task_roots
+
     def generate_tree(self):
         self.FEED, self.COMP = self._generate_initial_mixture(self.n)
         self.tree = self._generate_tree(self.FEED)
@@ -620,6 +638,7 @@ class stn:
         self.LK = self._generate_light_key(self.TASKS)
         self.HK = self._generate_heavy_key(self.TASKS)
         self.r = self._generate_underwood_roots(self.n)
+        self.RUA = self._generate_active_roots(self.TASKS, self.r)
 
     # class methods for visualization
     def _print_tree(self, node, level=0):
@@ -692,10 +711,11 @@ class stn:
         print(f'15. IRECs: {self.IRECs}')
         print(f'16. ISTRIPs: {self.ISTRIPs}')
         print(f'17. r: {self.r}')
+        print(f'18. RUA: {self.RUA}')
 
 if __name__ == "__main__":
 
-    n = 3  # specify the number of components in the feed mixture
+    n = 5  # specify the number of components in the feed mixture
     network = stn(n)
     network.generate_tree()
     network.print_tree()

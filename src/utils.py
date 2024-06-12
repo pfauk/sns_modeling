@@ -1,5 +1,6 @@
 import sys
 import os
+import pandas as pd
 import pyomo.environ as pyo
 import numpy as np
 
@@ -318,3 +319,26 @@ def pprint_network_to_file(mdl, file_name, dir_path='src/thermal_coupled/results
     sys.stdout = sys.__stdout__
 
     return None
+
+class data:
+    """
+    class to hold problem data for input to a build_model() function
+    """
+    def __init__(self, file_name):
+        self.filepath = os.path.join('src/data/' + file_name)
+        self.species_df = pd.read_excel(self.filepath, sheet_name='species')
+        self.system_df = pd.read_excel(self.filepath, sheet_name='system')
+
+        self.F0 = self.system_df['F0']
+        self.P_abs = self.system_df['P_abs']
+        self.Tf = self.system_df['Tf']
+        self.rec = self.system_df['rec']
+        self.zf = dict(zip(self.species_df['index'], self.species_df['zf']))
+        self.relative_volatility = dict(zip(self.species_df['index'], self.species_df['alpha']))
+        self.species_densities = dict(zip(self.species_df['index'], self.species_df['density']))
+        self.PM = dict(zip(self.species_df['index'], self.species_df['MW']))
+        self.Hvap = dict(zip(self.species_df['index'], self.species_df['Hvap']))
+
+if __name__ == "__main__":
+    temp = data('3_comp.xlsx')
+    print(temp.__dir__)
