@@ -715,7 +715,7 @@ class stn:
 
 if __name__ == "__main__":
 
-    n = 5  # specify the number of components in the feed mixture
+    n = 3  # specify the number of components in the feed mixture
     network = stn(n)
     network.generate_tree()
     network.print_tree()

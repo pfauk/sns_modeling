@@ -35,7 +35,12 @@ ST_s = {'ABCD': ('ABCD/E',),
         'AB': ('AB/CDE', 'AB/CD', 'AB/C'),
         'BC': ('BC/DE', 'A/BC', 'BC/D'),
         'CD': ('AB/CD', 'B/CD', 'CD/E'),
-        'DE': ('ABC/DE', 'BC/DE', 'C/DE')}
+        'DE': ('ABC/DE', 'BC/DE', 'C/DE'),
+        'A': ('A/BCDE', 'A/BCD', 'A/BC', 'A/B'),
+        'B': ('B/CDE', 'B/CD', 'B/C', 'A/B'),
+        'C': ('C/DE', 'C/D', 'AB/C', 'B/C'),
+        'D': ('D/E', 'ABC/D', 'BC/D', 'C/D'),
+        'E': ('ABCD/E', 'BCD/E', 'CD/E', 'D/E')}
 
 ISTATE = ['ABCD', 'BCDE', 'ABC', 'BCD', 'CDE', 'AB', 'BC', 'CD', 'DE']
 
@@ -123,9 +128,9 @@ def test_dictionaries():
     for key, values in network.TSs.items():
         assert set(values) == set(TS_s[key])
 
-    # assert network.STs.keys() == ST_s.keys()
-    # for key, values in network.STs.items():
-    #     assert set(values) == set(ST_s[key])
+    assert network.STs.keys() == ST_s.keys()
+    for key, values in network.STs.items():
+        assert set(values) == set(ST_s[key])
 
     assert network.PREi.keys() == PRE_i.keys()
     for key, values in network.PREi.items():

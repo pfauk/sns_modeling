@@ -1,34 +1,30 @@
 """Main script file to build and solve models for thermally coupled distillation columns"""
 import sys
-from math import pi
 import random
 import numpy as np
 import idaes
 import pyomo.environ as pyo
-from pyomo.util.infeasible import log_infeasible_constraints, log_infeasible_bounds, find_infeasible_constraints
 from pyomo.gdp import Disjunction, Disjunct
 from utils import (
     data,
-    pprint_network,
-    pprint_network_to_file,
-    pprint_column, output_model,
-    IntHeatExchanger, FinalHeatExchanger)
-from superstructure.stn import State, Task, stn
+    pprint_model_to_file,)
+from superstructure.stn import stn
 from thermal_coupled.therm_dist import build_model
 
 n = 3  # specify number of components
 
-problem_data = data('3_comp.xlsx')
+# import problem data for system and relevant species to data object
+hydrocarbon_data = data('3_comp.xlsx')
 
 # build state-task network superstrucutre and associated index sets
 network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
-network_superstructure.print_tree()
 
-model = build_model(network_superstructure)
+model = build_model(network_superstructure, hydrocarbon_data)
 
-print(type(problem_data))
+# pprint the Pyomo model and save to a txt file to examine model
+# pprint_model_to_file(model, '3_comp_model')
 
 # SOLUTION
 # ================================================
@@ -39,8 +35,8 @@ mbigm = pyo.TransformationFactory('gdp.bigm')
 
 mbigm.apply_to(model)
 
-solver = pyo.SolverFactory('gams:baron')
-status = solver.solve(model, tee=True)
+# solver = pyo.SolverFactory('gams:baron')
+# status = solver.solve(model, tee=True)
 
 # # =================================================================
 # # solution of GDP with L-bOA

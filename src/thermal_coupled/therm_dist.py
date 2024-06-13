@@ -21,7 +21,6 @@ Chemistry Research, 40(10), 2260-2274. https://doi.org/10.1021/ie000761a
 
 import sys
 from math import pi
-import random
 import numpy as np
 import pyomo.environ as pyo
 from pyomo.util.infeasible import (
@@ -30,17 +29,9 @@ from pyomo.util.infeasible import (
     find_infeasible_constraints,
 )
 from pyomo.gdp import Disjunction, Disjunct
-from utils import (
-    pprint_network,
-    pprint_network_to_file,
-    pprint_column,
-    output_model,
-    IntHeatExchanger,
-    FinalHeatExchanger,
-)
 
 
-def build_model(stn):
+def build_model(stn, data):
     """
     Build a disjunctive model for the separation of a zeotropic mixture with thermally coupled distillation oclumns
 
@@ -60,61 +51,40 @@ def build_model(stn):
 
     # feed molar flow rate [kmol/hr]
     # 600 kmol/hr for the given hydrocarbon mixture is approximately 450 tons/yr
-    F0 = 600
+    F0 = data.F0
 
     # desired recovery of key components
-    rec = 0.98
+    rec = data.rec
+    comp_rec = {chr(65 + i): rec for i in range(N)}
 
-    P_abs = 1  # system pressure in [bara]
-    Tf = 85  # system temp in [C]
+    P_abs = data.P_abs  # system pressure in [bara]
+    Tf = data.Tf  # system temp in [C]
 
     # feed molar fractions
-    zf = {
-        "A": 0.5,
-        "B": 0.4,
-        "C": 0.1,
-    }
+    zf = data.zf
 
     # inlet molar component flow rates
     Fi0 = {key: value * F0 for key, value in zf.items()}
 
     # species relative volatilities
-    relative_volatilty = {
-        "A": 5.969,
-        "B": 2.296,
-        "C": 1,
-    }
+    relative_volatilty = data.relative_volatility
 
     # species liquid densities at 20 C in [kg/m^3]
-    species_densities = {
-        "A": 876,
-        "B": 867,
-        "C": 866,
-    }
+    species_densities = data.species_densities
 
     # denisty of liquid mixture; assumed to be ideal and constant [kg/m^3]
     rho_L = sum(species_densities[key] * zf[key] for key in zf)
 
     # species molecular weights
-    PM = {
-        "A": 78,
-        "B": 92,
-        "C": 106,
-    }
+    PM = data.PM
 
     # species vaporization enthalpy [KJ/mol]
-    Hvap = {
-        "A": 30.77,
-        "B": 33.19,
-        "C": 35.58,
-    }
+    Hvap = data.Hvap
 
     # utility cost coefficients
     C_cw = 1.5e3 / 1e6  # cost of cooling utilities [$/kJ]
     C_h = 5.0e3 / 1e6  # cost of heating utilities [$/kJ]
-    op_time = (
-        24 * 360
-    )  # assumed hours per year of column operating given some maintenance time
+    op_time = (24 * 360)  # assumed hours per year of column operating given some maintenance time
 
     # for use in calculating total annualized cost
     i = 0.08  # discount rate (interest rate)
@@ -155,11 +125,9 @@ def build_model(stn):
     m.RECT_s = pyo.Set(m.STATES, initialize=stn.RECTs,
                        doc="RECT_s = {taks t that produces state s by a rectifying section}")
 
-    # STRIP_s {taks t that produces state s by a stripping section}
     m.STRIP_s = pyo.Set(m.STATES, initialize=stn.STRIPs,
                         doc="STRIP_s {taks t that produces state s by a stripping section}")
 
-    # Underwood roots
     # system has N = 3 components, thus will have at most 2 active underwood roots
     # roots are bounded by relative volatilities
     m.r = pyo.Set(initialize=stn.r, doc="Underwood roots")
@@ -382,26 +350,18 @@ def build_model(stn):
     # PARAMETERS
     # ================================================
 
-    m.F0 = pyo.Param(initialize=F0, doc="System inlet molar flow rate")
+    m.F0 = pyo.Param(initialize=data.F0, doc="System inlet molar flow rate")
 
-    m.F0_comp = pyo.Param(
-        m.COMP, initialize=Fi0, doc="System inlet molar flow rate for each species i"
-    )
+    m.F0_comp = pyo.Param(m.COMP, initialize=Fi0, doc="System inlet molar flow rate for each species i")
 
-    m.rec_comp = pyo.Param(
-        m.COMP,
-        initialize={"A": rec, "B": rec, "C": rec},
-        doc="Specified recovery for each component",
-    )
+    m.rec_comp = pyo.Param(m.COMP, initialize=comp_rec,
+                           doc="Specified recovery for each component")
 
-    m.alpha = pyo.Param(
-        m.COMP, initialize=relative_volatilty, doc="species relative volatility"
-    )
+    m.alpha = pyo.Param(m.COMP, initialize=relative_volatilty,
+                        doc="species relative volatility")
 
-    m.PPM = pyo.Param(
-        initialize=sum(zf[i] * PM[i] for i in m.COMP),
-        doc="Molecular weight of feed stream",
-    )
+    m.PPM = pyo.Param(initialize=sum(zf[i] * PM[i] for i in m.COMP),
+                      doc="Molecular weight of feed stream")
 
     m.rho_V = pyo.Param(
         m.TASKS,
@@ -410,9 +370,8 @@ def build_model(stn):
         initialize=m.PPM * P_abs / 0.082 / (Tf + 273),
     )
 
-    m.Hvap = pyo.Param(
-        m.COMP, initialize=Hvap, doc="vaporization enthalpy for each species [KJ/mol]"
-    )
+    m.Hvap = pyo.Param(m.COMP, initialize=Hvap,
+                       doc="vaporization enthalpy for each species [KJ/mol]")
 
     # GLOBAL CONSTRAINTS
     # ================================================

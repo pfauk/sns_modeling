@@ -4,26 +4,6 @@ import pandas as pd
 import pyomo.environ as pyo
 import numpy as np
 
-def output_model(mdl, file_name):
-    """Function outputs the Pyomo model to a text file in the current directory
-    Args:
-    -mdl: Pyomo model
-    -file_name: string for desired file name
-
-    Returns:
-    -None: creates .txt file
-    """
-    # use utf-8 encoding, standard Windows cp1252 does not support logical characters
-    with open(file_name + '.txt', 'w', encoding='utf-8') as f:
-        # Redirect stdout to file
-        sys.stdout = f
-        mdl.pprint()
-
-    # Reset stdout to its default value
-    sys.stdout = sys.__stdout__
-
-    return None
-
 class Column:
     """Class to encapuslate data for a given column (separation task) for easier display.
     Columns are indexed by the set m.TASKS, which represents all possible separation tasks
@@ -293,7 +273,7 @@ def pprint_network(mdl):
         active_columns[i].display_complete_col()
 
 
-def pprint_network_to_file(mdl, file_name, dir_path='src/thermal_coupled/results'):
+def pprint_model_to_file(mdl, file_name, dir_path='src/thermal_coupled/results'):
     """Function outputs solution results from model to a .txt files
     Args:
     -mdl: Pyomo model
@@ -313,7 +293,7 @@ def pprint_network_to_file(mdl, file_name, dir_path='src/thermal_coupled/results
     with open(full_path, 'w', encoding='utf-8') as f:
         # Redirect stdout to file
         sys.stdout = f
-        pprint_network(mdl)
+        mdl.pprint()
 
     # Reset stdout to its default value
     sys.stdout = sys.__stdout__
@@ -329,16 +309,24 @@ class data:
         self.species_df = pd.read_excel(self.filepath, sheet_name='species')
         self.system_df = pd.read_excel(self.filepath, sheet_name='system')
 
-        self.F0 = self.system_df['F0']
-        self.P_abs = self.system_df['P_abs']
-        self.Tf = self.system_df['Tf']
-        self.rec = self.system_df['rec']
-        self.zf = dict(zip(self.species_df['index'], self.species_df['zf']))
-        self.relative_volatility = dict(zip(self.species_df['index'], self.species_df['alpha']))
-        self.species_densities = dict(zip(self.species_df['index'], self.species_df['density']))
-        self.PM = dict(zip(self.species_df['index'], self.species_df['MW']))
-        self.Hvap = dict(zip(self.species_df['index'], self.species_df['Hvap']))
+        self.species_names = dict(zip(self.species_df['index'], self.species_df['Species']))
+        self.F0 = self.system_df['F0 [kmol/hr]']
+        self.F0 = self.F0.iloc[0]
+
+        self.P_abs = self.system_df['Pressure [bar]']
+        self.P_abs = self.P_abs.iloc[0]
+
+        self.Tf = self.system_df['Temp [C]']
+        self.Tf = self.Tf.iloc[0]
+
+        self.rec = self.system_df['recovery']
+        self.rec = self.rec.iloc[0]
+
+        self.zf = dict(zip(self.species_df['index'], self.species_df['Inlet Mole Frac']))
+        self.relative_volatility = dict(zip(self.species_df['index'], self.species_df['Relative Volatility']))
+        self.species_densities = dict(zip(self.species_df['index'], self.species_df['Liquid Density [kg/m^3]']))
+        self.PM = dict(zip(self.species_df['index'], self.species_df['Molecular Weight']))
+        self.Hvap = dict(zip(self.species_df['index'], self.species_df['Enthalpy of Vaporization [kJ/mol]']))
 
 if __name__ == "__main__":
-    temp = data('3_comp.xlsx')
-    print(temp.__dir__)
+    hydrocarbon_data = data('3_comp.xlsx')
