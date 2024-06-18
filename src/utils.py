@@ -291,10 +291,11 @@ def save_solution_to_file(mdl, results, file_name, dir_path='src/thermal_coupled
     else:
         full_path = file_name + '.txt'
     
-    # use utf-8 encoding instead of standard Windows cp1252
-    with open(full_path, 'w', encoding='utf-8') as f:
-        # Redirect stdout to file
-
+    # # use utf-8 encoding instead of standard Windows cp1252
+    # with open(full_path, 'w', encoding='utf-8') as f:
+    #     # Redirect stdout to file
+    
+    return None
 
 def save_model_to_file(mdl, file_name, dir_path='src/thermal_coupled/saved_models'):
     """

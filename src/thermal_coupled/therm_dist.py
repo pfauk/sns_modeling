@@ -1001,10 +1001,7 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def condenser_cost(_):
-                return (
-                    m.final_condenser_cost[i]
-                    == K_shell_tube * m.area_final_exchanger[i] ** n
-                )
+                return (m.final_condenser_cost[i] == K_shell_tube * m.area_final_exchanger[i] ** n)
 
         # if the final state is produced by a stripping section, will have assocaited reboiler
         if i in m.PST_i:
