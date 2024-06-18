@@ -42,6 +42,9 @@ def build_model(stn, data):
 
     N = stn.n  # number of components
 
+    if N != data.n:
+        raise Exception('Number of components in STN object must be the same as number of components in data sheet')
+
     # MODEL DECLARATION
     # ================================================
     m = pyo.ConcreteModel(str(N) + " Component GDP Distillation Model")

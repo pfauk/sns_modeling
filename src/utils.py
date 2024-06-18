@@ -272,9 +272,34 @@ def pprint_network(mdl):
     for i in active_columns.keys():
         active_columns[i].display_complete_col()
 
+def save_solution_to_file(mdl, results, file_name, dir_path='src/thermal_coupled/results'):
+    """
+    saves the formatted solution output and solver output to a .txt file
 
-def pprint_model_to_file(mdl, file_name, dir_path='src/thermal_coupled/results'):
-    """Function outputs solution results from model to a .txt files
+    Args:
+    -mdl: Pyomo model
+    -results: solver output
+    -file_name: string for desired file name
+    -dir_path: string for desired directory; default to output to results directory
+
+    Returns:
+    -None: creates .txt file
+    """
+    
+    if dir_path and os.path.exists(dir_path):
+        full_path = os.path.join(dir_path, file_name + '.txt')
+    else:
+        full_path = file_name + '.txt'
+    
+    # use utf-8 encoding instead of standard Windows cp1252
+    with open(full_path, 'w', encoding='utf-8') as f:
+        # Redirect stdout to file
+
+
+def save_model_to_file(mdl, file_name, dir_path='src/thermal_coupled/saved_models'):
+    """
+    saves the Pyomo model to a .txt file
+
     Args:
     -mdl: Pyomo model
     -file_name: string for desired file name
@@ -289,7 +314,7 @@ def pprint_model_to_file(mdl, file_name, dir_path='src/thermal_coupled/results')
     else:
         full_path = file_name + '.txt'
 
-    # use utf-8 encoding instead of standard Windows cp1252 for output
+    # use utf-8 encoding instead of standard Windows cp1252 for output to handle logical characters
     with open(full_path, 'w', encoding='utf-8') as f:
         # Redirect stdout to file
         sys.stdout = f
@@ -309,6 +334,7 @@ class data:
         self.species_df = pd.read_excel(self.filepath, sheet_name='species')
         self.system_df = pd.read_excel(self.filepath, sheet_name='system')
 
+        self.n = self.species_df.shape[0]  # number of components in the system
         self.species_names = dict(zip(self.species_df['index'], self.species_df['Species']))
         self.F0 = self.system_df['F0 [kmol/hr]']
         self.F0 = self.F0.iloc[0]

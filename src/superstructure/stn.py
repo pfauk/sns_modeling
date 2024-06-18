@@ -120,7 +120,7 @@ class stn:
 
         e.g. n = 6, feed_mixture = 'ABCDEF', components = ['A', 'B', 'C', 'D', 'E', 'F']
         """
-        if not isinstance(n, int):
+        if not isinstance(n, (int, float)) and not n == int(n):
             raise TypeError("n must be an integer")
 
         if n <= 0 or n > 26:
@@ -673,7 +673,8 @@ class stn:
                 self.add_nodes_edges(graph, child, pos, x + (i - len(node.children) / 2) * (1 / layer), y - 1, layer + 1, node.task)
         return pos
 
-    def display_tree(self, tree):
+    def display_tree(self):
+        tree = self.tree
         graph = nx.DiGraph()
         pos = self.add_nodes_edges(graph, tree)
 
@@ -715,10 +716,10 @@ class stn:
 
 if __name__ == "__main__":
 
-    n = 3  # specify the number of components in the feed mixture
+    n = 6  # specify the number of components in the feed mixture
     network = stn(n)
     network.generate_tree()
     network.print_tree()
     network.generate_index_sets()
     network.print_sets()
-    network.display_tree(network.tree)
+    network.display_tree()

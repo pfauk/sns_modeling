@@ -1,15 +1,18 @@
-"""Main script file to build and solve models for thermally coupled distillation columns"""
 import sys
-import random
 import numpy as np
 import idaes
-import pyomo.environ as pyo
-from pyomo.gdp import Disjunction, Disjunct
 from utils import (
     data,
-    pprint_model_to_file,)
+    save_model_to_file)
 from superstructure.stn import stn
 from thermal_coupled.therm_dist import build_model
+
+"""Main script file to build and solve models for thermally coupled distillation columns
+
+User specifies the number of components in the mixture and the file name for the data sheet
+to import from
+
+"""
 
 n = 3  # specify number of components
 
@@ -21,19 +24,19 @@ network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
-model = build_model(network_superstructure, hydrocarbon_data)
+# model = build_model(network_superstructure, hydrocarbon_data)
 
-# pprint the Pyomo model and save to a txt file to examine model
-# pprint_model_to_file(model, '3_comp_model')
+# save the Pyomo model to a txt file to examine model
+# save_model_to_file(model, '3_comp_model')
 
 # SOLUTION
 # ================================================
-pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+# pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
 
-# applying Big-M transformation
-mbigm = pyo.TransformationFactory('gdp.bigm')
+# # applying Big-M transformation
+# mbigm = pyo.TransformationFactory('gdp.bigm')
 
-mbigm.apply_to(model)
+# mbigm.apply_to(model)
 
 # solver = pyo.SolverFactory('gams:baron')
 # status = solver.solve(model, tee=True)
