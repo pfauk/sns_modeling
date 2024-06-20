@@ -1,18 +1,6 @@
-# sns_modeling
+<img src="docs/images/sns_logo.png" width="250" height="100">
 
-Repo contains modeling files for solving optimal separation network synthesis problems for zeotropic mixtures. Models are formualted in Pyomom using Pyomo.GDP and solved using BARON. 
-
-# Installation
-
-Download or clone sns_modeling from this github site. 
-
-Navigate to the sns_scheduling folder using a terminal (or Anaconda prompt or VS code terminal) and run setup.py to install sns_scheduling as follows:
-
-```python
-pip install -e . 
-```
-
-
+Repo contains modeling files for solving optimal separation network synthesis problems for zeotropic mixtures. Models are formualted in Pyomom using Pyomo.GDP and solved using BARON.
 
 # Requirements
  
@@ -21,3 +9,18 @@ The requirements are listed in the requirements.txt file. To install them, run t
 ```python 
 pip install -r requirements.txt
 ```
+
+# Problem Data
+
+Data for a specific problems can be entered into Excel sheets. The ```src/data``` directory contains example sheets of how to structure the input data.
+
+
+# Solving Model and Viewing Output
+
+The optimization model is built and and solved in ```main.py``` script in ```src/thermal_coupled``` directory. Users must specify the number of componenets in the system and the name of the data file. Navigate to ```src/thermal_coupled``` directory and run:
+
+```python 
+python main.py
+```
+
+Users can specfiy a file name and directory to save the Pyomo model to with ```save_model_to_file()``` and can save the solution output by specifying a file name and directory with ```save_solution_to_file()```
