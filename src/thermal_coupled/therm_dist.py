@@ -643,8 +643,7 @@ def build_model(stn, data):
 
         @column.Constraint(roots)
         def underwood1(_, r):
-            return sum((m.alpha[i] * m.F[(i, t)]) for i in m.COMP) == (
-                m.Vr[t] - m.Vs[t]) * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP)
+            return sum((m.alpha[i] * m.F[(i, t)]) for i in m.COMP) - (m.Vr[t] - m.Vs[t]) * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP) == 0
 
         @column.Constraint(roots)
         def underwood2(_, r):
@@ -652,8 +651,7 @@ def build_model(stn, data):
 
         @column.Constraint(roots)
         def underwood3(_, r):
-            return -sum((m.alpha[i] * m.B[(i, t)]) for i in m.COMP) <= m.Vs[t] * sum(
-                m.alpha[i] - m.rud[(t, r)] for i in m.COMP)
+            return -sum((m.alpha[i] * m.B[(i, t)]) for i in m.COMP) - m.Vs[t] * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP) <= 0
 
     # Functions for defining tray number, column size, and cost constraints
     # ================================================
@@ -902,9 +900,7 @@ def build_model(stn, data):
             @heat_exchanger.Constraint(rect_tasks)
             def condenser_heat_duty(_, t):
                 """Task reboiler heat duty based on enthalpy of vaporization and stripping section vapor flow rate"""
-                return m.Qcond[t] * m.DT[t] == sum(
-                    m.Hvap[j] * m.D[(j, t)] * m.Vr[t] for j in m.COMP
-                )
+                return m.Qcond[t] * m.DT[t] == sum(m.Hvap[j] * m.D[(j, t)] * m.Vr[t] for j in m.COMP)
 
             @no_heat_exchanger.Constraint(rect_tasks)
             def inactive_final_condenser(_, t):
@@ -968,10 +964,10 @@ def build_model(stn, data):
         # U for hot side of condensing steam and cold side fluid of low viscosity liquid hydrocarbons
         Ureb = 600  # [J / m^2 sec K]
         # U for hot side of hydrocarbon gases and cold side fluid of liquid water
-        Ucond = 150  # [J / m^2 sec K]
+        Ucond = 200  # [J / m^2 sec K]
 
         # delta log mean temp difference from condenser and reboiler
-        delta_LM_T_cond = 50
+        delta_LM_T_cond = 200
         delta_LM_T_reb = 270
 
         # if the final state is produced by a rectifying section, will have assocaited condenser
@@ -1079,7 +1075,7 @@ def build_model(stn, data):
             @heat_exchanger.Constraint(strip_tasks)
             def int_reboiler_heat_duty(_, t):
                 """Task condenser heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
-                return m.Qreb[t] * m.BT[t] == sum(m.Hvap[i] * m.B[(i, t)] * m.Vs[t] for i in m.COMP)
+                return m.Qreb[t] * m.BT[t] == sum(m.Hvap[i] * m.B[(i, t)] * m.Vr[t] for i in m.COMP)
 
             @no_heat_exchanger.Constraint(strip_tasks)
             def inactive_intermediate_reboiler(_, t):
@@ -1129,10 +1125,10 @@ def build_model(stn, data):
         # U for hot side of condensing steam and cold side fluid of low viscosity liquid hydrocarbons
         Ureb = 600  # [J / m^2 sec K]
         # U for hot side of hydrocarbon gases and cold side fluid of liquid water
-        Ucond = 150  # [J / m^2 sec K]
+        Ucond = 200  # [J / m^2 sec K]
 
         # delta log mean temp difference from condenser and reboiler
-        delta_LM_T_cond = 50
+        delta_LM_T_cond = 200
         delta_LM_T_reb = 270
 
         # if the intermediate state is produced by a rectifying section, will have assocaited condenser

@@ -25,8 +25,8 @@ to import from
 """
 
 # specify number of components and data file name
-n = 4
-data_file_name = '4_comp.xlsx'
+n = 3
+data_file_name = '3_comp.xlsx'
 
 # import problem data for system and relevant species to data object
 hydrocarbon_data = data(data_file_name)
@@ -39,7 +39,7 @@ network_superstructure.generate_index_sets()
 model = build_model(network_superstructure, hydrocarbon_data)
 
 # # uncomment below line to save the Pyomo model to a txt file to examine model
-save_model_to_file(model, '4_comp_pyomo_model')
+save_model_to_file(model, '3_comp_pyomo_model')
 
 # SOLUTION
 # ================================================
@@ -50,23 +50,23 @@ mbigm = pyo.TransformationFactory('gdp.bigm')
 
 mbigm.apply_to(model)
 
-solver = pyo.SolverFactory('gams:baron')
+solver = pyo.SolverFactory('gams:baron')  # BARON is accessed through GAMS to solve the MINLP
 results = solver.solve(model, tee=True)
 
 # uncomment below line if you want to see solver results, problem size
 # print(results)
 
 # Log infeasible constraints if any
-logging.basicConfig(level=logging.INFO)
-log_infeasible_constraints(model)
+# logging.basicConfig(level=logging.INFO)
+# log_infeasible_constraints(model)
 
 # =================================================================
 # solution of GDP with L-bOA
-# results = pyo.SolverFactory('gdpopt.loa').solve(m, nlp_solver='ipopt', mip_solver='gams:cplex', tee=True)
+# results = pyo.SolverFactory('gdpopt.loa').solve(m, nlp_solver='ipopt', mip_solver='gurobi', tee=True)
 
 # SOLUTION OUTPUT
 # =================================================================
 # pprint_network(model)
 
 # uncomment below line to save the solution output to a txt file
-save_solution_to_file(model, '4_comp_solution')
+save_solution_to_file(model, '3_comp_solution')

@@ -1,0 +1,120 @@
+
+================================
+NETWORK OVERVIEW
+================================
+3 Component GDP Distillation Model
+*All Flow Units in [kmol/hr]*
+
+System Objective: $1,429,087.07
+
+CAPEX: $794,149.54
+OPEX: $1,358,544.81
+
+System Feed Total: ABC (600 [kmol/hr])
+Feed A 300.0
+Feed B 240.0
+Feed C 60.0
+
+Active Separation Tasks
+================================
+A/B
+AB/C
+
+Column A/B:
+Column cost $306,894.64
+Number of trays: 17.0
+Column height: 10.8 [m]
+Column diameter: 2.6 [m^2]
+================================
+Feed flow (FT): 529.2000
+Distillate (DT): 294.0000
+Bottoms (BT): 235.2000
+
+Column AB/C:
+Column cost $348,275.83
+Number of trays: 19.0
+Column height: 12.5 [m]
+Column diameter: 2.6 [m^2]
+================================
+Feed flow (FT): 600.0000
+Distillate (DT): 529.2000
+Bottoms (BT): 70.8000
+
+================================
+DETAILED NETWORK VIEW
+================================
+
+
+================================
+Separation task A/B is active
+
+Total Flows for Column A/B [kmol/hr]:
+Feed flow (FT): 529.2000
+Distillate (DT): 294.0000
+Bottoms (BT): 235.2000
+
+================================
+Component Flows for Column A/B
+Feed Component Flows:
+Feed (A): 294.0000
+Feed (B): 235.2000
+Feed (C): 0.0000
+
+Distillate Component Flows:
+Distillate (A): 294.0000
+Distillate (B): 0.0000
+Distillate (C): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 235.2000
+Bottoms (C): 0.0000
+
+================================
+Separation task AB/C is active
+
+Total Flows for Column AB/C [kmol/hr]:
+Feed flow (FT): 600.0000
+Distillate (DT): 529.2000
+Bottoms (BT): 70.8000
+
+================================
+Component Flows for Column AB/C
+Feed Component Flows:
+Feed (A): 300.0000
+Feed (B): 240.0000
+Feed (C): 60.0000
+
+Distillate Component Flows:
+Distillate (A): 294.0000
+Distillate (B): 235.2000
+Distillate (C): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 6.0000
+Bottoms (B): 4.8000
+Bottoms (C): 60.0000
+
+================================
+HEAT EXCHANGERS
+================================
+
+Final Product Heat Exchangers
+
+Final Prodcut A has associated condenser
+Capital cost of condenser: $51,908.16
+Exchanger area: 407.09 [m^2]
+Heat Duty: 16,283.5 [10^3 kJ/hr]
+
+Final Prodcut B has associated reboiler
+Capital cost of reboiler: $31,291.70
+Exchanger area: 108.42 [m^2]
+Heat Duty: 17,564.1 [10^3 kJ/hr]
+
+Final Prodcut C has associated reboiler
+Capital cost of reboiler: $32,310.42
+Exchanger area: 114.37 [m^2]
+Heat Duty: 18,527.5 [10^3 kJ/hr]
+
+Intermedaite Product Heat Exchangers
+

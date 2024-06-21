@@ -97,12 +97,12 @@ class Column:
             for k in self.B.keys():
                 print(f'Bottoms ({k[1]}): {self.B[k]:1.4f}')
 
-            print()
-            print('Internal Flows of Column')
-            print(f'Vr {self.Vr:1.4}')
-            print(f'Lr {self.Lr:1.4}')
-            print(f'Vs {self.Vs:1.4}')
-            print(f'Ls {self.Ls:1.4}')
+            # print()
+            # print('Internal Flows of Column')
+            # print(f'Vr {self.Vr:1.4}')
+            # print(f'Lr {self.Lr:1.4}')
+            # print(f'Vs {self.Vs:1.4}')
+            # print(f'Ls {self.Ls:1.4}')
 
 
 class IntHeatExchanger:
@@ -218,7 +218,7 @@ class FinalHeatExchanger:
 
         if i in mdl.PST_i:
             strip_tasks = list(mdl.PST_i[i])
-            
+
             for t in strip_tasks:
                 if pyo.value(mdl.column[t].indicator_var):
                     active_strip_tasks.append(t)
@@ -423,12 +423,12 @@ def save_model_to_file(mdl, file_name, dir_path=None):
     file_name = str(file_name + '.txt')
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
-    
+
     if dir_path:
         directory = os.path.join(base_dir, 'thermal_coupled', dir_path)
     else:
         directory = os.path.join(base_dir, 'thermal_coupled', 'saved_models')
-    
+
     full_path = os.path.join(directory, file_name)
 
     # use utf-8 encoding instead of standard Windows cp1252 for output to handle logical characters
