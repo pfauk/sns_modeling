@@ -1,5 +1,6 @@
 import sys
 import os
+import math
 import pandas as pd
 import pyomo.environ as pyo
 import numpy as np
@@ -42,7 +43,7 @@ class Column:
         self.area = pyo.value(mdl.Area[t])  # column area [m^2]
         self.diameter = 2 * np.sqrt(self.area / np.pi)  # column diameter [m]
         self.height = pyo.value(mdl.height[t])  # column height [m]
-        self.trays = pyo.value(mdl.Ntray[t])  # number of trays
+        self.trays = math.ceil(pyo.value(mdl.Ntray[t]))  # number of trays
 
         # initialization of heat exchanger (reboiler and condenser)
         self.Qreb = pyo.value(mdl.Qreb[t])
@@ -56,7 +57,7 @@ class Column:
             print()
             print(f'Column {self.col_index}:')
             print(f'Column cost ${self.cost:,.2f}')
-            print(f'Number of trays: {self.trays:1f}')
+            print(f'Number of trays: {self.trays:,.1f}')
             print(f'Column height: {self.height:1.1f} [m]')
             print(f'Column diameter: {self.diameter:1.1f} [m^2]')
             print('================================')
@@ -103,6 +104,7 @@ class Column:
             print(f'Vs {self.Vs:1.4}')
             print(f'Ls {self.Ls:1.4}')
 
+
 class IntHeatExchanger:
     """Class to encapuslate data for intermediate heat exchanger for easier display.
     Intermediate heat exchangers are indexed by the set m.ISTATE, which is all intermediate states in
@@ -111,14 +113,18 @@ class IntHeatExchanger:
     def __init__(self, mdl, s):
         self.active = pyo.value(mdl.int_heat_exchanger[s].indicator_var)
         self.exchanger_index = str(s)
-        self.cost = pyo.value(mdl.intermedaite_heat_exchanger_cost[s])
+        self.cost = 0  # initialize to 0 and check if exchanger is a condenser or reboiler
+        self.exchanger_area = 0
+        self.heat_duty = 0
 
         # get lists of active rectifying and stripping tasks that produce this intermediate state
         # should not be more than 2 tasks, one from a rectifying section and one from a stripping section
+        active_strip_tasks = []
+        active_rec_tasks = []
+
         if s in mdl.IREC_m:
             rec_tasks = list(mdl.IREC_m[s])
 
-            active_rec_tasks = []
             for t in rec_tasks:
                 if pyo.value(mdl.column[t].indicator_var):
                     active_rec_tasks.append(t)
@@ -130,7 +136,6 @@ class IntHeatExchanger:
         if s in mdl.ISTRIP_m:
             strip_tasks = list(mdl.ISTRIP_m[s])
 
-            active_strip_tasks = []
             for t in strip_tasks:
                 if pyo.value(mdl.column[t].indicator_var):
                     active_strip_tasks.append(t)
@@ -144,17 +149,44 @@ class IntHeatExchanger:
         if self.active:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
+                self.cost = mdl.inter_condenser_cost[s]
+                self.exchanger_area = pyo.value(mdl.area_intermediate_exchanger[s])
+                condenser_duty = pyo.value(sum(mdl.Qcond[t] for t in active_rec_tasks))
             else:
                 self.is_condenser = False
+                condenser_duty = 0
 
             if self.active_strip_tasks and not self.active_rec_tasks:
                 self.is_reboiler = True
+                self.cost = mdl.inter_reboiler_cost[s]
+                self.exchanger_area = pyo.value(mdl.area_intermedaite_exchanger[s])
+                reboiler_duty = pyo.value(sum(mdl.Qreb[t] for t in active_strip_tasks))
             else:
                 self.is_reboiler = False
+                reboiler_duty = 0
+
+            self.heat_duty = reboiler_duty + condenser_duty
 
         elif not self.active:
             self.is_condenser = False
             self.is_reboiler = False
+
+    def display_exchanger(self):
+        # display costs, area, and heat duty of heat exchanger
+        print()
+        if self.active is False:
+            print(f'Heat Exchanger for final product {self.exchanger_index} is not active')
+        elif self.active is True:
+            if self.is_reboiler is True:
+                print(f'Final Prodcut {self.exchanger_index} has associated reboiler')
+                print(f'Capital cost of reboiler: ${self.cost:,.2f}')
+                print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
+                print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
+            if self.is_condenser is True:
+                print(f'Final Prodcut {self.exchanger_index} has associated condenser')
+                print(f'Capital cost of condenser: ${self.cost:,.2f}')
+                print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
+                print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
 
 class FinalHeatExchanger:
     """Class to encapuslate data for final product heat exchanger for easier display.
@@ -164,14 +196,18 @@ class FinalHeatExchanger:
     def __init__(self, mdl, i):
         self.active = pyo.value(mdl.final_heat_exchanger[i].indicator_var)
         self.exchanger_index = str(i)
-        # self.cost = pyo.value(mdl.final_heat_exchanger_cost[i])
+        self.cost = 0  # initialize to 0 and check if exchanger is a condenser or reboiler
+        self.exchanger_area = 0
+        self.heat_duty = 0
 
         # get lists of active rectifying and stripping tasks that produce this final state
         # should not be more than 2 tasks, one from a rectifying section and one from a stripping section
+        active_rec_tasks = []
+        active_strip_tasks = []
+
         if i in mdl.PRE_i:
             rec_tasks = list(mdl.PRE_i[i])
 
-            active_rec_tasks = []
             for t in rec_tasks:
                 if pyo.value(mdl.column[t].indicator_var):
                     active_rec_tasks.append(t)
@@ -182,8 +218,7 @@ class FinalHeatExchanger:
 
         if i in mdl.PST_i:
             strip_tasks = list(mdl.PST_i[i])
-
-            active_strip_tasks = []
+            
             for t in strip_tasks:
                 if pyo.value(mdl.column[t].indicator_var):
                     active_strip_tasks.append(t)
@@ -197,17 +232,44 @@ class FinalHeatExchanger:
         if self.active:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
+                self.cost = pyo.value(mdl.final_condenser_cost[i])
+                self.exchanger_area = pyo.value(mdl.area_final_exchanger[i])
+                condenser_duty = pyo.value(sum(mdl.Qcond[t] for t in active_rec_tasks))
             else:
                 self.is_condenser = False
+                condenser_duty = 0
 
             if self.active_strip_tasks and not self.active_rec_tasks:
                 self.is_reboiler = True
+                self.cost = pyo.value(mdl.final_reboiler_cost[i])
+                self.exchanger_area = pyo.value(mdl.area_final_exchanger[i])
+                reboiler_duty = pyo.value(sum(mdl.Qreb[t] for t in active_strip_tasks))
             else:
                 self.is_reboiler = False
+                reboiler_duty = 0
+
+            self.heat_duty = reboiler_duty + condenser_duty
 
         elif not self.active:
             self.is_condenser = False
             self.is_reboiler = False
+
+    def display_exchanger(self):
+        # display costs, area, and heat duty of heat exchanger
+        print()
+        if self.active is False:
+            print(f'Heat Exchanger for final product {self.exchanger_index} is not active')
+        elif self.active is True:
+            if self.is_reboiler is True:
+                print(f'Final Prodcut {self.exchanger_index} has associated reboiler')
+                print(f'Capital cost of reboiler: ${self.cost:,.2f}')
+                print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
+                print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
+            if self.is_condenser is True:
+                print(f'Final Prodcut {self.exchanger_index} has associated condenser')
+                print(f'Capital cost of condenser: ${self.cost:,.2f}')
+                print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
+                print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
 
 
 def pprint_column(mdl, k):
@@ -243,25 +305,39 @@ def pprint_network(mdl):
     print(f'OPEX: ${pyo.value(mdl.OPEX):,.2f}')
     print()
     print(f'System Feed Total: {feed_index} ({feed_val} [kmol/hr])')
-    for i in mdl.COMP:
-        print(f'Feed {i} {mdl.F0_comp[i]}')
+    for t in mdl.COMP:
+        print(f'Feed {t} {mdl.F0_comp[t]}')
 
     # build up a dictionary with Column objects of active columns
     active_columns = {}
-    for k in mdl.TASKS:
-        temp = pyo.value(mdl.column[k].indicator_var)
+    for t in mdl.TASKS:
+        temp = pyo.value(mdl.column[t].indicator_var)
         if temp is True:
-            active_columns[k] = Column(mdl, k)
+            active_columns[t] = Column(mdl, t)
+
+    # build up a dictionary with FinalHeatExchanger objects of active heat exchangers associated with final products
+    active_final_heat_exchanger = {}
+    for i in mdl.COMP:
+        temp = pyo.value(mdl.final_heat_exchanger[i].indicator_var)
+        if temp is True:
+            active_final_heat_exchanger[i] = FinalHeatExchanger(mdl, i)
+
+    # build up a dictionary with IntHeatExchanger objects of active heat exchangers associated with intermediate products
+    active_inter_heat_exchanger = {}
+    for s in mdl.ISTATE:
+        temp = pyo.value(mdl.int_heat_exchanger[s].indicator_var)
+        if temp is True:
+            active_inter_heat_exchanger[s] = IntHeatExchanger(mdl, s)
 
     print()
-    print('Active Columns')
+    print('Active Separation Tasks')
     print("================================")
     for cols in active_columns.keys():
         print(active_columns[cols].col_index)
 
     # do a simple display (total flows) for every active column
-    for i in active_columns.keys():
-        active_columns[i].display_simple_col()
+    for t in active_columns.keys():
+        active_columns[t].display_simple_col()
 
     print()
     print("================================")
@@ -269,10 +345,33 @@ def pprint_network(mdl):
     print("================================")
     print()
 
-    for i in active_columns.keys():
-        active_columns[i].display_complete_col()
+    for t in active_columns.keys():
+        active_columns[t].display_complete_col()
 
-def save_solution_to_file(mdl, results, file_name, dir_path='src/thermal_coupled/results'):
+    print()
+    print("================================")
+    print('HEAT EXCHANGERS')
+    print("================================")
+    print()
+
+    print('Final Product Heat Exchangers')
+    for i in active_final_heat_exchanger.keys():
+        active_final_heat_exchanger[i].display_exchanger()
+
+    print()
+    print('Intermedaite Product Heat Exchangers')
+    for s in active_inter_heat_exchanger.keys():
+        active_inter_heat_exchanger[s].display_exchanger()
+
+def pprint_tasks(mdl):
+    """Function displays all separations tasks and if they are active / inactive"""
+    print()
+    print('Active Separation Tasks in Network')
+    for t in mdl.TASKS:
+        print(f'{t}: {pyo.value(mdl.column[t].indicator_var)}')
+
+
+def save_solution_to_file(mdl, file_name, dir_path=None):
     """
     saves the formatted solution output and solver output to a .txt file
 
@@ -285,35 +384,52 @@ def save_solution_to_file(mdl, results, file_name, dir_path='src/thermal_coupled
     Returns:
     -None: creates .txt file
     """
-    
-    if dir_path and os.path.exists(dir_path):
-        full_path = os.path.join(dir_path, file_name + '.txt')
+
+    file_name = str(file_name + '.txt')
+
+    base_dir = os.path.dirname(os.path.realpath(__file__))
+
+    if dir_path:
+        directory = os.path.join(base_dir, 'thermal_coupled', dir_path)
     else:
-        full_path = file_name + '.txt'
-    
-    # # use utf-8 encoding instead of standard Windows cp1252
-    # with open(full_path, 'w', encoding='utf-8') as f:
-    #     # Redirect stdout to file
-    
+        directory = os.path.join(base_dir, 'thermal_coupled', 'results')
+
+    full_path = os.path.join(directory, file_name)
+
+    # use utf-8 encoding instead of standard Windows cp1252
+    with open(full_path, 'w', encoding='utf-8') as f:
+        # Redirect stdout to file
+        sys.stdout = f
+        pprint_network(mdl)
+
+    # Reset stdout to its default value
+    sys.stdout = sys.__stdout__
+
     return None
 
-def save_model_to_file(mdl, file_name, dir_path='src/thermal_coupled/saved_models'):
+def save_model_to_file(mdl, file_name, dir_path=None):
     """
     saves the Pyomo model to a .txt file
 
     Args:
     -mdl: Pyomo model
     -file_name: string for desired file name
-    -dir_path: string for desired directory; default to output to results directory
+    -dir_path: string for desired directory
+        default to output to src/thermal_coupled/saved_models directory
 
     Returns:
     -None: creates .txt file
     """
+    file_name = str(file_name + '.txt')
 
-    if dir_path and os.path.exists(dir_path):
-        full_path = os.path.join(dir_path, file_name + '.txt')
+    base_dir = os.path.dirname(os.path.realpath(__file__))
+    
+    if dir_path:
+        directory = os.path.join(base_dir, 'thermal_coupled', dir_path)
     else:
-        full_path = file_name + '.txt'
+        directory = os.path.join(base_dir, 'thermal_coupled', 'saved_models')
+    
+    full_path = os.path.join(directory, file_name)
 
     # use utf-8 encoding instead of standard Windows cp1252 for output to handle logical characters
     with open(full_path, 'w', encoding='utf-8') as f:
@@ -330,8 +446,17 @@ class data:
     """
     class to hold problem data for input to a build_model() function
     """
-    def __init__(self, file_name):
-        self.filepath = os.path.join('src/data/' + file_name)
+    def __init__(self, file_name, dir_path=None):
+
+        base_dir = os.path.dirname(os.path.realpath(__file__))
+
+        if dir_path:
+            data_directory = os.path.join(base_dir, dir_path)
+        else:
+            data_directory = os.path.join(base_dir, 'data')
+
+        self.filepath = os.path.join(data_directory, file_name)
+
         self.species_df = pd.read_excel(self.filepath, sheet_name='species')
         self.system_df = pd.read_excel(self.filepath, sheet_name='system')
 

@@ -1,9 +1,19 @@
 import sys
+import os
 import numpy as np
-import idaes
+import logging
+import pyomo.environ as pyo
+from pyomo.util.infeasible import (
+    log_infeasible_constraints,
+    log_infeasible_bounds,
+    find_infeasible_constraints,
+)
 from utils import (
     data,
-    save_model_to_file)
+    pprint_network,
+    pprint_tasks,
+    save_model_to_file,
+    save_solution_to_file)
 from superstructure.stn import stn
 from thermal_coupled.therm_dist import build_model
 
@@ -14,75 +24,49 @@ to import from
 
 """
 
-n = 3  # specify number of components
+# specify number of components and data file name
+n = 4
+data_file_name = '4_comp.xlsx'
 
 # import problem data for system and relevant species to data object
-hydrocarbon_data = data('3_comp.xlsx')
+hydrocarbon_data = data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
 network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
-# model = build_model(network_superstructure, hydrocarbon_data)
+model = build_model(network_superstructure, hydrocarbon_data)
 
-# save the Pyomo model to a txt file to examine model
-# save_model_to_file(model, '3_comp_model')
+# # uncomment below line to save the Pyomo model to a txt file to examine model
+save_model_to_file(model, '4_comp_pyomo_model')
 
 # SOLUTION
 # ================================================
-# pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
 
-# # applying Big-M transformation
-# mbigm = pyo.TransformationFactory('gdp.bigm')
+# applying Big-M transformation
+mbigm = pyo.TransformationFactory('gdp.bigm')
 
-# mbigm.apply_to(model)
+mbigm.apply_to(model)
 
-# solver = pyo.SolverFactory('gams:baron')
-# status = solver.solve(model, tee=True)
+solver = pyo.SolverFactory('gams:baron')
+results = solver.solve(model, tee=True)
 
-# # =================================================================
-# # solution of GDP with L-bOA
+# uncomment below line if you want to see solver results, problem size
+# print(results)
+
+# Log infeasible constraints if any
+logging.basicConfig(level=logging.INFO)
+log_infeasible_constraints(model)
+
+# =================================================================
+# solution of GDP with L-bOA
 # results = pyo.SolverFactory('gdpopt.loa').solve(m, nlp_solver='ipopt', mip_solver='gams:cplex', tee=True)
 
-# # =================================================================
-# pprint_network(m)
+# SOLUTION OUTPUT
+# =================================================================
+# pprint_network(model)
 
-# print()
-# print('INTERMEDIATE HEAT EXCHANGERS')
-# for i in m.ISTATE:
-#     print(f'{i}: {pyo.value(m.int_heat_exchanger[i].indicator_var)}')
-
-
-# print()
-# print('FINAL HEAT EXCHANGERS')
-# for i in m.COMP:
-#     print(f'{i}: {pyo.value(m.final_heat_exchanger[i].indicator_var)}')
-
-# print()
-# print('Active Tasks')
-# for t in m.TASKS:
-#     print(f'{t}: {pyo.value(m.column[t].indicator_var)}')
-
-# for t in m.TASKS:
-#     print(f'Qreb {t}: {pyo.value(m.Qreb[t])}')
-#     print(f'Qcond {t}: {pyo.value(m.Qcond[t])}')
-#    # print(f'Heat Exchanger cost: $ {pyo.value(m.final_heat_exchanger_cost[t])}')
-
-
-# # uncomment the line below if you want to output the Pyomo model to a text file
-# output_model(m, '3_Component_GDP_Model')
-
-# #pprint_network_to_file(m, 'temp_file')
-
-
-# print()
-# print('Exchanger area')
-# for i in m.COMP:
-#     print(f'{i} {pyo.value(m.area_final_exchanger[i])}')
-
-# print()
-# print('Exchanger cost')
-# for i in m.COMP:
-#     print(f'{i} {pyo.value(m.final_reboiler_cost[i])}')
-#     print(f'{i} {pyo.value(m.final_condenser_cost[i])}')
+# uncomment below line to save the solution output to a txt file
+save_solution_to_file(model, '4_comp_solution')
