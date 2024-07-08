@@ -15,16 +15,9 @@ Chemistry Research, 40(10), 2260-2274. https://doi.org/10.1021/ie000761a
 
 """
 
-import sys
 from math import pi
-import numpy as np
 import pyomo.environ as pyo
-from pyomo.util.infeasible import (
-    log_infeasible_constraints,
-    log_infeasible_bounds,
-    find_infeasible_constraints,
-)
-from pyomo.gdp import Disjunction, Disjunct
+from pyomo.gdp import Disjunct
 
 
 def build_model(stn, data):
@@ -41,7 +34,7 @@ def build_model(stn, data):
     N = stn.n  # number of components
 
     if N != data.n:
-        raise Exception('Number of components in STN object must be the same as number of components in data sheet')
+        raise ValueError('Number of components in STN object must be the same as number of components in data sheet')
 
     # MODEL DECLARATION
     # ================================================
@@ -51,6 +44,8 @@ def build_model(stn, data):
     # ================================================
 
     # feed molar flow rate [kmol/hr]
+
+    # data object 
     F0 = data.F0
 
     # desired recovery of key components
@@ -84,7 +79,7 @@ def build_model(stn, data):
     # utility cost coefficients
     C_cw = 1.5e3 / 1e6  # cost of cooling utilities [$/kJ]
     C_h = 5.0e3 / 1e6  # cost of heating utilities [$/kJ]
-    op_time = (24 * 360)  # assumed hours per year of column operating given some maintenance time
+    op_time = 24 * 360  # assumed hours per year of column operating given some maintenance time
 
     # for use in calculating total annualized cost
     i = 0.08  # discount rate (interest rate)
@@ -156,6 +151,7 @@ def build_model(stn, data):
         doc="Total molar flow rate entering column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/2
     )
 
     m.F = pyo.Var(
@@ -164,6 +160,7 @@ def build_model(stn, data):
         doc="Component molar flow rate of species i entering column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/N
     )
 
     m.DT = pyo.Var(
@@ -171,6 +168,7 @@ def build_model(stn, data):
         doc="Total distillate molar flow rate of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/2
     )
 
     m.D = pyo.Var(
@@ -179,6 +177,7 @@ def build_model(stn, data):
         doc="Component distillate molar flow rate of species i for column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/N
     )
 
     m.BT = pyo.Var(
@@ -186,6 +185,7 @@ def build_model(stn, data):
         doc="Total bottoms flow rate of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/2
     )
 
     m.B = pyo.Var(
@@ -194,6 +194,7 @@ def build_model(stn, data):
         doc="Component bottoms flow rate of species i for column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/N
     )
 
     m.Vr = pyo.Var(
@@ -201,7 +202,7 @@ def build_model(stn, data):
         doc="Molar flow rate of vapor in the rectifying section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
-        initialize=1,
+        initialize=F0/(2*N)
     )
 
     m.Lr = pyo.Var(
@@ -209,6 +210,7 @@ def build_model(stn, data):
         doc="Molar flow rate of Liquid in the rectifying section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/(2*N)
     )
 
     m.Vs = pyo.Var(
@@ -216,6 +218,7 @@ def build_model(stn, data):
         doc="Molar flow rate of vapor in the stripping section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/(2*N)
     )
 
     m.Ls = pyo.Var(
@@ -223,6 +226,7 @@ def build_model(stn, data):
         doc="Molar flow rate of Liquid in the stripping section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
         bounds=(0, F0),
+        initialize=F0/(2*N)
     )
 
     m.rud = pyo.Var(
@@ -231,6 +235,7 @@ def build_model(stn, data):
         doc="possible active Underwood root (r) in task t",
         within=pyo.NonNegativeReals,
         bounds=(0, 500),
+        initialize=1
     )
 
     # Column costing and sizing variables
@@ -239,67 +244,71 @@ def build_model(stn, data):
         doc="Capital cost of column t [$]",
         within=pyo.NonNegativeReals,
         bounds=(0, 10000000),
+        initialize=50000
     )
 
     m.area_final_exchanger = pyo.Var(
         m.COMP,
         doc="heat exchange area of heat exchanger associated with final product [m^2]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 5000),
+        bounds=(0, 100000),
+        initialize=100
     )
 
     m.area_intermediate_exchanger = pyo.Var(
         m.ISTATE,
         doc="heat exchange area of heat exchanger associated with intermedaite product [m^2]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 5000),
+        bounds=(0, 100000),
+        initialize=100
     )
 
     m.final_condenser_cost = pyo.Var(
         m.COMP,
         doc="Capital cost of heat exchanger associated with final product i [$]",
         within=pyo.NonNegativeReals,
-        initialize=0,
         bounds=(0, 10000000),
+        initialize=100
     )
 
     m.final_reboiler_cost = pyo.Var(
         m.COMP,
         doc="Capital cost of heat exchanger associated with final product i [$]",
         within=pyo.NonNegativeReals,
-        initialize=0,
         bounds=(0, 10000000),
+        initialize=10000
     )
 
     m.inter_condenser_cost = pyo.Var(
         m.ISTATE,
         doc="Capital cost of heat exchanger associated with intermediate state s [$]",
         within=pyo.NonNegativeReals,
-        initialize=0,
         bounds=(0, 10000000),
+        initialize=10000
     )
 
     m.inter_reboiler_cost = pyo.Var(
         m.ISTATE,
         doc="Capital cost of heat exchanger associated with intermediate state s [$]",
         within=pyo.NonNegativeReals,
-        initialize=0,
         bounds=(0, 10000000),
+        initialize=10000
     )
 
     m.Ntray = pyo.Var(
         m.TASKS,
         doc="Numer of trays in column t",
         within=pyo.NonNegativeReals,
-        bounds=(0, 200),
+        bounds=(0, 100),
+        initialize=15
     )
 
     m.height = pyo.Var(
         m.TASKS,
         doc="height of column t [m]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 100),
-        initialize=1,
+        bounds=(0, 200),
+        initialize=15,
     )
 
     m.Area = pyo.Var(
@@ -337,14 +346,14 @@ def build_model(stn, data):
     m.CAPEX = pyo.Var(
         doc="Total capital expense as sum of bare module purchase prices",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10000000),
+        bounds=(0, 100000000),
         initialize=10000,
     )
 
     m.OPEX = pyo.Var(
         doc="Total system operating expenses as sum of reboiler and condenser expenses",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10000000),
+        bounds=(0, 100000000),
         initialize=10000,
     )
 
@@ -508,7 +517,7 @@ def build_model(stn, data):
     # Functions for defining mass balance and Underwood relation constraints for columns disjuncts
     # ================================================
 
-    def _build_mass_balance_column(m, t, column):
+    def _build_mass_balance_column(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
         """
         Function to build mass balance relation for active column disjuncts
 
@@ -566,7 +575,7 @@ def build_model(stn, data):
             """Sum of component flows in bottoms equals total bottoms flow"""
             return m.BT[t] == sum(m.B[(i, t)] for i in m.COMP)
 
-    def _build_mass_balance_no_column(m, t, nocolumn):
+    def _build_mass_balance_no_column(m: pyo.ConcreteModel, t: str, nocolumn: Disjunct) -> None:
         """
         Function to build mass balance relation for inactive column disjuncts
 
@@ -620,7 +629,7 @@ def build_model(stn, data):
         def inactive_bottoms_total_flow(_):
             return m.BT[t] == 0
 
-    def _build_underwood_eqns(m, t, column):
+    def _build_underwood_eqns(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
         """
         Function to build Underwood equations for a given column
 
@@ -655,7 +664,7 @@ def build_model(stn, data):
 
     # Functions for defining tray number, column size, and cost constraints
     # ================================================
-    def _build_trays(m, t, column):
+    def _build_trays(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
         """
         Builds constraints for the number of trays associated with each separation task t using Fenske equation.
         Fenske equation gives a minimum number of trays. Actual trays is give as twice the minimum number
@@ -689,7 +698,7 @@ def build_model(stn, data):
             H_per_tray = 0.5 * D**0.3
             return m.height[t] == m.Ntray[t] * H_per_tray
 
-    def _build_column_area(m, t, column):
+    def _build_column_area(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
         """
         Function builds constraints for the column area for each column disjunct
 
@@ -735,12 +744,12 @@ def build_model(stn, data):
             # maxium gas load for large tray spacing
             F_max = 2.5 * (phi**2 * sigma * (rho_L - rho_g) * g) ** (1 / 4)
 
-            """can use 2 criterion for minimum gas load:
-            F_min_1: non-uniform gas flow
-            F_min_2: criterion for weeping"""
+            # can use 2 criterion for minimum gas load:
+            # F_min_1: non-uniform gas flow
+            # F_min_2: criterion for weeping
 
-            F_min_1 = phi * np.sqrt(2 * (sigma / dh))
-            F_min_2 = phi * np.sqrt(0.37 * dh * g * ((rho_L - rho_g) ** 1.25) / rho_g**0.25)
+            F_min_1 = phi * pyo.sqrt(2 * (sigma / dh))
+            F_min_2 = phi * pyo.sqrt(0.37 * dh * g * ((rho_L - rho_g) ** 1.25) / rho_g**0.25)
 
             # take the max of the 2; using logical comparison to avoid nondifferentiable max() operator
             if F_min_1 > F_min_2:
@@ -751,12 +760,12 @@ def build_model(stn, data):
             # take the geometric mean of min and max gas load to get gas load specification for system
             F = (F_min * F_max) ** (1 / 2)
 
-            u_g = F / np.sqrt(rho_g)  # calcuating sueprficial gas velocity
+            u_g = F / pyo.sqrt(rho_g)  # calcuating sueprficial gas velocity
 
             V_g = V_dot * (PM / rho_g)  # calculation of volumetric gas flow rate [m^3/sec]
             Aac = V_g / u_g  # calculation of active area of a tray [m^2]
 
-            temp = 1 - (2 / np.pi) * (np.arcsin(weir_length) - np.sqrt(weir_length**2 - weir_length**4))
+            temp = 1 - (2 / pi) * (pyo.asin(weir_length) - pyo.sqrt(weir_length**2 - weir_length**4))
             Ac = Aac / temp  # column area [m^2]
 
             return Ac  # column area in [m^2]
@@ -766,7 +775,7 @@ def build_model(stn, data):
             """Calculation of column area based on empirical correlation"""
             return m.Area[t] == column_area_correlation(m.Vr[t], rho_L, m.rho_V[t], m.PPM)
 
-    def _build_column_volume(m, t, column):
+    def _build_column_volume(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
         """
         Function builds constraints for the volume of each column
 
@@ -808,7 +817,7 @@ def build_model(stn, data):
         def inactive_volume(_):
             return m.Vol[t] == 0
 
-    def _build_column_cost(m, t, column, no_column):
+    def _build_column_cost(m: pyo.ConcreteModel, t: str, column: Disjunct, no_column: Disjunct) -> None:
         """
         Function builds constraints for the cost relation for each column
 
@@ -873,7 +882,8 @@ def build_model(stn, data):
     def final_heat_exchange_no_final_heat_exchange(m, i):
         return [m.final_heat_exchanger[i], m.no_final_heat_exchanger[i]]
 
-    def _build_final_product_heat_exchanger(m, i, heat_exchanger, no_heat_exchanger):
+    def _build_final_product_heat_exchanger(m: pyo.ConcreteModel, i: str,
+                                            heat_exchanger: Disjunct, no_heat_exchanger: Disjunct) -> None:
         """Function to build constraints for disjuncts of final product heat exchangers
 
         Args:
@@ -921,7 +931,7 @@ def build_model(stn, data):
                 """final product heat exchange for a stream from a stripping section is not selected"""
                 return m.Qreb[t] == 0
 
-    def _final_heat_exchanger_cost(m, i, heat_exchanger, no_heat_exchanger):
+    def _final_heat_exchanger_cost(m: pyo.ConcreteModel, i: str, heat_exchanger: Disjunct, no_heat_exchanger: Disjunct) -> None:
         """Function to build constraints for area and capital cost of active final product heat exchanger
 
         Args:
@@ -980,7 +990,7 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def condenser_cost(_):
-                return (m.final_condenser_cost[i] == K_shell_tube * m.area_final_exchanger[i] ** n)
+                return m.final_condenser_cost[i] == K_shell_tube * m.area_final_exchanger[i] ** n
 
         # if the final state is produced by a stripping section, will have assocaited reboiler
         if i in m.PST_i:
@@ -992,7 +1002,7 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def reboiler_cost(_):
-                return (m.final_reboiler_cost[i] == K_reb * m.area_final_exchanger[i] ** n)
+                return m.final_reboiler_cost[i] == K_reb * m.area_final_exchanger[i] ** n
 
         @no_heat_exchanger.Constraint()
         def inactive_exchanger_area(_):
@@ -1027,7 +1037,7 @@ def build_model(stn, data):
     def int_heat_exchange_no_final_heat_exchange(m, i):
         return [m.int_heat_exchanger[i], m.no_int_heat_exchanger[i]]
 
-    def _build_intermediate_product_heat_exchanger(m, s, heat_exchanger, no_heat_exchanger):
+    def _build_intermediate_product_heat_exchanger(m: pyo.ConcreteModel, s: str, heat_exchanger: Disjunct, no_heat_exchanger: Disjunct) -> None:
         """Function to build constraints for disjuncts of active intermediate product heat exchangers
 
         Args:
@@ -1047,7 +1057,6 @@ def build_model(stn, data):
             None. Function adds constraints to the model but does not return a value
         """
 
-        #TODO: double check this constraint for intermediate heat exchanger
         task_list = list(m.TS_s[s])
 
         @heat_exchanger.Constraint(task_list)
@@ -1082,7 +1091,7 @@ def build_model(stn, data):
                 """intermediate product heat exchange for a stream from a stripping section is not selected"""
                 return m.Qreb[t] == 0
 
-    def _build_intermediate_heat_exchanger_cost(m, s, heat_exchanger, no_heat_exchanger):
+    def _build_intermediate_heat_exchanger_cost(m: pyo.ConcreteModel, s: str, heat_exchanger: Disjunct, no_heat_exchanger: Disjunct) -> None:
         """Function to build constraints for capital cost of active intermediate product heat exchanger
 
         Args:
@@ -1186,11 +1195,11 @@ def build_model(stn, data):
 
         @no_heat_exchanger.Constraint()
         def heat_exchanger_mb_vapor(_):
-            return (sum(m.Vr[t] - m.Vs[t] for t in m.TS_s[s]) + vapor_strip_flow == vapor_rec_flow)
+            return sum(m.Vr[t] - m.Vs[t] for t in m.TS_s[s]) + vapor_strip_flow == vapor_rec_flow
 
         @no_heat_exchanger.Constraint()
         def heat_exchanger_mb_liquid(_):
-            return (sum(m.Lr[t] - m.Ls[t] for t in m.TS_s[s]) + liquid_strip_flow == liquid_rec_flow)
+            return sum(m.Lr[t] - m.Ls[t] for t in m.TS_s[s]) + liquid_strip_flow == liquid_rec_flow
 
     # calling functions to build constraints for active and inactive intermediate product heat exchanger disjuncts
     for s in m.ISTATE:
@@ -1210,8 +1219,8 @@ def build_model(stn, data):
         else:
             return pyo.Constraint.Skip
 
-    """Logic 2 and Logic 3: A given state can be produced by at most 2 tasks; one must
-    be from a rectifying section and one must be from a stripping section"""
+    # Logic 2 and Logic 3: A given state can be produced by at most 2 tasks; one must
+    # be from a rectifying section and one must be from a stripping section
 
     @m.Constraint(m.STATES,
                   doc="State generated by rectifying section")
@@ -1262,8 +1271,8 @@ def build_model(stn, data):
         else:
             return pyo.Constraint.Skip
 
-    """Logic 7 and Logic 8: If a final product is produced by exactly one contribution, the heat exchanger associated with
-    this product must be selected."""
+    # Logic 7 and Logic 8: If a final product is produced by exactly one contribution, the heat exchanger associated with
+    # this product must be selected.
 
     @m.LogicalConstraint(m.COMP)
     def logic7(m, i):
@@ -1281,7 +1290,7 @@ def build_model(stn, data):
         else:
             return pyo.Constraint.Skip
 
-    """If a given final state is produced by 2 tasks, then there is no heat exchnager associated with that state"""
+    # If a given final state is produced by 2 tasks, then there is no heat exchnager associated with that state
 
     @m.LogicalConstraint(m.COMP)
     def logic9(m, i):
@@ -1296,7 +1305,7 @@ def build_model(stn, data):
 
         return pyo.implies(pyo.land(temp_var1, temp_var2), pyo.lnot(m.final_heat_exchanger[i].indicator_var))
 
-    """Intermediate heat exchanger logic: cannot have a heat exchanger for an intermediate state if the state is not produced by a task"""
+    # Intermediate heat exchanger logic: cannot have a heat exchanger for an intermediate state if the state is not produced by a task
 
     # @m.Constraint(m.ISTATE)
     # def logic10(m, s):

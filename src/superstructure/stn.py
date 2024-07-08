@@ -86,9 +86,104 @@ class Task:
 
 class stn:
     """
-    class to represent a state-task network for the separation of an N component zeotropic mixture
-    with splits between consecutive key components
+    A class to represent a state-task network for the separation of an N-component zeotropic mixture with splits between consecutive key components.
+
+    This class provides methods to generate and manipulate a separation network, including the creation of feed and component sets, 
+    tree structures representing separation tasks, and various index sets used in the separation process.
+
+    Attributes
+    ----------
+    n : int
+        The number of components in the mixture.
+    tree : State or None
+        The root of the separation tree.
+    FEED : str or None
+        A string representing the initial mixture feed.
+    COMP : list or None
+        A list of components in the mixture.
+    TASKS : list or None
+        A list of tasks in the separation process.
+    FSf : list or None
+        A list of names of separation tasks that can have the initial mixture as their feed.
+    TSs : dict or None
+        A dictionary where keys are non-final states and values are lists of tasks that are children of the state.
+    STs : dict or None
+        A dictionary mapping states to tasks that have the state as a child.
+    ISTATE : list or None
+        A list of intermediate states.
+    PREi : dict or None
+        A dictionary mapping final states to tasks that produce them through a rectifying section.
+    PSTi : dict or None
+        A dictionary mapping final states to tasks that produce them through a stripping section.
+    STRIPs : dict or None
+        A dictionary mapping states to tasks that produce them through a stripping section.
+    RECTs : dict or None
+        A dictionary mapping states to tasks that produce them through a rectifying section.
+    IRECs : dict or None
+        A dictionary mapping intermediate states to tasks that produce them through a rectifying section.
+    ISTRIPs : dict or None
+        A dictionary mapping intermediate states to tasks that produce them through a stripping section.
+    LK : dict or None
+        A dictionary mapping tasks to their light key components.
+    HK : dict or None
+        A dictionary mapping tasks to their heavy key components.
+    r : list or None
+        A list of possible Underwood roots for the mixture.
+    RUA : dict or None
+        A dictionary mapping tasks to active Underwood roots.
+
+    Methods
+    -------
+    _generate_initial_mixture(n):
+        Create feed and components sets for a separation system.
+    _generate_tree(initial_state):
+        Create a separation tree for a given initial state.
+    _collect_tasks(node):
+        Traverse the tree and collect names of all Task objects.
+    _collect_states(node):
+        Traverse the tree and collect names of all State objects.
+    _collect_feed_columns(node):
+        Collect the names of all child Tasks from the root State node of the tree.
+    _collect_TSs(node):
+        Traverse the tree and collect child tasks that each state is able to produce.
+    _collect_STs(node, result=None):
+        Traverse the tree and collect a mapping of states to tasks that have the state as a child.
+    _collect_final_states_from_distillate(node, current_tasks=None, result=None):
+        Traverse the tree and collect a mapping of tasks that produce a final state from a rectifying section.
+    _collect_final_states_from_bottoms(node, current_tasks=None, result=None):
+        Traverse the tree and collect a mapping of tasks that produce a final state from a stripping section.
+    _collect_states_from_bottoms(node, current_tasks=None, result=None):
+        Traverse the tree and collect a mapping of tasks that produce a state from a stripping section.
+    _collect_states_from_distillate(node, current_tasks=None, result=None):
+        Traverse the tree and collect a mapping of tasks that produce a state from a rectifying section.
+    _generarte_intermediate_rectifying(rect, istates):
+        Produce a mapping of tasks that produce an intermediate state through a rectifying section.
+    _generarte_intermediate_stripping(strip, istates):
+        Produce a mapping of tasks that produce an intermediate state through a stripping section.
+    _generate_light_key(tasks):
+        Generate a dictionary of tasks with the values being the light key component in a given separation.
+    _generate_heavy_key(tasks):
+        Generate a dictionary of tasks with the values being the heavy key component in a given separation.
+    _generate_underwood_roots(n):
+        Generate possible Underwood roots for a mixture with N components.
+    _generate_active_roots(tasks, roots):
+        Generate a dictionary mapping tasks to their active Underwood roots.
+    generate_tree():
+        Generate the separation tree and initial mixture components.
+    generate_index_sets():
+        Generate and populate various index sets used in the separation process.
+    _print_tree(node, level=0):
+        Recursively print the tree structure.
+    print_tree():
+        Print the entire separation tree.
+    add_nodes_edges(graph, node, pos=None, x=0, y=0, layer=1, parent=None):
+        Add nodes and edges to a graph for visualization.
+    display_tree():
+        Display the separation tree using networkx and matplotlib.
+    print_sets():
+        Print the generated index sets.
     """
+
     def __init__(self, n):
         self.n = n
         self.tree = None

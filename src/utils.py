@@ -1,6 +1,7 @@
 import sys
 import os
 import math
+from math import pi
 import pandas as pd
 import pyomo.environ as pyo
 import numpy as np
@@ -41,7 +42,7 @@ class Column:
 
         # initialization of column physical dimensions
         self.area = pyo.value(mdl.Area[t])  # column area [m^2]
-        self.diameter = 2 * np.sqrt(self.area / np.pi)  # column diameter [m]
+        self.diameter = 2 * pyo.sqrt(self.area / pi)  # column diameter [m]
         self.height = pyo.value(mdl.height[t])  # column height [m]
         self.trays = math.ceil(pyo.value(mdl.Ntray[t]))  # number of trays
 
@@ -460,19 +461,20 @@ class data:
         self.species_df = pd.read_excel(self.filepath, sheet_name='species')
         self.system_df = pd.read_excel(self.filepath, sheet_name='system')
 
-        self.n = self.species_df.shape[0]  # number of components in the system
+        # type cast data to Python floats instead of Numpy float64 in order to work with GDPopt
+        self.n = float(self.species_df.shape[0])  # number of components in the system
         self.species_names = dict(zip(self.species_df['index'], self.species_df['Species']))
         self.F0 = self.system_df['F0 [kmol/hr]']
-        self.F0 = self.F0.iloc[0]
+        self.F0 = float(self.F0.iloc[0])
 
         self.P_abs = self.system_df['Pressure [bar]']
-        self.P_abs = self.P_abs.iloc[0]
+        self.P_abs = float(self.P_abs.iloc[0])
 
         self.Tf = self.system_df['Temp [C]']
-        self.Tf = self.Tf.iloc[0]
-
+        self.Tf = float(self.Tf.iloc[0])
+        
         self.rec = self.system_df['recovery']
-        self.rec = self.rec.iloc[0]
+        self.rec = float(self.rec.iloc[0])
 
         self.zf = dict(zip(self.species_df['index'], self.species_df['Inlet Mole Frac']))
         self.relative_volatility = dict(zip(self.species_df['index'], self.species_df['Relative Volatility']))

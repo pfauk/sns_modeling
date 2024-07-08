@@ -1,7 +1,12 @@
+"""Main script file to build and solve models for thermally coupled distillation columns
+
+User specifies the number of components in the mixture and the file name for the data sheet
+to import from
+
+"""
+
 import sys
 import os
-import numpy as np
-import logging
 import pyomo.environ as pyo
 from pyomo.util.infeasible import (
     log_infeasible_constraints,
@@ -17,16 +22,10 @@ from utils import (
 from superstructure.stn import stn
 from thermal_coupled.therm_dist import build_model
 
-"""Main script file to build and solve models for thermally coupled distillation columns
-
-User specifies the number of components in the mixture and the file name for the data sheet
-to import from
-
-"""
 
 # specify number of components and data file name
 n = 3
-data_file_name = '3_comp.xlsx'
+data_file_name = '3_comp_hydrocarbon.xlsx'
 
 # import problem data for system and relevant species to data object
 hydrocarbon_data = data(data_file_name)

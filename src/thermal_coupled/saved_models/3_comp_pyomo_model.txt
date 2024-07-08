@@ -1,21 +1,12 @@
-25 Set Declarations
-    B_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain     : Size : Members
-        None :     2 : COMP*TASKS :   12 : {('A', 'A/B'), ('A', 'A/BC'), ('A', 'AB/C'), ('A', 'B/C'), ('B', 'A/B'), ('B', 'A/BC'), ('B', 'AB/C'), ('B', 'B/C'), ('C', 'A/B'), ('C', 'A/BC'), ('C', 'AB/C'), ('C', 'B/C')}
+18 Set Declarations
     COMP : COM  ={i|i is a component in the mixture}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
         None :     1 :    Any :    3 : {'A', 'B', 'C'}
-    D_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain     : Size : Members
-        None :     2 : COMP*TASKS :   12 : {('A', 'A/B'), ('A', 'A/BC'), ('A', 'AB/C'), ('A', 'B/C'), ('B', 'A/B'), ('B', 'A/BC'), ('B', 'AB/C'), ('B', 'B/C'), ('C', 'A/B'), ('C', 'A/BC'), ('C', 'AB/C'), ('C', 'B/C')}
     FS_F : FS_F = {Columns whose feed is the initial mixture}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
         None :     1 :    Any :    2 : {'A/BC', 'AB/C'}
-    F_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain     : Size : Members
-        None :     2 : COMP*TASKS :   12 : {('A', 'A/B'), ('A', 'A/BC'), ('A', 'AB/C'), ('A', 'B/C'), ('B', 'A/B'), ('B', 'A/BC'), ('B', 'AB/C'), ('B', 'B/C'), ('C', 'A/B'), ('C', 'A/BC'), ('C', 'AB/C'), ('C', 'B/C')}
     Feed : feed mixture to system
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -49,17 +40,17 @@
     PRE_i : PRE_i = {Tasks t that produce final product i through a rectifying section}
         Size=2, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
-          A :     1 :    Any :    2 : {'A/B', 'A/BC'}
+          A :     1 :    Any :    2 : {'A/BC', 'A/B'}
           B :     1 :    Any :    1 : {'B/C',}
     PST_i : PST_i  = {Tasks t that produce final product i through a stripping section}
         Size=2, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           B :     1 :    Any :    1 : {'A/B',}
-          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
+          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
     RECT_s : RECT_s = {taks t that produces state s by a rectifying section}
         Size=3, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
-          A :     1 :    Any :    2 : {'A/B', 'A/BC'}
+          A :     1 :    Any :    2 : {'A/BC', 'A/B'}
          AB :     1 :    Any :    1 : {'AB/C',}
           B :     1 :    Any :    1 : {'B/C',}
     RUA : active Underwood roots in column C
@@ -78,15 +69,15 @@
         Key : Dimen : Domain : Size : Members
           B :     1 :    Any :    1 : {'A/B',}
          BC :     1 :    Any :    1 : {'A/BC',}
-          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
+          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
     ST_s : ST_s = {tasks t that are able to produce state s}
         Size=5, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
-          A :     1 :    Any :    2 : {'A/B', 'A/BC'}
+          A :     1 :    Any :    2 : {'A/BC', 'A/B'}
          AB :     1 :    Any :    1 : {'AB/C',}
           B :     1 :    Any :    2 : {'A/B', 'B/C'}
          BC :     1 :    Any :    1 : {'A/BC',}
-          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
+          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
     TASKS : TASKS {t|t is a separation task}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -97,22 +88,10 @@
          AB :     1 :    Any :    1 : {'A/B',}
         ABC :     1 :    Any :    2 : {'A/BC', 'AB/C'}
          BC :     1 :    Any :    1 : {'B/C',}
-    component_mb_between_cols_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain      : Size : Members
-        None :     2 : STATES*COMP :   18 : {('A', 'A'), ('A', 'B'), ('A', 'C'), ('AB', 'A'), ('AB', 'B'), ('AB', 'C'), ('ABC', 'A'), ('ABC', 'B'), ('ABC', 'C'), ('B', 'A'), ('B', 'B'), ('B', 'C'), ('BC', 'A'), ('BC', 'B'), ('BC', 'C'), ('C', 'A'), ('C', 'B'), ('C', 'C')}
-    logic11_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain       : Size : Members
-        None :     2 : STATES*TASKS :   24 : {('A', 'A/B'), ('A', 'A/BC'), ('A', 'AB/C'), ('A', 'B/C'), ('AB', 'A/B'), ('AB', 'A/BC'), ('AB', 'AB/C'), ('AB', 'B/C'), ('ABC', 'A/B'), ('ABC', 'A/BC'), ('ABC', 'AB/C'), ('ABC', 'B/C'), ('B', 'A/B'), ('B', 'A/BC'), ('B', 'AB/C'), ('B', 'B/C'), ('BC', 'A/B'), ('BC', 'A/BC'), ('BC', 'AB/C'), ('BC', 'B/C'), ('C', 'A/B'), ('C', 'A/BC'), ('C', 'AB/C'), ('C', 'B/C')}
-    logic12_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain       : Size : Members
-        None :     2 : STATES*TASKS :   24 : {('A', 'A/B'), ('A', 'A/BC'), ('A', 'AB/C'), ('A', 'B/C'), ('AB', 'A/B'), ('AB', 'A/BC'), ('AB', 'AB/C'), ('AB', 'B/C'), ('ABC', 'A/B'), ('ABC', 'A/BC'), ('ABC', 'AB/C'), ('ABC', 'B/C'), ('B', 'A/B'), ('B', 'A/BC'), ('B', 'AB/C'), ('B', 'B/C'), ('BC', 'A/B'), ('BC', 'A/BC'), ('BC', 'AB/C'), ('BC', 'B/C'), ('C', 'A/B'), ('C', 'A/BC'), ('C', 'AB/C'), ('C', 'B/C')}
     r : Underwood roots
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
         None :     1 :    Any :    2 : {'r1', 'r2'}
-    rud_index : Size=1, Index=None, Ordered=True
-        Key  : Dimen : Domain  : Size : Members
-        None :     2 : TASKS*r :    8 : {('A/B', 'r1'), ('A/B', 'r2'), ('A/BC', 'r1'), ('A/BC', 'r2'), ('AB/C', 'r1'), ('AB/C', 'r2'), ('B/C', 'r1'), ('B/C', 'r2')}
 
 7 Param Declarations
     F0 : System inlet molar flow rate [kmol/hr]
@@ -164,7 +143,7 @@
         AB/C :     0 :    10 :  1000 : False : False : NonNegativeReals
          B/C :     0 :    10 :  1000 : False : False : NonNegativeReals
     B : Component bottoms flow rate of species i for column t [kmol/hr]
-        Size=12, Index=B_index
+        Size=12, Index=COMP*TASKS
         Key           : Lower : Value : Upper : Fixed : Stale : Domain
          ('A', 'A/B') :     0 :  None :   600 : False :  True : NonNegativeReals
         ('A', 'A/BC') :     0 :  None :   600 : False :  True : NonNegativeReals
@@ -190,7 +169,7 @@
         Key  : Lower : Value : Upper    : Fixed : Stale : Domain
         None :     0 : 10000 : 10000000 : False : False : NonNegativeReals
     D : Component distillate molar flow rate of species i for column t [kmol/hr]
-        Size=12, Index=D_index
+        Size=12, Index=COMP*TASKS
         Key           : Lower : Value : Upper : Fixed : Stale : Domain
          ('A', 'A/B') :     0 :  None :   600 : False :  True : NonNegativeReals
         ('A', 'A/BC') :     0 :  None :   600 : False :  True : NonNegativeReals
@@ -212,7 +191,7 @@
         AB/C :     0 :  None :   600 : False :  True : NonNegativeReals
          B/C :     0 :  None :   600 : False :  True : NonNegativeReals
     F : Component molar flow rate of species i entering column t [kmol/hr]
-        Size=12, Index=F_index
+        Size=12, Index=COMP*TASKS
         Key           : Lower : Value : Upper : Fixed : Stale : Domain
          ('A', 'A/B') :     0 :  None :   600 : False :  True : NonNegativeReals
         ('A', 'A/BC') :     0 :  None :   600 : False :  True : NonNegativeReals
@@ -296,14 +275,14 @@
     area_final_exchanger : heat exchange area of heat exchanger associated with final product [m^2]
         Size=3, Index=COMP
         Key : Lower : Value : Upper : Fixed : Stale : Domain
-          A :     0 :  None :  5000 : False :  True : NonNegativeReals
-          B :     0 :  None :  5000 : False :  True : NonNegativeReals
-          C :     0 :  None :  5000 : False :  True : NonNegativeReals
+          A :     0 :  None : 10000 : False :  True : NonNegativeReals
+          B :     0 :  None : 10000 : False :  True : NonNegativeReals
+          C :     0 :  None : 10000 : False :  True : NonNegativeReals
     area_intermediate_exchanger : heat exchange area of heat exchanger associated with intermedaite product [m^2]
         Size=2, Index=ISTATE
         Key : Lower : Value : Upper : Fixed : Stale : Domain
-         AB :     0 :  None :  5000 : False :  True : NonNegativeReals
-         BC :     0 :  None :  5000 : False :  True : NonNegativeReals
+         AB :     0 :  None : 10000 : False :  True : NonNegativeReals
+         BC :     0 :  None : 10000 : False :  True : NonNegativeReals
     column_cost : Capital cost of column t [$]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper    : Fixed : Stale : Domain
@@ -341,7 +320,7 @@
          AB :     0 :     0 : 10000000 : False : False : NonNegativeReals
          BC :     0 :     0 : 10000000 : False : False : NonNegativeReals
     rud : possible active Underwood root (r) in task t
-        Size=8, Index=rud_index
+        Size=8, Index=TASKS*r
         Key            : Lower : Value : Upper : Fixed : Stale : Domain
          ('A/B', 'r1') :     0 :  None :   500 : False :  True : NonNegativeReals
          ('A/B', 'r2') :     0 :  None :   500 : False :  True : NonNegativeReals
@@ -361,7 +340,7 @@
     capex_def : Size=1, Index=None, Active=True
         Key  : Lower : Body                                                                                                                                                                                                                                                                                                                                                     : Upper : Active
         None :   0.0 : CAPEX - (column_cost[A/B] + column_cost[A/BC] + column_cost[AB/C] + column_cost[B/C] + final_reboiler_cost[A] + final_condenser_cost[A] + final_reboiler_cost[B] + final_condenser_cost[B] + final_reboiler_cost[C] + final_condenser_cost[C] + inter_reboiler_cost[AB] + inter_condenser_cost[AB] + inter_reboiler_cost[BC] + inter_condenser_cost[BC]) :   0.0 :   True
-    component_mb_between_cols : Size=6, Index=component_mb_between_cols_index, Active=True
+    component_mb_between_cols : Size=6, Index=STATES*COMP, Active=True
         Key         : Lower : Body                 : Upper : Active
         ('AB', 'A') :   0.0 : F[A,A/B] - D[A,AB/C] :   0.0 :   True
         ('AB', 'B') :   0.0 : F[B,A/B] - D[B,AB/C] :   0.0 :   True
@@ -371,9 +350,9 @@
         ('BC', 'C') :   0.0 : F[C,B/C] - B[C,A/BC] :   0.0 :   True
     final_product_mb : Size=3, Index=COMP, Active=True
         Key : Lower : Body                 : Upper : Active
-          A : 294.0 : D[A,A/B] + D[A,A/BC] :  +Inf :   True
+          A : 294.0 : D[A,A/BC] + D[A,A/B] :  +Inf :   True
           B : 235.2 :  D[B,B/C] + B[B,A/B] :  +Inf :   True
-          C :  58.8 : B[C,AB/C] + B[C,B/C] :  +Inf :   True
+          C :  58.8 : B[C,B/C] + B[C,AB/C] :  +Inf :   True
     liquid_internal_mb : Size=2, Index=STATES, Active=True
         Key : Lower : Body                         : Upper : Active
          AB :   0.0 : Lr[A/B] - Ls[A/B] - Lr[AB/C] :   0.0 :   True
@@ -382,15 +361,15 @@
                         stream and send to 2 different columns
         Size=5, Index=STATES, Active=True
         Key : Lower : Body                                                                 : Upper : Active
-          A :  -Inf : column[A/B].binary_indicator_var + column[A/BC].binary_indicator_var :   1.0 :   True
+          A :  -Inf : column[A/BC].binary_indicator_var + column[A/B].binary_indicator_var :   1.0 :   True
          AB :  -Inf :                                    column[AB/C].binary_indicator_var :   1.0 :   True
           B :  -Inf :  column[A/B].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
          BC :  -Inf :                                    column[A/BC].binary_indicator_var :   1.0 :   True
-          C :  -Inf : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
+          C :  -Inf : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
     logic2 : State generated by rectifying section
         Size=3, Index=STATES, Active=True
         Key : Lower : Body                                                                 : Upper : Active
-          A :  -Inf : column[A/B].binary_indicator_var + column[A/BC].binary_indicator_var :   1.0 :   True
+          A :  -Inf : column[A/BC].binary_indicator_var + column[A/B].binary_indicator_var :   1.0 :   True
          AB :  -Inf :                                    column[AB/C].binary_indicator_var :   1.0 :   True
           B :  -Inf :                                     column[B/C].binary_indicator_var :   1.0 :   True
     logic3 : State generated by stripping section
@@ -398,23 +377,23 @@
         Key : Lower : Body                                                                 : Upper : Active
           B :  -Inf :                                     column[A/B].binary_indicator_var :   1.0 :   True
          BC :  -Inf :                                    column[A/BC].binary_indicator_var :   1.0 :   True
-          C :  -Inf : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
+          C :  -Inf : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
     logic4 : All products must be produced by at least one task
         Size=3, Index=COMP, Active=True
         Key : Lower : Body                                                                 : Upper : Active
-          A :   1.0 : column[A/B].binary_indicator_var + column[A/BC].binary_indicator_var :  +Inf :   True
+          A :   1.0 : column[A/BC].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
           B :   1.0 :  column[B/C].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
-          C :   1.0 : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :  +Inf :   True
+          C :   1.0 : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :  +Inf :   True
     logic5 : Pure product i can only be produced by at most 1 rectifying section
         Size=2, Index=COMP, Active=True
         Key : Lower : Body                                                                 : Upper : Active
-          A :  -Inf : column[A/B].binary_indicator_var + column[A/BC].binary_indicator_var :   1.0 :   True
+          A :  -Inf : column[A/BC].binary_indicator_var + column[A/B].binary_indicator_var :   1.0 :   True
           B :  -Inf :                                     column[B/C].binary_indicator_var :   1.0 :   True
     logic6 : Pure product i can only be produced by at most 1 stripping section
         Size=2, Index=COMP, Active=True
         Key : Lower : Body                                                                 : Upper : Active
           B :  -Inf :                                     column[A/B].binary_indicator_var :   1.0 :   True
-          C :  -Inf : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
+          C :  -Inf : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
     opex_def : Size=1, Index=None, Active=True
         Key  : Lower : Body                                                                                                                          : Upper : Active
         None :   0.0 : OPEX - (12.96*(Qreb[A/B] + Qreb[A/BC] + Qreb[AB/C] + Qreb[B/C]) + 43.2*(Qcond[A/B] + Qcond[A/BC] + Qcond[AB/C] + Qcond[B/C])) :   0.0 :   True
@@ -439,17 +418,6 @@
     column : Disjunct for column existence
         Size=4, Index=TASKS, Active=True
         column[A/B] : Active=True
-            3 Set Declarations
-                underwood1_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'r1',}
-                underwood2_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'r1',}
-                underwood3_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'r1',}
-
             1 Var Declarations
                 binary_indicator_var : Size=1, Index=None
                     Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -494,13 +462,13 @@
                 feed_comp_mb : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                       : Upper : Active
                     None :   0.0 : FT[A/B] - (F[A,A/B] + F[B,A/B] + F[C,A/B]) :   0.0 :   True
-                underwood1 : Size=1, Index=column[A/B].underwood1_index, Active=True
+                underwood1 : Size=1, Index={r1}, Active=True
                     Key : Lower : Body                                                                                                                             : Upper : Active
                      r1 :   0.0 : 5.969*F[A,A/B] + 2.296*F[B,A/B] + F[C,A/B] - (Vr[A/B] - Vs[A/B])*(5.969 - rud[A/B,r1] + 2.296 - rud[A/B,r1] + 1.0 - rud[A/B,r1]) :   0.0 :   True
-                underwood2 : Size=1, Index=column[A/B].underwood2_index, Active=True
+                underwood2 : Size=1, Index={r1}, Active=True
                     Key : Lower : Body                                                                                                                 : Upper : Active
                      r1 :  -Inf : 5.969*D[A,A/B] + 2.296*D[B,A/B] + D[C,A/B] - Vr[A/B]*(5.969 - rud[A/B,r1] + 2.296 - rud[A/B,r1] + 1.0 - rud[A/B,r1]) :   0.0 :   True
-                underwood3 : Size=1, Index=column[A/B].underwood3_index, Active=True
+                underwood3 : Size=1, Index={r1}, Active=True
                     Key : Lower : Body                                                                                                                     : Upper : Active
                      r1 :  -Inf : - (5.969*B[A,A/B] + 2.296*B[B,A/B] + B[C,A/B]) - Vs[A/B]*(5.969 - rud[A/B,r1] + 2.296 - rud[A/B,r1] + 1.0 - rud[A/B,r1]) :   0.0 :   True
 
@@ -509,19 +477,8 @@
                     Key  : Value : Fixed : Stale
                     None :  None : False :  True
 
-            20 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1_index underwood1 underwood2_index underwood2 underwood3_index underwood3 Number_trays column_height column_area columnn_volume column_cost
+            17 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1 underwood2 underwood3 Number_trays column_height column_area columnn_volume column_cost
         column[A/BC] : Active=True
-            3 Set Declarations
-                underwood1_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    2 : {'r1', 'r2'}
-                underwood2_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    2 : {'r1', 'r2'}
-                underwood3_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    2 : {'r1', 'r2'}
-
             1 Var Declarations
                 binary_indicator_var : Size=1, Index=None
                     Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -566,15 +523,15 @@
                 feed_comp_mb : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                           : Upper : Active
                     None :   0.0 : FT[A/BC] - (F[A,A/BC] + F[B,A/BC] + F[C,A/BC]) :   0.0 :   True
-                underwood1 : Size=2, Index=column[A/BC].underwood1_index, Active=True
+                underwood1 : Size=2, Index={r1, r2}, Active=True
                     Key : Lower : Body                                                                                                                                     : Upper : Active
                      r1 :   0.0 : 5.969*F[A,A/BC] + 2.296*F[B,A/BC] + F[C,A/BC] - (Vr[A/BC] - Vs[A/BC])*(5.969 - rud[A/BC,r1] + 2.296 - rud[A/BC,r1] + 1.0 - rud[A/BC,r1]) :   0.0 :   True
                      r2 :   0.0 : 5.969*F[A,A/BC] + 2.296*F[B,A/BC] + F[C,A/BC] - (Vr[A/BC] - Vs[A/BC])*(5.969 - rud[A/BC,r2] + 2.296 - rud[A/BC,r2] + 1.0 - rud[A/BC,r2]) :   0.0 :   True
-                underwood2 : Size=2, Index=column[A/BC].underwood2_index, Active=True
+                underwood2 : Size=2, Index={r1, r2}, Active=True
                     Key : Lower : Body                                                                                                                        : Upper : Active
                      r1 :  -Inf : 5.969*D[A,A/BC] + 2.296*D[B,A/BC] + D[C,A/BC] - Vr[A/BC]*(5.969 - rud[A/BC,r1] + 2.296 - rud[A/BC,r1] + 1.0 - rud[A/BC,r1]) :   0.0 :   True
                      r2 :  -Inf : 5.969*D[A,A/BC] + 2.296*D[B,A/BC] + D[C,A/BC] - Vr[A/BC]*(5.969 - rud[A/BC,r2] + 2.296 - rud[A/BC,r2] + 1.0 - rud[A/BC,r2]) :   0.0 :   True
-                underwood3 : Size=2, Index=column[A/BC].underwood3_index, Active=True
+                underwood3 : Size=2, Index={r1, r2}, Active=True
                     Key : Lower : Body                                                                                                                            : Upper : Active
                      r1 :  -Inf : - (5.969*B[A,A/BC] + 2.296*B[B,A/BC] + B[C,A/BC]) - Vs[A/BC]*(5.969 - rud[A/BC,r1] + 2.296 - rud[A/BC,r1] + 1.0 - rud[A/BC,r1]) :   0.0 :   True
                      r2 :  -Inf : - (5.969*B[A,A/BC] + 2.296*B[B,A/BC] + B[C,A/BC]) - Vs[A/BC]*(5.969 - rud[A/BC,r2] + 2.296 - rud[A/BC,r2] + 1.0 - rud[A/BC,r2]) :   0.0 :   True
@@ -584,19 +541,8 @@
                     Key  : Value : Fixed : Stale
                     None :  None : False :  True
 
-            20 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1_index underwood1 underwood2_index underwood2 underwood3_index underwood3 Number_trays column_height column_area columnn_volume column_cost
+            17 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1 underwood2 underwood3 Number_trays column_height column_area columnn_volume column_cost
         column[AB/C] : Active=True
-            3 Set Declarations
-                underwood1_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    2 : {'r1', 'r2'}
-                underwood2_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    2 : {'r1', 'r2'}
-                underwood3_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    2 : {'r1', 'r2'}
-
             1 Var Declarations
                 binary_indicator_var : Size=1, Index=None
                     Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -641,15 +587,15 @@
                 feed_comp_mb : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                           : Upper : Active
                     None :   0.0 : FT[AB/C] - (F[A,AB/C] + F[B,AB/C] + F[C,AB/C]) :   0.0 :   True
-                underwood1 : Size=2, Index=column[AB/C].underwood1_index, Active=True
+                underwood1 : Size=2, Index={r1, r2}, Active=True
                     Key : Lower : Body                                                                                                                                     : Upper : Active
                      r1 :   0.0 : 5.969*F[A,AB/C] + 2.296*F[B,AB/C] + F[C,AB/C] - (Vr[AB/C] - Vs[AB/C])*(5.969 - rud[AB/C,r1] + 2.296 - rud[AB/C,r1] + 1.0 - rud[AB/C,r1]) :   0.0 :   True
                      r2 :   0.0 : 5.969*F[A,AB/C] + 2.296*F[B,AB/C] + F[C,AB/C] - (Vr[AB/C] - Vs[AB/C])*(5.969 - rud[AB/C,r2] + 2.296 - rud[AB/C,r2] + 1.0 - rud[AB/C,r2]) :   0.0 :   True
-                underwood2 : Size=2, Index=column[AB/C].underwood2_index, Active=True
+                underwood2 : Size=2, Index={r1, r2}, Active=True
                     Key : Lower : Body                                                                                                                        : Upper : Active
                      r1 :  -Inf : 5.969*D[A,AB/C] + 2.296*D[B,AB/C] + D[C,AB/C] - Vr[AB/C]*(5.969 - rud[AB/C,r1] + 2.296 - rud[AB/C,r1] + 1.0 - rud[AB/C,r1]) :   0.0 :   True
                      r2 :  -Inf : 5.969*D[A,AB/C] + 2.296*D[B,AB/C] + D[C,AB/C] - Vr[AB/C]*(5.969 - rud[AB/C,r2] + 2.296 - rud[AB/C,r2] + 1.0 - rud[AB/C,r2]) :   0.0 :   True
-                underwood3 : Size=2, Index=column[AB/C].underwood3_index, Active=True
+                underwood3 : Size=2, Index={r1, r2}, Active=True
                     Key : Lower : Body                                                                                                                            : Upper : Active
                      r1 :  -Inf : - (5.969*B[A,AB/C] + 2.296*B[B,AB/C] + B[C,AB/C]) - Vs[AB/C]*(5.969 - rud[AB/C,r1] + 2.296 - rud[AB/C,r1] + 1.0 - rud[AB/C,r1]) :   0.0 :   True
                      r2 :  -Inf : - (5.969*B[A,AB/C] + 2.296*B[B,AB/C] + B[C,AB/C]) - Vs[AB/C]*(5.969 - rud[AB/C,r2] + 2.296 - rud[AB/C,r2] + 1.0 - rud[AB/C,r2]) :   0.0 :   True
@@ -659,19 +605,8 @@
                     Key  : Value : Fixed : Stale
                     None :  None : False :  True
 
-            20 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1_index underwood1 underwood2_index underwood2 underwood3_index underwood3 Number_trays column_height column_area columnn_volume column_cost
+            17 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1 underwood2 underwood3 Number_trays column_height column_area columnn_volume column_cost
         column[B/C] : Active=True
-            3 Set Declarations
-                underwood1_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'r2',}
-                underwood2_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'r2',}
-                underwood3_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'r2',}
-
             1 Var Declarations
                 binary_indicator_var : Size=1, Index=None
                     Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -716,13 +651,13 @@
                 feed_comp_mb : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                       : Upper : Active
                     None :   0.0 : FT[B/C] - (F[A,B/C] + F[B,B/C] + F[C,B/C]) :   0.0 :   True
-                underwood1 : Size=1, Index=column[B/C].underwood1_index, Active=True
+                underwood1 : Size=1, Index={r2}, Active=True
                     Key : Lower : Body                                                                                                                             : Upper : Active
                      r2 :   0.0 : 5.969*F[A,B/C] + 2.296*F[B,B/C] + F[C,B/C] - (Vr[B/C] - Vs[B/C])*(5.969 - rud[B/C,r2] + 2.296 - rud[B/C,r2] + 1.0 - rud[B/C,r2]) :   0.0 :   True
-                underwood2 : Size=1, Index=column[B/C].underwood2_index, Active=True
+                underwood2 : Size=1, Index={r2}, Active=True
                     Key : Lower : Body                                                                                                                 : Upper : Active
                      r2 :  -Inf : 5.969*D[A,B/C] + 2.296*D[B,B/C] + D[C,B/C] - Vr[B/C]*(5.969 - rud[B/C,r2] + 2.296 - rud[B/C,r2] + 1.0 - rud[B/C,r2]) :   0.0 :   True
-                underwood3 : Size=1, Index=column[B/C].underwood3_index, Active=True
+                underwood3 : Size=1, Index={r2}, Active=True
                     Key : Lower : Body                                                                                                                     : Upper : Active
                      r2 :  -Inf : - (5.969*B[A,B/C] + 2.296*B[B,B/C] + B[C,B/C]) - Vs[B/C]*(5.969 - rud[B/C,r2] + 2.296 - rud[B/C,r2] + 1.0 - rud[B/C,r2]) :   0.0 :   True
 
@@ -731,7 +666,7 @@
                     Key  : Value : Fixed : Stale
                     None :  None : False :  True
 
-            20 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1_index underwood1 underwood2_index underwood2 underwood3_index underwood3 Number_trays column_height column_area columnn_volume column_cost
+            17 Declarations: indicator_var binary_indicator_var column_total_mb column_component_mb column_rectifying_mb column_stripping_mb feed_comp_mb distillate_comp_mb bottoms_comp_mb underwood1 underwood2 underwood3 Number_trays column_height column_area columnn_volume column_cost
     final_heat_exchanger : Disjunct for the existence of a heat exchanger associated with a final product
         Size=3, Index=COMP, Active=True
         final_heat_exchanger[A] : Active=True
@@ -743,7 +678,7 @@
             3 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                            : Upper : Active
-                    None :   0.0 : area_final_exchanger[A] - (Qcond[A/B] + Qcond[A/BC])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_final_exchanger[A] - (Qcond[A/BC] + Qcond[A/B])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                      : Upper : Active
                     None :   0.0 : final_condenser_cost[A] - 1410.6628829215924*area_final_exchanger[A]**0.6 :   0.0 :   True
@@ -799,7 +734,7 @@
             3 Constraint Declarations
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                           : Upper : Active
-                    None :   0.0 : area_final_exchanger[C] - (Qreb[AB/C] + Qreb[B/C])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_exchanger[C] - (Qreb[B/C] + Qreb[AB/C])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                     : Upper : Active
                     None :   0.0 : final_reboiler_cost[C] - 1880.8838438954565*area_final_exchanger[C]**0.6 :   0.0 :   True
@@ -817,11 +752,6 @@
     int_heat_exchanger : Disjunct for the existence of a heat exchanger associated with a intermedaite product
         Size=2, Index=ISTATE, Active=True
         int_heat_exchanger[AB] : Active=True
-            1 Set Declarations
-                flow_constraint_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'A/B',}
-
             1 Var Declarations
                 binary_indicator_var : Size=1, Index=None
                     Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -834,7 +764,7 @@
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                               : Upper : Active
                     None :   0.0 : inter_condenser_cost[AB] - 1410.6628829215924*area_intermediate_exchanger[AB]**0.6 :   0.0 :   True
-                flow_constraint : Size=1, Index=int_heat_exchanger[AB].flow_constraint_index, Active=True
+                flow_constraint : Size=1, Index={A/B}, Active=True
                     Key : Lower : Body                        : Upper : Active
                     A/B :   0.0 : FT[A/B] + Lr[A/B] - Ls[A/B] :   0.0 :   True
                 int_condenser_heat_duty : Size=1, Index=IREC_m[AB], Active=True
@@ -846,20 +776,15 @@
                     Key  : Value : Fixed : Stale
                     None :  None : False :  True
 
-            7 Declarations: indicator_var binary_indicator_var flow_constraint_index flow_constraint int_condenser_heat_duty condenser_area condenser_cost
+            6 Declarations: indicator_var binary_indicator_var flow_constraint int_condenser_heat_duty condenser_area condenser_cost
         int_heat_exchanger[BC] : Active=True
-            1 Set Declarations
-                flow_constraint_index : Size=1, Index=None, Ordered=Insertion
-                    Key  : Dimen : Domain : Size : Members
-                    None :     1 :    Any :    1 : {'B/C',}
-
             1 Var Declarations
                 binary_indicator_var : Size=1, Index=None
                     Key  : Lower : Value : Upper : Fixed : Stale : Domain
                     None :     0 :  None :     1 : False :  True : Binary
 
             4 Constraint Declarations
-                flow_constraint : Size=1, Index=int_heat_exchanger[BC].flow_constraint_index, Active=True
+                flow_constraint : Size=1, Index={B/C}, Active=True
                     Key : Lower : Body                        : Upper : Active
                     B/C :   0.0 : FT[B/C] + Lr[B/C] - Ls[B/C] :   0.0 :   True
                 int_reboiler_heat_duty : Size=1, Index=ISTRIP_m[BC], Active=True
@@ -877,7 +802,7 @@
                     Key  : Value : Fixed : Stale
                     None :  None : False :  True
 
-            7 Declarations: indicator_var binary_indicator_var flow_constraint_index flow_constraint int_reboiler_heat_duty reboiler_area reboiler_cost
+            6 Declarations: indicator_var binary_indicator_var flow_constraint int_reboiler_heat_duty reboiler_area reboiler_cost
     no_column : Disjunct for column absence
         Size=4, Index=TASKS, Active=True
         no_column[A/B] : Active=True
@@ -1302,27 +1227,27 @@
 
 5 LogicalConstraint Declarations
     logic11 : Connectivity relations e.g. Existence of task AB/C implies A/B
-        Size=2, Index=logic11_index, Active=True
+        Size=2, Index=STATES*TASKS, Active=True
         Key            : Body                                                     : Active
         ('AB', 'AB/C') : column[AB/C].indicator_var --> column[A/B].indicator_var :   True
         ('BC', 'A/BC') : column[A/BC].indicator_var --> column[B/C].indicator_var :   True
     logic12 : Connectivity relations e.g. A/B implies AB/C
-        Size=2, Index=logic12_index, Active=True
+        Size=2, Index=STATES*TASKS, Active=True
         Key           : Body                                                     : Active
         ('AB', 'A/B') : column[A/B].indicator_var --> column[AB/C].indicator_var :   True
         ('BC', 'B/C') : column[B/C].indicator_var --> column[A/BC].indicator_var :   True
     logic7 : Size=2, Index=COMP, Active=True
         Key : Body                                                                                                            : Active
-          A : (exactly(1: [column[A/B].indicator_var, column[A/BC].indicator_var])) --> final_heat_exchanger[A].indicator_var :   True
+          A : (exactly(1: [column[A/BC].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[A].indicator_var :   True
           B :                             (exactly(1: [column[B/C].indicator_var])) --> final_heat_exchanger[B].indicator_var :   True
     logic8 : Size=2, Index=COMP, Active=True
         Key : Body                                                                                                            : Active
           B :                             (exactly(1: [column[A/B].indicator_var])) --> final_heat_exchanger[B].indicator_var :   True
-          C : (exactly(1: [column[AB/C].indicator_var, column[B/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
+          C : (exactly(1: [column[B/C].indicator_var, column[AB/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
     logic9 : Size=3, Index=COMP, Active=True
         Key : Body                                                                                              : Active
-          A : column[A/B].indicator_var ∧ column[A/BC].indicator_var --> ~final_heat_exchanger[A].indicator_var :   True
+          A : column[A/BC].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[A].indicator_var :   True
           B :  column[B/C].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[B].indicator_var :   True
-          C : column[AB/C].indicator_var ∧ column[B/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
+          C : column[B/C].indicator_var ∧ column[AB/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
 
-88 Declarations: Feed COMP TASKS STATES FS_F TS_s ST_s ISTATE PRE_i PST_i RECT_s STRIP_s LK HK IREC_m ISTRIP_m r RUA FT F_index F DT D_index D BT B_index B Vr Lr Vs Ls rud_index rud column_cost area_final_exchanger area_intermediate_exchanger final_condenser_cost final_reboiler_cost inter_condenser_cost inter_reboiler_cost Ntray height Area Vol Qreb Qcond CAPEX OPEX F0 F0_comp rec_comp alpha PPM rho_V Hvap system_feed_total_mb system_feed_component_mb total_mb_between_cols component_mb_between_cols_index component_mb_between_cols vapor_internal_mb liquid_internal_mb final_product_mb column no_column column_no_column final_heat_exchanger no_final_heat_exchanger final_heat_exchange_no_final_heat_exchange int_heat_exchanger no_int_heat_exchanger int_heat_exchange_no_final_heat_exchange logic1 logic2 logic3 logic4 logic5 logic6 logic7 logic8 logic9 logic11_index logic11 logic12_index logic12 capex_def opex_def obj
+81 Declarations: Feed COMP TASKS STATES FS_F TS_s ST_s ISTATE PRE_i PST_i RECT_s STRIP_s LK HK IREC_m ISTRIP_m r RUA FT F DT D BT B Vr Lr Vs Ls rud column_cost area_final_exchanger area_intermediate_exchanger final_condenser_cost final_reboiler_cost inter_condenser_cost inter_reboiler_cost Ntray height Area Vol Qreb Qcond CAPEX OPEX F0 F0_comp rec_comp alpha PPM rho_V Hvap system_feed_total_mb system_feed_component_mb total_mb_between_cols component_mb_between_cols vapor_internal_mb liquid_internal_mb final_product_mb column no_column column_no_column final_heat_exchanger no_final_heat_exchanger final_heat_exchange_no_final_heat_exchange int_heat_exchanger no_int_heat_exchanger int_heat_exchange_no_final_heat_exchange logic1 logic2 logic3 logic4 logic5 logic6 logic7 logic8 logic9 logic11 logic12 capex_def opex_def obj
