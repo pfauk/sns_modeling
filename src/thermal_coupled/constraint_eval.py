@@ -42,15 +42,17 @@ network_superstructure.generate_index_sets()
 model = build_model(network_superstructure, hydrocarbon_data)
 
 # applying Big-M transformation
-mbigm = pyo.TransformationFactory('gdp.bigm')
+tansform = pyo.TransformationFactory('gdp.bigm')
 
-mbigm.apply_to(model)
+tansform.apply_to(model)
 
 mdl_size = build_model_size_report(model)
 
 mdl_type = get_model_type(model)
 
 print(f'Model type: {mdl_type}')
+
+# print_constraint_type(model)
 
 # print_constraint_type(model)
 

@@ -676,6 +676,7 @@ def build_model(stn, data):
             None: function applies constraints to model object, does not return value
         
         Constraints:
+            intermediate_var_con
             underwood1
             underwood2
             underwood3
@@ -684,17 +685,21 @@ def build_model(stn, data):
         # get a list of the potentail active Underwood roots for a separation task t
         roots = list(m.RUA[t])
 
+        @column.Constraint(m.COMP, roots)
+        def intermediate_var_con(_, i, r):
+            return m.z[(i, t, r)] * (m.alpha[i] - m.rud[(t, r)]) == 1
+
         @column.Constraint(roots)
         def underwood1(_, r):
-            return sum((m.alpha[i] * m.F[(i, t)]) for i in m.COMP) *  - (m.Vr[t] - m.Vs[t]) == 0
+            return sum((m.z[(i, t, r)] * m.alpha[i] * m.F[(i, t)]) for i in m.COMP) - (m.Vr[t] - m.Vs[t]) == 0
 
         @column.Constraint(roots)
         def underwood2(_, r):
-            return sum((m.alpha[i] * m.D[(i, t)]) for i in m.COMP) - m.Vr[t] * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP) <= 0
+            return sum((m.z[(i, t, r)] * m.alpha[i] * m.D[(i, t)]) for i in m.COMP) - m.Vr[t] <= 0
 
         @column.Constraint(roots)
         def underwood3(_, r):
-            return -sum((m.alpha[i] * m.B[(i, t)]) for i in m.COMP) - m.Vs[t] * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP) <= 0
+            return -sum((m.z[(i, t, r)] * m.alpha[i] * m.B[(i, t)]) for i in m.COMP) - m.Vs[t] <= 0
 
     # Functions for defining tray number, column size, and cost constraints
     # ================================================
