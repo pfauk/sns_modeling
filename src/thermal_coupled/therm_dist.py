@@ -16,7 +16,9 @@ Chemistry Research, 40(10), 2260-2274. https://doi.org/10.1021/ie000761a
 """
 
 from math import pi
+import numpy as np
 import pyomo.environ as pyo
+from pyomo.contrib.piecewise import PiecewiseLinearFunction
 from pyomo.gdp import Disjunct
 
 
@@ -141,7 +143,7 @@ def build_model(stn, data):
     m.r = pyo.Set(initialize=stn.r, doc="Underwood roots")
 
     m.RUA = pyo.Set(m.TASKS, initialize=stn.RUA,
-                    doc="active Underwood roots in column C")
+                    doc="active Underwood roots in column t")
 
     # CONTINUOUS POSITIVE VARIABLES
     # ================================================
@@ -238,13 +240,30 @@ def build_model(stn, data):
         initialize=1
     )
 
+    # intermediate variable to transform to MIQCP
+    m.z = pyo.Var(
+        m.COMP,
+        m.TASKS,
+        m.r,
+        doc='Intermediate variable for Underwood equations',
+        bounds=(0, 100000),
+        initialize=1
+    )
+
     # Column costing and sizing variables
     m.column_cost = pyo.Var(
         m.TASKS,
         doc="Capital cost of column t [$]",
         within=pyo.NonNegativeReals,
         bounds=(0, 10000000),
-        initialize=50000
+        initialize=1e6
+    )
+    m.cost_per_tray = pyo.Var(
+        m.TASKS,
+        doc="Capital cost of each tray for column t [$]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 10000000),
+        initialize=1e5
     )
 
     m.area_final_exchanger = pyo.Var(
@@ -316,6 +335,14 @@ def build_model(stn, data):
         doc="Transveral area of column t [m^2]",
         within=pyo.NonNegativeReals,
         bounds=(0, 1000),
+        initialize=10,
+    )
+
+    m.Diameter = pyo.Var(
+        m.TASKS,
+        doc="Diameter of column t [m]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 50),
         initialize=10,
     )
 
@@ -518,26 +545,25 @@ def build_model(stn, data):
     # ================================================
 
     def _build_mass_balance_column(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
-        """
-        Function to build mass balance relation for active column disjuncts
+        """Apply total and component mass balance constraints to active column disjuncts
 
         Args:
-            m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            m (pyo.ConcreteModel): Pyomo model object contains relevant variables, parameters
                 and expressions for distillation network
             t (str): index from the set TASKS representing the column
-            column (pyomo.gdp.disjunct): Pyomo Disjunct representing an active column
-
-        Constraints:
-            -column_total_mb: mass balance on the total molar flows of the active column
-            -column_component_mb: mass balance on the component molar flows of the active column
-            -column_rectifying_mb: mass balance on the total flows in the rectifying section of the active column
-            -column_strippiong_mb: mass balance on the total flows in the stripping section of the active column
-            -feed_comp_mb: sum of component flows equals total flow for column feed
-            -distillate_comp_mb: sum of component flows equals total flow for column distillate
-            -bottoms_comp_mb: sum of component flows equals total flow for column bottoms
+            column (Disjunct): Pyomo Disjunct representing an active column
 
         Returns:
-            None: The function directly updates the model object, adding constraints to it.
+            None: function applies constraints to model object, does not return value
+            
+        Constraints:
+            column_total_mb: Total mass balance on column
+            column_component_mb: Component mass balance on column
+            column_rectifying_mb: Total mass balance on rectifying section of column
+            column_stripping_mb: Total mass balance on stripping section of column
+            feed_comp_mb: Feed component flows sum to total feed flow
+            distillate_comp_mb: Distillate component flows sum to total distillation flow
+            bottoms_comp_mb: Bottom component flows sum to total bottom flow
         """
 
         @column.Constraint()
@@ -576,21 +602,29 @@ def build_model(stn, data):
             return m.BT[t] == sum(m.B[(i, t)] for i in m.COMP)
 
     def _build_mass_balance_no_column(m: pyo.ConcreteModel, t: str, nocolumn: Disjunct) -> None:
-        """
-        Function to build mass balance relation for inactive column disjuncts
+        """Apply total and component mass balance constraints to inactive column disjuncts.
+            Set flow to zero. 
 
         Args:
-            m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            m (pyo.ConcreteModel): Pyomo model object contains relevant variables, parameters
                 and expressions for distillation network
             t (str): index from the set TASKS representing the column
-            no_column (pyomo.gdp.disjunct): Pyomo Disjunct representing an inactive column
-
-        Constraints:
-            Constraints set all total and component molar flows for inactive column
-            disjunct to be zero
+            nocolumn (Disjunct): Pyomo Disjunct representing an active column
 
         Returns:
-        None: The function directly updates the model object, adding constraints to it.
+            None: function applies constraints to model object, does not return value
+            
+        Constraints:
+        All flow values set to zero
+            inactive_feed_component_flow 
+            inactive_distillate_component_flow
+            inactive_bottoms_component_flow
+            inactive_vapor_rectifying_flow
+            inactive_liquid_rectifying_flow
+            inactive_liquide_stripping_flow
+            inactive_feed_total_flow
+            inactive_distillate_total_flow
+            inactive_bottoms_total_flow
         """
 
         @nocolumn.Constraint(m.COMP)
@@ -630,21 +664,21 @@ def build_model(stn, data):
             return m.BT[t] == 0
 
     def _build_underwood_eqns(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
-        """
-        Function to build Underwood equations for a given column
+        """Apply constraints for the Underwood equations, that act as shortcut models for column behavior, to active column disjuncts
 
         Args:
-            m(pyomo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+            m (pyo.ConcreteModel): Pyomo model object contains relevant variables, parameters
                 and expressions for distillation network
             t (str): index from the set TASKS representing the column
-            column (pyomo.gdp.disjunct): Pyomo Disjunct representing an active column
-
-        Constraints:
-            -underwood1,2,3: Underwood equations act as shortcut models for operation of column in terms of
-            relative volatilities of species
+            column (Disjunct): Pyomo Disjunct representing an active column
 
         Returns:
-        None: The function directly updates the model object, adding constraints to it.
+            None: function applies constraints to model object, does not return value
+        
+        Constraints:
+            underwood1
+            underwood2
+            underwood3
         """
 
         # get a list of the potentail active Underwood roots for a separation task t
@@ -652,11 +686,11 @@ def build_model(stn, data):
 
         @column.Constraint(roots)
         def underwood1(_, r):
-            return sum((m.alpha[i] * m.F[(i, t)]) for i in m.COMP) - (m.Vr[t] - m.Vs[t]) * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP) == 0
+            return sum((m.alpha[i] * m.F[(i, t)]) for i in m.COMP) *  - (m.Vr[t] - m.Vs[t]) == 0
 
         @column.Constraint(roots)
         def underwood2(_, r):
-            return sum((m.alpha[i] * m.D[(i, t)]) for i in m.COMP) <= m.Vr[t] * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP)
+            return sum((m.alpha[i] * m.D[(i, t)]) for i in m.COMP) - m.Vr[t] * sum(m.alpha[i] - m.rud[(t, r)] for i in m.COMP) <= 0
 
         @column.Constraint(roots)
         def underwood3(_, r):
@@ -690,12 +724,33 @@ def build_model(stn, data):
                 sum(m.alpha[i] for i in m.LK[t]) / sum(m.alpha[i] for i in m.HK[t]))
             return m.Ntray[t] == 2 * Ntray_min
 
-    def _build_column_height(m, t, column):
+    def _build_column_height(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
+        """Apply constraints for empirical relation of column height
+
+        Args:
+            m (pyo.ConcreteModel): Pyomo model object contains relevant variables, parameters
+                and expressions for distillation network
+            t (str): index from the set TASKS representing the column
+            column (Disjunct): Pyomo Disjunct representing an active column
+
+        Returns:
+            None: function applies constraints to model object, does not return value
+            
+        Constraints:
+            column_diameter: compute column diameter with intermediate variable in order to calculate area
+            column_height: compute column height in [m]
+        """
+        @column.Constraint()
+        def column_diameter(_):
+            """Constraint for definig column diameter"""
+            return m.Area[t] == pi * (m.Diameter[t] / 2)**2
+        
         @column.Constraint()
         def column_height(_):
             """Empirical relation for the height of the column from Ulrich et al Ch 4. Column height in [m^2]"""
-            D = 2 * pyo.sqrt(m.Area[t] / pi)
-            H_per_tray = 0.5 * D**0.3
+            # parameters for a quadractic fit of empirical relation for height of each tray
+            fit_params = [-0.00222188,  0.08265548,  0.41101634]
+            H_per_tray = m.Diameter[t]*fit_params[0]**2 + m.Diameter[t]*fit_params[1] + m.Diameter[t]*fit_params[2]
             return m.height[t] == m.Ntray[t] * H_per_tray
 
     def _build_column_area(m: pyo.ConcreteModel, t: str, column: Disjunct) -> None:
@@ -838,23 +893,32 @@ def build_model(stn, data):
         """
 
         @column.Constraint()
+        def cost_tray(_):
+            # empirical cost correlation for capital cost of each tray as function of area
+            return m.cost_per_tray[t] == 571.1 + 406.8 * m.Area[t] + 38 * m.Area[t] ** 2
+
+        @column.Constraint()
         def column_cost(_):
             # values used to calculate price changes due to inflation
             CEPCI_2004 = 444.2
             CEPCI_2020 = 596.2
             inflation_ratio = CEPCI_2020 / CEPCI_2004
 
-            Cpisos = 571.1 + 406.8 * m.Area[t] + 38 * m.Area[t] ** 2
-            CostPisos = Cpisos * m.Ntray[t]
-
+            Cost_trays = m.cost_per_tray[t] * m.Ntray[t]
             CP = 603.8 * m.Vol[t] + 5307
-            CostColumn = CP * (2.50 + 1.72)
+            Cost_shell = CP * (2.50 + 1.72)
 
-            return m.column_cost[t] == (CostColumn + CostPisos) * inflation_ratio
+            return m.column_cost[t] == (Cost_shell + Cost_trays) * inflation_ratio
 
         @no_column.Constraint()
         def no_column_cost(_):
+            # set total cost to zero for inactive column
             return m.column_cost[t] == 0
+
+        @no_column.Constraint()
+        def no_column_tray_cost(_):
+            # set the per tray cost to zero for inactive column
+            return m.cost_per_tray[t] == 0
 
     # calling functions to build constraints for active and inactive column disjuncts
     # =================================================================
@@ -990,7 +1054,12 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def condenser_cost(_):
-                return m.final_condenser_cost[i] == K_shell_tube * m.area_final_exchanger[i] ** n
+                """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
+                # parameters for a polynomial fit
+                condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
+                return (m.final_condenser_cost[i] == K_shell_tube * (condenser_params[0] * m.area_final_exchanger[i]**2
+                                                                    + condenser_params[1] * m.area_final_exchanger[i]
+                                                                    + condenser_params[2]))
 
         # if the final state is produced by a stripping section, will have assocaited reboiler
         if i in m.PST_i:
@@ -1002,7 +1071,12 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def reboiler_cost(_):
-                return m.final_reboiler_cost[i] == K_reb * m.area_final_exchanger[i] ** n
+                """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
+                # parameters for a polynomial fit
+                reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
+                return (m.final_reboiler_cost[i] == K_reb * (reboiler_params[0] * m.area_final_exchanger[i]**2
+                                                            + reboiler_params[1] * m.area_final_exchanger[i]
+                                                            + reboiler_params[2]))
 
         @no_heat_exchanger.Constraint()
         def inactive_exchanger_area(_):
@@ -1150,7 +1224,12 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def condenser_cost(_):
-                return (m.inter_condenser_cost[s] == K_shell_tube * m.area_intermediate_exchanger[s] ** n)
+                """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
+                # parameters for a polynomial fit
+                condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
+                return (m.inter_condenser_cost[s] == K_shell_tube *  (condenser_params[0] * m.area_intermediate_exchanger[s]**2
+                                                                    + condenser_params[1] * m.area_intermediate_exchanger[s]
+                                                                    + condenser_params[2]))
 
         # if the intermediate state is produced by a stripping section, will have assocaited reboiler
         if s in m.ISTRIP_m:
@@ -1162,8 +1241,12 @@ def build_model(stn, data):
 
             @heat_exchanger.Constraint()
             def reboiler_cost(_):
-                return (m.inter_reboiler_cost[s] == K_reb * m.area_intermediate_exchanger[s] ** n)
-
+                """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
+                # parameters for a polynomial fit
+                reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
+                return (m.inter_reboiler_cost[s] == K_reb * (reboiler_params[0] * m.area_intermediate_exchanger[s]**2
+                                                            + reboiler_params[1] * m.area_intermediate_exchanger[s]
+                                                            + reboiler_params[2]))
         @no_heat_exchanger.Constraint()
         def inactive_exchanger_area(_):
             """For an inactive exchanger, set heat exchange area to zero"""

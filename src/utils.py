@@ -4,6 +4,7 @@ import math
 from math import pi
 import pandas as pd
 import pyomo.environ as pyo
+from pyomo.core.expr.visitor import polynomial_degree
 import numpy as np
 
 class Column:
@@ -481,6 +482,224 @@ class data:
         self.species_densities = dict(zip(self.species_df['index'], self.species_df['Liquid Density [kg/m^3]']))
         self.PM = dict(zip(self.species_df['index'], self.species_df['Molecular Weight']))
         self.Hvap = dict(zip(self.species_df['index'], self.species_df['Enthalpy of Vaporization [kJ/mol]']))
+
+
+# utility functions to examine model type
+def get_var_type(model: pyo.ConcreteModel) -> dict:
+    """retruns the domain of each variable in a Pyomo model 
+
+    Args:
+        model (pyo.ConcreteModel): Pyomo model object
+
+    Returns:
+        dict: dictionary where keys are (variable, index) and values are 
+    """
+    # diciontary to store variable types in
+    variables = {}
+
+    for variable in model.component_objects(pyo.Var, active=True):
+        for index in variable:
+            variable_type = variable[index].domain.name
+            variables[(variable.name, index)] = variable_type
+
+    return variables
+
+def get_constraint_type(model: pyo.ConcreteModel) -> dict:
+    """returns the equation type of the constraints in a Pyomo model.
+    
+    Constraints can be: linear, quadratic, nth degree polynomial, or nonlinear
+
+    Args:
+        model (pyo.ConcreteModel): Pyomo model object
+
+    Returns:
+        dict: dictionary where keys are (constraint, index) and values are 
+    """
+    # dictionary to store constraints in
+    constraints = {}
+
+    # get degree / type of model constraints
+    for constraint in model.component_objects(pyo.Constraint, active=True):
+        for index in constraint:
+            constraint_degree = polynomial_degree(constraint[index].expr)
+            constraint_type = None
+            if constraint_degree == 1:
+                constraint_type = 'Linear'
+            elif constraint_degree == 2:
+                constraint_type = 'Quadratic'
+            elif isinstance(constraint_degree, int) and constraint_degree > 2:
+                constraint_type = f'Degree {constraint_degree} Polynomial'
+            elif constraint_degree is None:
+                constraint_type = 'Nonlinear'
+
+            constraints[(constraint.name, index)] = constraint_type
+
+    return constraints
+
+def print_constraint_type(model: pyo.ConcreteModel) -> None:
+    """displays constraints in model based on type of equation
+
+    Constraints can be: linear, quadratic, nth degree polynomial, or nonlinear
+    
+    Args:
+        model (pyo.ConcreteModel): Pyomo model object
+    
+    Returns:
+        None: prints contraints and returns None
+    """
+
+    linear_constraints = {}
+    quadratic_constraints = {}
+    polynomial_constraints = {}
+    nonlinear_constraints = {}
+
+    # get degree / type of model constraints
+    for constraint in model.component_objects(pyo.Constraint, active=True):
+        for index in constraint:
+            constraint_degree = polynomial_degree(constraint[index].expr)
+            if constraint_degree == 1:
+                linear_constraints[(constraint.name, index)] = constraint[index].expr
+            elif constraint_degree == 2:
+                quadratic_constraints[(constraint.name, index)] = constraint[index].expr
+            elif isinstance(constraint_degree, int) and constraint_degree > 2:
+                polynomial_constraints[(constraint.name, index)] = constraint[index].expr
+            elif constraint_degree is None:
+                nonlinear_constraints[(constraint.name, index)] = constraint[index].expr
+
+    # displaying constraints in model by type
+    if not linear_constraints:
+        print('No linear constraints in model')
+    else:
+        print('Linear constraints in model')
+        for index, constr in enumerate(linear_constraints.items(), start=1):
+            print()
+            print(f'{index}: {constr}')
+
+    print()
+    if not quadratic_constraints:
+        print('No quadratic constraints in model')
+    else:
+        print('Quadratic constraints in model')
+        print()
+        for index, constr in enumerate(quadratic_constraints.values(), start=1):
+            print()
+            print(f'{index}: {constr}')
+
+    print()
+    if not polynomial_constraints:
+        print('No higher-order polynomial constraints in model')
+    else:
+        print('Higher-order polynomial constraints in model')
+        for index, constr in enumerate(polynomial_constraints.values(), start=1):
+            print()
+            print(f'{index}: {constr}')
+
+    print()
+    if not nonlinear_constraints:
+        print('No nonlinear constraints in model')
+    else:
+        print('Nonlinear constraints in model')
+        for index, constr in enumerate(nonlinear_constraints.values(), start=1):
+            print()
+            print(f'{index}: {constr}')
+
+    return None
+
+def get_objective_type(model: pyo.ConcreteModel) -> str:
+    """returns the equation type of the objective function in a Pyomo model.
+    
+    Objective can be: linear, quadratic, nth degree polynomial, or nonlinear
+
+    Args:
+        model (pyo.ConcreteModel): Pyomo model object
+
+    Returns:
+        dict: dictionary where keys are (constraint, index) and values are 
+    """
+
+    # get degree / type of model objective
+    for obj in model.component_objects(pyo.Objective, active=True):
+        obj_degree = polynomial_degree(obj.expr)
+        obj_type = None
+        if obj_degree == 1:
+            obj_type = 'Linear'
+        elif obj_degree == 2:
+            obj_type = ' Quadratic'
+        elif isinstance(obj_degree, int) and obj_degree > 2:
+            obj_type = f'Degree {obj_degree} Polynomial'
+        elif obj_degree is None:
+            obj_type = 'Nonlinear'
+
+    return obj_type
+
+
+def get_model_type(model: pyo.ConcreteModel) -> str:
+    """Determine the type of model
+
+    Args:
+        model (pyo.ConcreteModel): Pyomo model object
+
+    Returns:
+        str: Type of mathemtical program contained in the Pyomo model object
+        LP, QP, IP, QP, NLP, MILP, MIQCP, MINLP, GDP
+    """
+
+    # domains of discrete variables in a Pyomo model
+    integer_vars = {'Integers', 'Binary', 'NegativeIntegers', 'PositiveIntegers', 'NonPositiveIntegers', 'NonNegativeIntegers'}
+
+    var_types = {'Continuous': False, 'Discrete': False}
+    constraint_types = {'Linear': False, 'Quadratic': False, 'Nonlinear': False}
+
+    # get dictionaries of the variables, constratinst, and objective and type/domain
+    variables = get_var_type(model)
+    constraints = get_constraint_type(model)
+    objective = get_objective_type(model)
+
+    # check if there are any any continuous or discrete variables
+    for value in variables.values():
+        if value in integer_vars:
+            var_types['Discrete'] = True
+        else:
+            var_types['Continuous'] = True
+
+    # check if constraints are linear, quadratic, or nonlinear
+    for value in constraints.values():
+        if value == 'Linear':
+            constraint_types['Linear'] = True
+        elif value == 'Quadratic':
+            constraint_types['Quadratic'] = True
+        elif value == 'Nonlinear' or value.startswith('Degree'):
+            constraint_types['Nonlinear'] = True
+
+    if objective == 'Nonlinear' or constraint_types['Nonlinear'] is True:
+        if var_types['Discrete'] is True:
+            model_type = 'MINLP'
+
+    if objective == 'Linear':
+        if constraint_types['Linear'] is True and constraint_types['Quadratic'] is False and constraint_types['Nonlinear'] is False:
+            if var_types['Continuous'] is True and var_types['Discrete'] is False:
+                model_type = 'LP'
+            elif var_types['Discrete'] is True and var_types['Continuous'] is True:
+                model_type = 'MILP'
+            elif var_types['Discrete'] is True and var_types['Continuous'] is False:
+                model_type = 'IP'
+
+    if objective == 'Quadratic' or constraint_types['Quadratic'] is True:
+        if constraint_types['Nonlinear'] is False:
+            if var_types['Continuous'] is True and var_types['Discrete'] is False:
+                model_type = 'QP'
+            elif var_types['Discrete'] is True:
+                model_type = 'MIQCP'
+
+    if var_types['Continuous'] is True and var_types['Discrete'] is False:
+        if objective == 'Nonlinear' or constraint_types['Nonlinear'] is True:
+            model_type = 'NLP'
+
+
+
+    return  model_type
+
+
 
 if __name__ == "__main__":
     hydrocarbon_data = data('3_comp.xlsx')
