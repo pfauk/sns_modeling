@@ -6,6 +6,7 @@ import pandas as pd
 import pyomo.environ as pyo
 from pyomo.core.expr.visitor import polynomial_degree
 import numpy as np
+from typing import Tuple, Dict
 
 class Column:
     """Class to encapuslate data for a given column (separation task) for easier display.
@@ -35,7 +36,7 @@ class Column:
             self.D[('D', i)] = pyo.value(mdl.D[(i, t)])
             self.B[('B', i)] = pyo.value(mdl.B[(i, t)])
 
-        # initialization of internal coumn flows
+        # initialization of internal column flows
         self.Vr = pyo.value(mdl.Vr[t])
         self.Lr = pyo.value(mdl.Lr[t])
         self.Ls = pyo.value(mdl.Ls[t])
@@ -99,12 +100,12 @@ class Column:
             for k in self.B.keys():
                 print(f'Bottoms ({k[1]}): {self.B[k]:1.4f}')
 
-            # print()
-            # print('Internal Flows of Column')
-            # print(f'Vr {self.Vr:1.4}')
-            # print(f'Lr {self.Lr:1.4}')
-            # print(f'Vs {self.Vs:1.4}')
-            # print(f'Ls {self.Ls:1.4}')
+            print()
+            print('Internal Flows of Column')
+            print(f'Vr {self.Vr:1.4}')
+            print(f'Lr {self.Lr:1.4}')
+            print(f'Vs {self.Vs:1.4}')
+            print(f'Ls {self.Ls:1.4}')
 
 
 class IntHeatExchanger:
@@ -161,7 +162,7 @@ class IntHeatExchanger:
             if self.active_strip_tasks and not self.active_rec_tasks:
                 self.is_reboiler = True
                 self.cost = mdl.inter_reboiler_cost[s]
-                self.exchanger_area = pyo.value(mdl.area_intermedaite_exchanger[s])
+                self.exchanger_area = pyo.value(mdl.area_intermediate_exchanger[s])
                 reboiler_duty = pyo.value(sum(mdl.Qreb[t] for t in active_strip_tasks))
             else:
                 self.is_reboiler = False
@@ -181,7 +182,7 @@ class IntHeatExchanger:
         elif self.active is True:
             if self.is_reboiler is True:
                 print(f'Final Prodcut {self.exchanger_index} has associated reboiler')
-                print(f'Capital cost of reboiler: ${self.cost:,.2f}')
+                print(f'Capital cost of reboiler: ${pyo.value(self.cost):,.2f}')
                 print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
             if self.is_condenser is True:
@@ -444,12 +445,11 @@ def save_model_to_file(mdl, file_name, dir_path=None):
 
     return None
 
-class data:
+class Data:
     """
-    class to hold problem data for input to a build_model() function
+    Class to hold problem data for input to a build_model() function.
     """
-    def __init__(self, file_name, dir_path=None):
-
+    def __init__(self, file_name: str, dir_path: str = None):
         base_dir = os.path.dirname(os.path.realpath(__file__))
 
         if dir_path:
@@ -462,27 +462,75 @@ class data:
         self.species_df = pd.read_excel(self.filepath, sheet_name='species')
         self.system_df = pd.read_excel(self.filepath, sheet_name='system')
 
-        # type cast data to Python floats instead of Numpy float64 in order to work with GDPopt
+        # Type cast data to Python floats instead of Numpy float64 in order to work with GDPopt
         self.n = float(self.species_df.shape[0])  # number of components in the system
         self.species_names = dict(zip(self.species_df['index'], self.species_df['Species']))
-        self.F0 = self.system_df['F0 [kmol/hr]']
-        self.F0 = float(self.F0.iloc[0])
-
-        self.P_abs = self.system_df['Pressure [bar]']
-        self.P_abs = float(self.P_abs.iloc[0])
-
-        self.Tf = self.system_df['Temp [C]']
-        self.Tf = float(self.Tf.iloc[0])
-        
-        self.rec = self.system_df['recovery']
-        self.rec = float(self.rec.iloc[0])
+        self.F0 = float(self.system_df['F0 [kmol/hr]'].iloc[0])
+        self.P_abs = float(self.system_df['Pressure [bar]'].iloc[0])
+        self.Tf = float(self.system_df['Temp [C]'].iloc[0])
 
         self.zf = dict(zip(self.species_df['index'], self.species_df['Inlet Mole Frac']))
         self.relative_volatility = dict(zip(self.species_df['index'], self.species_df['Relative Volatility']))
         self.species_densities = dict(zip(self.species_df['index'], self.species_df['Liquid Density [kg/m^3]']))
         self.PM = dict(zip(self.species_df['index'], self.species_df['Molecular Weight']))
         self.Hvap = dict(zip(self.species_df['index'], self.species_df['Enthalpy of Vaporization [kJ/mol]']))
+        self.rec = dict(zip(self.species_df['index'], self.species_df['Recovery']))
 
+        # Calculate bounds and initialization for Underwood roots and intermediate variable (z)
+        self.root_upper_bounds, self.root_lower_bounds, self.root_initial = self.calculate_root_bounds(self.relative_volatility)
+        self.z_upper_bounds, self.z_lower_bounds, self.z_initial = self.calculate_intermediate_bounds(self.relative_volatility)
+        
+    def calculate_root_bounds(self, alpha:dict) -> Tuple[dict, dict, dict]:
+        """Calculate the bounds and initialization for Underwood roots based on relative volatilites
+
+        Args:
+            alpha (dict): relative volatilities for n species (e.g. A:10, B:5, C:1,...)
+
+        Returns:
+            Tuple[dict]: upper bounds on Underwood roots (dict), lower bounds on Underwood roots (dict),
+                         initial values for Underwood roots (dict) as mid point between bounds 
+        """
+        root_upper_bounds = {}
+        root_lower_bounds = {}
+        root_initial = {}    
+        
+        n_components = len(alpha)
+        alpha_values = list(alpha.values())
+        
+        for i in range(n_components - 1):
+            root_upper_bounds[f'r{i+1}'] = alpha_values[i] - 0.01
+            root_lower_bounds[f'r{i+1}'] = alpha_values[i+1] + 0.01
+            root_initial[f'r{i+1}'] = (alpha_values[i] + alpha_values[i+1]) / 2
+            
+        return root_upper_bounds, root_lower_bounds, root_initial
+    
+    def calculate_intermediate_bounds(self, alpha:dict) -> Tuple[dict, dict, dict]:
+        """Calculate the bounds and initialization for intermediate variable (z) used in reformulation of Underwood equations
+
+        Args:
+            alpha (dict): relative volatilities for n species (e.g. A:10, B:5, C:1,...)
+
+        Returns:
+            Tuple[dict]: upper bounds on intermediate variable (dict), lower bounds on intermediate variable (dict),
+                         initial values of intermediate variable (dict) as mid point between bounds 
+        """
+        z_upper_bounds = {}
+        z_lower_bounds = {}
+        z_initial = {}
+        
+        n_components = len(alpha)
+        components = list(alpha.keys())
+        
+        root_upper_bounds, root_lower_bounds, root_initial = self.calculate_root_bounds(alpha)
+        
+        # calculating bounds for intermediate variable (z) using bounds from Underwood roots
+        for i in components:
+            for r in range(1, n_components):
+                z_upper_bounds[(i, f'r{r}')] = 1 / (alpha[i] - root_upper_bounds[f'r{r}'])
+                z_lower_bounds[(i, f'r{r}')] = 1 / (alpha[i] - root_lower_bounds[f'r{r}'])
+                z_initial[(i, f'r{r}')] = (z_upper_bounds[(i, f'r{r}')] + z_lower_bounds[(i, f'r{r}')]) / 2
+    
+        return z_upper_bounds, z_lower_bounds, z_initial
 
 # utility functions to examine model type
 def get_var_type(model: pyo.ConcreteModel) -> dict:
@@ -702,4 +750,4 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
 
 
 if __name__ == "__main__":
-    hydrocarbon_data = data('3_comp.xlsx')
+    hydrocarbon_data = Data('3_comp.xlsx')
