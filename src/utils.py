@@ -153,7 +153,7 @@ class IntHeatExchanger:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
                 self.cost = mdl.inter_condenser_cost[s]
-                self.exchanger_area = pyo.value(mdl.area_intermediate_exchanger[s])
+                self.exchanger_area = pyo.value(mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
                 condenser_duty = pyo.value(sum(mdl.Qcond[t] for t in active_rec_tasks))
             else:
                 self.is_condenser = False
@@ -162,7 +162,7 @@ class IntHeatExchanger:
             if self.active_strip_tasks and not self.active_rec_tasks:
                 self.is_reboiler = True
                 self.cost = mdl.inter_reboiler_cost[s]
-                self.exchanger_area = pyo.value(mdl.area_intermediate_exchanger[s])
+                self.exchanger_area = pyo.value(mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
                 reboiler_duty = pyo.value(sum(mdl.Qreb[t] for t in active_strip_tasks))
             else:
                 self.is_reboiler = False
@@ -181,12 +181,12 @@ class IntHeatExchanger:
             print(f'Heat Exchanger for final product {self.exchanger_index} is not active')
         elif self.active is True:
             if self.is_reboiler is True:
-                print(f'Final Prodcut {self.exchanger_index} has associated reboiler')
+                print(f'State {self.exchanger_index} has associated reboiler')
                 print(f'Capital cost of reboiler: ${pyo.value(self.cost):,.2f}')
                 print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
             if self.is_condenser is True:
-                print(f'Final Prodcut {self.exchanger_index} has associated condenser')
+                print(f'State {self.exchanger_index} has associated condenser')
                 print(f'Capital cost of condenser: ${self.cost:,.2f}')
                 print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
@@ -236,7 +236,7 @@ class FinalHeatExchanger:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
                 self.cost = pyo.value(mdl.final_condenser_cost[i])
-                self.exchanger_area = pyo.value(mdl.area_final_exchanger[i])
+                self.exchanger_area = pyo.value(mdl.area_final_reboiler[i]) + pyo.value(mdl.area_final_condenser[i])
                 condenser_duty = pyo.value(sum(mdl.Qcond[t] for t in active_rec_tasks))
             else:
                 self.is_condenser = False
@@ -245,7 +245,7 @@ class FinalHeatExchanger:
             if self.active_strip_tasks and not self.active_rec_tasks:
                 self.is_reboiler = True
                 self.cost = pyo.value(mdl.final_reboiler_cost[i])
-                self.exchanger_area = pyo.value(mdl.area_final_exchanger[i])
+                self.exchanger_area = pyo.value(mdl.area_final_reboiler[i]) + pyo.value(mdl.area_final_condenser[i])
                 reboiler_duty = pyo.value(sum(mdl.Qreb[t] for t in active_strip_tasks))
             else:
                 self.is_reboiler = False

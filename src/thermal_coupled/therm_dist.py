@@ -296,17 +296,33 @@ def build_model(stn, data)->pyo.ConcreteModel:
         initialize=1e5
     )
 
-    m.area_final_exchanger = pyo.Var(
+    m.area_final_reboiler = pyo.Var(
         m.COMP,
-        doc="heat exchange area of heat exchanger associated with final product [m^2]",
+        doc="heat exchange area of reboiler associated with final product [m^2]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 100000),
+        initialize=100
+    )
+    
+    m.area_final_condenser = pyo.Var(
+        m.COMP,
+        doc="heat exchange area of condenser associated with final product [m^2]",
         within=pyo.NonNegativeReals,
         bounds=(0, 100000),
         initialize=100
     )
 
-    m.area_intermediate_exchanger = pyo.Var(
+    m.area_intermediate_reboiler = pyo.Var(
         m.ISTATE,
-        doc="heat exchange area of heat exchanger associated with intermediate product [m^2]",
+        doc="heat exchange area of reboiler associated with intermediate product [m^2]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 100000),
+        initialize=100
+    )
+
+    m.area_intermediate_condenser = pyo.Var(
+        m.ISTATE,
+        doc="heat exchange area of condenser associated with intermediate product [m^2]",
         within=pyo.NonNegativeReals,
         bounds=(0, 100000),
         initialize=100
@@ -1016,8 +1032,8 @@ def build_model(stn, data)->pyo.ConcreteModel:
 
             @heat_exchanger.Constraint(rect_tasks)
             def condenser_heat_duty(_, t):
-                """Task reboiler heat duty based on enthalpy of vaporization and stripping section vapor flow rate"""
-                return m.Qcond[t] * m.DT[t] == sum(m.Hvap[j] * m.D[(j, t)] * m.Vr[t] for j in m.COMP)
+                """Task condenser heat duty based on enthalpy of vaporization and stripping section vapor flow rate"""
+                return m.Qcond[t] * m.DT[t] == sum(m.Hvap[j] * m.D[(j, t)] * m.Vr[t] for j in m.COMP) 
 
             @no_heat_exchanger.Constraint(rect_tasks)
             def inactive_final_condenser(_, t):
@@ -1030,8 +1046,8 @@ def build_model(stn, data)->pyo.ConcreteModel:
 
             @heat_exchanger.Constraint(strip_tasks)
             def reboiler_heat_duty(_, t):
-                """Task condenser heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
-                return m.Qreb[t] * m.BT[t] == sum(m.Hvap[j] * m.B[(j, t)] * m.Vs[t] for j in m.COMP)
+                """Task reboiler heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
+                return m.Qreb[t] * m.BT[t] == sum(m.Hvap[j] * m.B[(j, t)] * m.Vs[t] for j in m.COMP) 
 
             @no_heat_exchanger.Constraint(strip_tasks)
             def inactive_final_reboiler(_, t):
@@ -1075,9 +1091,6 @@ def build_model(stn, data)->pyo.ConcreteModel:
         C_reb_2020 = Reboiler_base_price_2004 * inflation_ratio
         C_shell_tube_2020 = Shell_tube_base_price_2004 * inflation_ratio
 
-        K_reb = C_reb_2020 / (100) ** n
-        K_shell_tube = C_shell_tube_2020 / (100) ** n
-
         # U for hot side of condensing steam and cold side fluid of low viscosity liquid hydrocarbons
         Ureb = 600  # [J / m^2 sec K]
         # U for hot side of hydrocarbon gases and cold side fluid of liquid water
@@ -1088,43 +1101,49 @@ def build_model(stn, data)->pyo.ConcreteModel:
         delta_LM_T_reb = 270
 
         # # if the final state is produced by a rectifying section, will have associated condenser
-        # if i in m.PRE_i:
+        if i in m.PRE_i:
 
-        #     @heat_exchanger.Constraint()
-        #     def condenser_area(_):
-        #         Qcon_inter = (sum(m.Qcond[t] for t in m.PRE_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
-        #         return m.area_final_exchanger[i] == Qcon_inter / (Ucond * delta_LM_T_cond)
+            @heat_exchanger.Constraint()
+            def condenser_area(_):
+                Qcon_inter = (sum(m.Qcond[t] for t in m.PRE_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
+                return m.area_final_condenser[i] == Qcon_inter / (Ucond * delta_LM_T_cond)
 
-        #     @heat_exchanger.Constraint()
-        #     def condenser_cost(_):
-        #         """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
-        #         # parameters for a polynomial fit
-        #         condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
-        #         return (m.final_condenser_cost[i] == K_shell_tube * (condenser_params[0] * m.area_final_exchanger[i]**2
-        #                                                             + condenser_params[1] * m.area_final_exchanger[i]
-        #                                                             + condenser_params[2]))
+            @heat_exchanger.Constraint()
+            def condenser_cost(_):
+                """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
+                # parameters for a polynomial fit
+                condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
+                return (m.final_condenser_cost[i] == (condenser_params[0] * m.area_final_condenser[i]**2
+                                                                    + condenser_params[1] * m.area_final_condenser[i]
+                                                                    + condenser_params[2])) 
 
-        # # if the final state is produced by a stripping section, will have associated reboiler
-        # if i in m.PST_i:
+        # if the final state is produced by a stripping section, will have associated reboiler
+        if i in m.PST_i:
 
-        #     @heat_exchanger.Constraint()
-        #     def reboiler_area(_):
-        #         Qreb_inter = (sum(m.Qreb[t] for t in m.PST_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
-        #         return m.area_final_exchanger[i] == Qreb_inter / (Ureb * delta_LM_T_reb)
+            @heat_exchanger.Constraint()
+            def reboiler_area(_):
+                Qreb_inter = (sum(m.Qreb[t] for t in m.PST_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
+                return m.area_final_reboiler[i] == Qreb_inter / (Ureb * delta_LM_T_reb)
 
-        #     @heat_exchanger.Constraint()
-        #     def reboiler_cost(_):
-        #         """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
-        #         # parameters for a polynomial fit
-        #         reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
-        #         return (m.final_reboiler_cost[i] == K_reb * (reboiler_params[0] * m.area_final_exchanger[i]**2
-        #                                                     + reboiler_params[1] * m.area_final_exchanger[i]
-        #                                                     + reboiler_params[2]))
+            @heat_exchanger.Constraint()
+            def reboiler_cost(_):
+                """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
+                # parameters for a polynomial fit
+                reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
+                
+                return (m.final_reboiler_cost[i] == (reboiler_params[0] * m.area_final_reboiler[i]**2
+                                                            + reboiler_params[1] * m.area_final_reboiler[i]
+                                                            + reboiler_params[2]))
 
         @no_heat_exchanger.Constraint()
-        def inactive_exchanger_area(_):
+        def inactive_reboiler_area(_):
             """For an inactive exchanger, set heat exchange area to zero"""
-            return m.area_final_exchanger[i] == 0
+            return m.area_final_reboiler[i] == 0
+
+        @no_heat_exchanger.Constraint()
+        def inactive_condenser_area(_):
+            """For an inactive exchanger, set heat exchange area to zero"""
+            return m.area_final_condenser[i] == 0
 
         @no_heat_exchanger.Constraint()
         def inactive_reboiler_cost(_):
@@ -1180,6 +1199,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
 
         @heat_exchanger.Constraint(task_list)
         def flow_constraint(_, t):
+            """"If an intermediate heat exchanger is used, the feed to the next column is a saturated liquid"""
             return m.FT[t] + m.Lr[t] == m.Ls[t]
 
         # if intermediate state is produced by a rectifying section and it has a heat exchanger, it will be a condenser
@@ -1272,9 +1292,6 @@ def build_model(stn, data)->pyo.ConcreteModel:
         C_reb_2020 = Reboiler_base_price_2004 * inflation_ratio
         C_shell_tube_2020 = Shell_tube_base_price_2004 * inflation_ratio
 
-        K_reb = C_reb_2020 / (100) ** n
-        K_shell_tube = C_shell_tube_2020 / (100) ** n
-
         # U for hot side of condensing steam and cold side fluid of low viscosity liquid hydrocarbons
         Ureb = 600  # [J / m^2 sec K]
         # U for hot side of hydrocarbon gases and cold side fluid of liquid water
@@ -1290,15 +1307,15 @@ def build_model(stn, data)->pyo.ConcreteModel:
             @heat_exchanger.Constraint()
             def condenser_area(_):
                 Qcon_inter = (sum(m.Qcond[t] for t in m.IREC_m[s]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
-                return m.area_intermediate_exchanger[s] == Qcon_inter / (Ucond * delta_LM_T_cond)
+                return m.area_intermediate_condenser[s] == Qcon_inter / (Ucond * delta_LM_T_cond)
 
             @heat_exchanger.Constraint()
             def condenser_cost(_):
                 """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
-                # parameters for a polynomial fit
+                # parameters for a polynomial fit to an empirical cost correlation
                 condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
-                return (m.inter_condenser_cost[s] == K_shell_tube *  (condenser_params[0] * m.area_intermediate_exchanger[s]**2
-                                                                    + condenser_params[1] * m.area_intermediate_exchanger[s]
+                return (m.inter_condenser_cost[s] == (condenser_params[0] * m.area_intermediate_condenser[s]**2
+                                                                    + condenser_params[1] * m.area_intermediate_condenser[s]
                                                                     + condenser_params[2]))
 
         # if the intermediate state is produced by a stripping section, will have associated reboiler
@@ -1307,20 +1324,25 @@ def build_model(stn, data)->pyo.ConcreteModel:
             @heat_exchanger.Constraint()
             def reboiler_area(_):
                 Qreb_inter = (sum(m.Qreb[t] for t in m.ISTRIP_m[s]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
-                return m.area_intermediate_exchanger[s] == Qreb_inter / (Ureb * delta_LM_T_reb)
+                return m.area_intermediate_reboiler[s] == Qreb_inter / (Ureb * delta_LM_T_reb)
 
             @heat_exchanger.Constraint()
             def reboiler_cost(_):
                 """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
                 # parameters for a polynomial fit
                 reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
-                return (m.inter_reboiler_cost[s] == K_reb * (reboiler_params[0] * m.area_intermediate_exchanger[s]**2
-                                                            + reboiler_params[1] * m.area_intermediate_exchanger[s]
+                return (m.inter_reboiler_cost[s] == (reboiler_params[0] * m.area_intermediate_reboiler[s]**2
+                                                            + reboiler_params[1] * m.area_intermediate_reboiler[s]
                                                             + reboiler_params[2]))
         @no_heat_exchanger.Constraint()
-        def inactive_exchanger_area(_):
+        def inactive_reboiler_area(_):
             """For an inactive exchanger, set heat exchange area to zero"""
-            return m.area_intermediate_exchanger[s] == 0
+            return m.area_intermediate_reboiler[s] == 0
+
+        @no_heat_exchanger.Constraint()
+        def inactive_condenser_area(_):
+            """For an inactive exchanger, set heat exchange area to zero"""
+            return m.area_intermediate_condenser[s] == 0
 
         @no_heat_exchanger.Constraint()
         def inactive_condenser_cost(_):
@@ -1345,8 +1367,8 @@ def build_model(stn, data)->pyo.ConcreteModel:
         doc="""A given state s can give rise to at most one task: cannot split a product
                 stream and send to 2 different columns""")
     def logic1(m, s):
-        if s in m.ST_s:
-            return sum(m.column[t].binary_indicator_var for t in m.ST_s[s]) <= 1
+        if s in m.TS_s:
+            return sum(m.column[t].binary_indicator_var for t in m.TS_s[s]) <= 1
         else:
             return pyo.Constraint.Skip
 
@@ -1402,49 +1424,50 @@ def build_model(stn, data)->pyo.ConcreteModel:
         else:
             return pyo.Constraint.Skip
 
-    # Logic 7 and Logic 8: If a final product is produced by exactly one contribution, the heat exchanger associated with
-    # this product must be selected.
-
-    @m.LogicalConstraint(m.COMP)
+    @m.LogicalConstraint(m.COMP,
+                         doc="""If a final product is produced by exactly one contribution, the heat exchanger associated with
+                         this product must be selected""")
     def logic7(m, i):
+        # getting lists of boolean variables for column disjuncts that could produce the final state i
         if i in m.PRE_i:
-            bool_vars = [m.column[t].indicator_var for t in m.PRE_i[i]]
-            return pyo.implies(pyo.exactly(1, bool_vars), m.final_heat_exchanger[i].indicator_var)
+            bool_vars_rectifying = [m.column[t].indicator_var for t in m.PRE_i[i]]
         else:
-            return pyo.Constraint.Skip
+            bool_vars_rectifying = []
+        if i in m.PST_i:
+            bool_vars_stripping = [m.column[t].indicator_var for t in m.PST_i[i]]
+        else:
+            bool_vars_stripping = []
+        
+        bool_vars = bool_vars_rectifying + bool_vars_stripping
+        
+        # if exactly one disjunct Boolean is true (task producing final product), the heat exchanger exists
+        return pyo.implies(pyo.exactly(1, bool_vars), m.final_heat_exchanger[i].indicator_var)
 
-    @m.LogicalConstraint(m.COMP)
+    @m.LogicalConstraint(m.COMP,
+                         doc="""If a given final state is produced by 2 tasks,
+                         then there is no heat exchanger associated with that state""")
     def logic8(m, i):
-        if i in m.PST_i:
-            bool_vars = [m.column[t].indicator_var for t in m.PST_i[i]]
-            return pyo.implies(pyo.exactly(1, bool_vars), m.final_heat_exchanger[i].indicator_var)
-        else:
-            return pyo.Constraint.Skip
-
-    # If a given final state is produced by 2 tasks, then there is no heat exchanger associated with that state
-
-    @m.LogicalConstraint(m.COMP)
-    def logic9(m, i):
         if i in m.PRE_i:
-            temp_var1 = [m.column[t].indicator_var for t in m.PRE_i[i]]
+            bool_vars_rectifying = [m.column[t].indicator_var for t in m.PRE_i[i]]
         else:
-            temp_var1 = []
+            bool_vars_rectifying = []
         if i in m.PST_i:
-            temp_var2 = [m.column[t].indicator_var for t in m.PST_i[i]]
+            bool_vars_stripping = [m.column[t].indicator_var for t in m.PST_i[i]]
         else:
-            temp_var2 = []
+            bool_vars_stripping = []
 
-        return pyo.implies(pyo.land(temp_var1, temp_var2), pyo.lnot(m.final_heat_exchanger[i].indicator_var))
+        bool_vars = bool_vars_rectifying + bool_vars_stripping
+        return pyo.implies(pyo.land(bool_vars), pyo.lnot(m.final_heat_exchanger[i].indicator_var))
 
     # Intermediate heat exchanger logic: cannot have a heat exchanger for an intermediate state if the state is not produced by a task
 
     @m.Constraint(m.ISTATE)
-    def logic10(m, s):
+    def logic9(m, s):
         return (1 - m.int_heat_exchanger[s].binary_indicator_var + sum(m.column[t].binary_indicator_var for t in m.ST_s[s]) >= 1)
 
     @m.LogicalConstraint(m.STATES, m.TASKS,
                          doc="""Connectivity relations e.g. Existence of task AB/C implies A/B""")
-    def logic11(m, s, t):
+    def logic10(m, s, t):
         if s in m.ST_s and s in m.TS_s:
             tasks = list(m.ST_s[s])
             if t in tasks:
@@ -1457,7 +1480,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
 
     @m.LogicalConstraint(m.STATES, m.TASKS,
                          doc="""Connectivity relations e.g. A/B implies AB/C""")
-    def logic12(m, s, t):
+    def logic11(m, s, t):
         if s in m.TS_s and s in m.ST_s:
             tasks = list(m.TS_s[s])
             if t in tasks:
@@ -1483,7 +1506,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
     # OBJECTIVE
     # ================================================
     # multiply sum of bare module capital expenses by capital recovery factor (CRF) to get annualized cost
-    # CRF * m.CAPEX + m.OPEX,
-    m.obj = pyo.Objective(expr= sum(m.Vr[t] +m.Vs[t] for t in m.TASKS), sense=pyo.minimize)
+
+    m.obj = pyo.Objective(expr= CRF * m.CAPEX + m.OPEX, sense=pyo.minimize)
 
     return m
