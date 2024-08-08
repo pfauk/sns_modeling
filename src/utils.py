@@ -192,7 +192,7 @@ class IntHeatExchanger:
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
 
 class FinalHeatExchanger:
-    """Class to encapuslate data for final product heat exchanger for easier display.
+    """Class to encapsulate data for final product heat exchanger for easier display.
     Final product heat exchangers are indexed by the set m.COMP, which is all the pure components in a
     separation network"""
 
@@ -231,7 +231,7 @@ class FinalHeatExchanger:
             self.active_strip_tasks = None
 
         # if the heat exchanger is active, determine if it is a reboiler or condenser
-        # based on what type of separation tasks are producting it
+        # based on what type of separation tasks are producing it
         if self.active:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
@@ -264,12 +264,12 @@ class FinalHeatExchanger:
             print(f'Heat Exchanger for final product {self.exchanger_index} is not active')
         elif self.active is True:
             if self.is_reboiler is True:
-                print(f'Final Prodcut {self.exchanger_index} has associated reboiler')
+                print(f'Final Product {self.exchanger_index} has associated reboiler')
                 print(f'Capital cost of reboiler: ${self.cost:,.2f}')
                 print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
             if self.is_condenser is True:
-                print(f'Final Prodcut {self.exchanger_index} has associated condenser')
+                print(f'Final Product {self.exchanger_index} has associated condenser')
                 print(f'Capital cost of condenser: ${self.cost:,.2f}')
                 print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
@@ -290,7 +290,7 @@ def pprint_network(mdl):
     """
 
     # get index and value for feed
-    element = next(iter(mdl.Feed))
+    element = next(iter(mdl.FEED))
     feed_index = str(pyo.value(element))
 
     feed_val = pyo.value(mdl.F0)
@@ -362,7 +362,7 @@ def pprint_network(mdl):
         active_final_heat_exchanger[i].display_exchanger()
 
     print()
-    print('Intermedaite Product Heat Exchangers')
+    print('Intermediate Product Heat Exchangers')
     for s in active_inter_heat_exchanger.keys():
         active_inter_heat_exchanger[s].display_exchanger()
 
@@ -468,6 +468,8 @@ class Data:
         self.F0 = float(self.system_df['F0 [kmol/hr]'].iloc[0])
         self.P_abs = float(self.system_df['Pressure [bar]'].iloc[0])
         self.Tf = float(self.system_df['Temp [C]'].iloc[0])
+        self.C_cw = float(self.system_df['Cost cooling [$/kJ]'].iloc[0])
+        self.C_h = float(self.system_df['Cost heating [$/kJ]'].iloc[0])
 
         self.zf = dict(zip(self.species_df['index'], self.species_df['Inlet Mole Frac']))
         self.relative_volatility = dict(zip(self.species_df['index'], self.species_df['Relative Volatility']))

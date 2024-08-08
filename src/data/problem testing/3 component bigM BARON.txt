@@ -1,0 +1,276 @@
+--- Job model.gms Start 07/24/24 18:34:01 41.5.0 2a5a4ddc WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\41\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input C:\Users\kevin\AppData\Local\Temp\tmponwftl6_\model.gms
+    Output C:\Users\kevin\AppData\Local\Temp\tmponwftl6_\output.lst
+    ScrDir C:\Users\kevin\AppData\Local\Temp\tmponwftl6_\225a\
+    SysDir C:\GAMS\41\
+    CurDir C:\Users\kevin\AppData\Local\Temp\tmponwftl6_\
+    LogOption 3
+Licensee: Prof. Ignacio E. Grossmann                     G240103|0002AS-GEN
+          Carnegie Mellon University, Dept. of Chemical Engineering  DCE375
+          C:\GAMS\41\gamslice.txt
+          License Admin: Ignacio E. Grossmann,
+          Evaluation license: Not for commercial or production use
+Processor information: 1 socket(s), 10 core(s), and 12 thread(s) available
+GAMS 41.5.0   Copyright (C) 1987-2023 GAMS Development. All rights reserved
+--- Starting compilation
+--- model.gms(2503) 2 Mb
+--- Starting execution: elapsed 0:00:00.032
+--- model.gms(1688) 3 Mb
+--- Generating MINLP model GAMS_MODEL
+--- model.gms(1689) 5 Mb
+--- Reset Solvelink = 2
+---   583 rows  178 columns  1,697 non-zeroes
+---   1,132 nl-code  388 nl-non-zeroes
+---   27 discrete-columns
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 2.004E-03, 7.118E+10] - Zero values observed as well
+--- Bound     [min, max] : [ 1.112E-01, 1.000E+10] - Zero values observed as well
+--- Matrix    [min, max] : [ 6.173E-03, 7.118E+10]
+--- model.gms(1689) 3 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:00.032
+
+GAMS/BARON       41.5.0 2a5a4ddc Jan 3, 2023           WEI x86 64bit/MS Window
+
+===========================================================================
+ BARON version 22.9.30. Built: WIN-64 Fri Sep 30 09:11:57 EDT 2022
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as:
+
+ Khajavirad, A. and N. V. Sahinidis,
+ A hybrid LP/NLP paradigm for global optimization relaxations,
+ Mathematical Programming Computation, 10, 383-421, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: CLP/CBC, ILOG CPLEX
+ For NLP: MINOS, SNOPT, External NLP, IPOPT, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             4.11      153413.         0.100000E+52
+         18+            9            19.77      588189.         0.100000E+52
+*      1441           244            36.94      703870.          711308.
+*      1705           209            38.94      704616.          707048.
+*      4940           834            59.92      705587.          705998.
+       9677          2172            81.08      705587.          705998.
+      15059          3489           106.02      705587.          705998.
+*     16651           708           114.77      705587.          705883.
+*     17021           606           117.72      705587.          705802.
+      20387          1465           142.12      705587.          705802.
+      23172          2405           166.47      705587.          705802.
+      25439          3096           187.16      705587.          705802.
+      28479          3986           207.44      705587.          705802.
+      31267          4533           228.16      705587.          705802.
+      33484          4978           249.55      705587.          705802.
+*     33977           230           253.28      705587.          705730.
+      34340             0           255.25      705660.          705730.
+
+ Calculating duals
+
+                         *** Normal completion ***
+
+ Wall clock time:                   354.26
+ Total CPU time used:               255.25
+
+ Total no. of BaR iterations:   34340
+ Best solution found at node:   33977
+ Max. no. of nodes in memory:    5161
+
+ All done
+===========================================================================
+
+Solution      = 705730.348183521  found at node 33977
+Best possible = 705659.782205
+Absolute gap  = 70.5659785212483  optca = 1E-9
+Relative gap  = 9.99900014260093E-5  optcr = 0.0001
+
+--- Reading solution for model GAMS_MODEL
+--- Executing after solve: elapsed 0:05:54.875
+--- model.gms(1692) 3 Mb
+--- model.gms(2503) 3 Mb
+--- Putfile results C:\Users\kevin\AppData\Local\Temp\tmponwftl6_\results.dat
+--- Putfile statresults C:\Users\kevin\AppData\Local\Temp\tmponwftl6_\resultsstat.dat
+*** Status: Normal completion
+--- Job model.gms Stop 07/24/24 18:39:56 elapsed 0:05:54.878
+
+Problem:
+- Name: C\x3a\Users\kevin\AppData\Local\Temp\tmponwftl6_\model.gms
+  Lower bound: 705659.782205
+  Upper bound: 705730.3481835213
+  Number of objectives: 1
+  Number of constraints: 583.0
+  Number of variables: 178.0
+  Number of binary variables: None
+  Number of integer variables: 27.0
+  Number of continuous variables: 151.0
+  Number of nonzeros: 1697.0
+  Sense: minimize
+Solver:
+- Name: GAMS (41, 5, 0, 0)
+  Status: ok
+  Return code: 0
+  Message: None
+  User time: 354.84300025273114
+  System time: None
+  Wallclock time: None
+  Termination condition: optimal
+  Termination message: None
+Solution:
+- number of solutions: 0
+  number of solutions displayed: 0
+
+INFO:pyomo.util.infeasible:CONSTR _pyomo_gdp_bigm_reformulation.relaxedDisjuncts[8].transformedConstraints['condenser_heat_duty[A/B]_0',A/B,lb]: 0.0 </= -9.074341505765915e-06
+INFO:pyomo.util.infeasible:CONSTR _pyomo_gdp_bigm_reformulation.relaxedDisjuncts[10].transformedConstraints['reboiler_heat_duty[A/B]_2',A/B,lb]: 0.0 </= -2.878950908780098e-06
+
+================================
+NETWORK OVERVIEW
+================================
+3 Component GDP Distillation Model
+*All Flow Units in [kmol/hr]*
+
+System Objective: $705,730.35
+
+CAPEX: $258,213.29
+OPEX: $682,793.92
+
+System Feed Total: ABC (250.0 [kmol/hr])
+Feed A 125.0
+Feed B 100.0
+Feed C 25.0
+
+Active Separation Tasks
+================================
+A/B
+AB/C
+
+Column A/B:
+Column cost $128,308.44
+Number of trays: 17.0
+Column height: 12.1 [m]
+Column diameter: 1.4 [m^2]
+================================
+Feed flow (FT): 221.2241
+Distillate (DT): 123.5007
+Bottoms (BT): 97.7234
+
+Column AB/C:
+Column cost $40,733.08
+Number of trays: 8.0
+Column height: 2.6 [m]
+Column diameter: 0.7 [m^2]
+================================
+Feed flow (FT): 250.0000
+Distillate (DT): 221.2241
+Bottoms (BT): 28.7759
+
+================================
+DETAILED NETWORK VIEW
+================================
+
+
+================================
+Separation task A/B is active
+
+Total Flows for Column A/B [kmol/hr]:
+Feed flow (FT): 221.2241
+Distillate (DT): 123.5007
+Bottoms (BT): 97.7234
+
+================================
+Component Flows for Column A/B
+Feed Component Flows:
+Feed (A): 125.0000
+Feed (B): 95.0000
+Feed (C): 1.2241
+
+Distillate Component Flows:
+Distillate (A): 118.7507
+Distillate (B): 4.7500
+Distillate (C): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 6.2493
+Bottoms (B): 90.2500
+Bottoms (C): 1.2241
+
+Internal Flows of Column
+Vr 445.6
+Lr 322.1
+Vs 164.8
+Ls 262.5
+
+================================
+Separation task AB/C is active
+
+Total Flows for Column AB/C [kmol/hr]:
+Feed flow (FT): 250.0000
+Distillate (DT): 221.2241
+Bottoms (BT): 28.7759
+
+================================
+Component Flows for Column AB/C
+Feed Component Flows:
+Feed (A): 125.0000
+Feed (B): 100.0000
+Feed (C): 25.0000
+
+Distillate Component Flows:
+Distillate (A): 125.0000
+Distillate (B): 95.0000
+Distillate (C): 1.2241
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 5.0000
+Bottoms (C): 23.7759
+
+Internal Flows of Column
+Vr 280.8
+Lr 59.62
+Vs 39.6
+Ls 68.37
+
+================================
+HEAT EXCHANGERS
+================================
+
+Final Product Heat Exchangers
+
+Final Prodcut A has associated condenser
+Capital cost of condenser: $46,752.43
+Exchanger area: 343.83 [m^2]
+Heat Duty: 13,753.2 [10^3 kJ/hr]
+
+Final Prodcut B has associated reboiler
+Capital cost of reboiler: $18,451.93
+Exchanger area: 33.63 [m^2]
+Heat Duty: 5,448.3 [10^3 kJ/hr]
+
+Final Prodcut C has associated reboiler
+Capital cost of reboiler: $14,313.42
+Exchanger area: 8.60 [m^2]
+Heat Duty: 1,392.4 [10^3 kJ/hr]
+
+Intermedaite Product Heat Exchangers
+
+Final heat exchanger active: A True
+Final heat exchanger active: B True
+Final heat exchanger active: C True
+
+Intermediate heat exchanger active: AB False
+Intermediate heat exchanger active: BC False
+
+Task (A/B): True
+Task (A/BC): False
+Task (AB/C): True
+Task (B/C): False

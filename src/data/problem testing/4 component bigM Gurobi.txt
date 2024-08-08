@@ -1,0 +1,305 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2025-06-24
+Read LP format model from file C:\Users\kevin\AppData\Local\Temp\tmppj114qct.pyomo.lp
+Reading time = 0.03 seconds
+x1: 1167 rows, 478 columns, 2990 nonzeros
+Set parameter NumericFocus to value 2
+Set parameter NonConvex to value 2
+Gurobi Optimizer version 11.0.2 build v11.0.2rc0 (win64 - Windows 11.0 (22631.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i5-1235U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Optimize a model with 1167 rows, 478 columns and 2990 nonzeros
+Model fingerprint: 0x356c7283
+Model has 404 quadratic constraints
+Variable types: 428 continuous, 50 integer (50 binary)
+Coefficient statistics:
+  Matrix range     [6e-03, 1e+08]
+  QMatrix range    [5e-02, 4e+01]
+  QLMatrix range   [2e-01, 7e+10]
+  Objective range  [9e-02, 1e+00]
+  Bounds range     [8e-02, 1e+10]
+  RHS range        [1e+00, 1e+08]
+  QRHS range       [2e-03, 7e+10]
+Warning: Model contains large bounds
+Warning: Quadratic constraints contain large coefficients on linear part
+Warning: Model contains large rhs on quadratic constraints
+Presolve removed 821 rows and 145 columns
+Presolve time: 0.04s
+Presolved: 1635 rows, 751 columns, 4458 nonzeros
+Presolved model has 30 SOS constraint(s)
+Presolved model has 109 quadratic constraint(s)
+Presolved model has 332 bilinear constraint(s)
+
+Solving non-convex MIQCP
+
+Variable types: 721 continuous, 30 integer (30 binary)
+Found heuristic solution: objective 833405.80455
+
+Root relaxation: objective 6.002777e+03, 168 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 6002.77721    0   59 833405.805 6002.77721  99.3%     -    0s
+     0     0 6002.77721    0   44 833405.805 6002.77721  99.3%     -    0s
+     0     0 6002.77721    0   44 833405.805 6002.77721  99.3%     -    0s
+     0     0 11476.3311    0   46 833405.805 11476.3311  98.6%     -    0s
+     0     0 86638.0183    0   50 833405.805 86638.0183  89.6%     -    0s
+     0     0 173411.930    0   84 833405.805 173411.930  79.2%     -    0s
+     0     0 173411.930    0   84 833405.805 173411.930  79.2%     -    0s
+     0     0 270732.472    0   86 833405.805 270732.472  67.5%     -    0s
+     0     0 587169.081    0  129 833405.805 587169.081  29.5%     -    0s
+     0     2 587169.081    0  129 833405.805 587169.081  29.5%     -    0s
+H  763   470                    833405.80405 587169.081  29.5%  18.6    3s
+H  769   451                    812279.88092 587169.081  27.7%  20.7    3s
+H  777   435                    812279.88082 708289.831  12.8%  20.9    4s
+H  786   419                    812279.88045 810660.291  0.20%  21.0    4s
+
+Cutting planes:
+  RLT: 9
+
+Explored 790 nodes (18106 simplex iterations) in 4.56 seconds (1.91 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 4: 812280 812280 833406 833406
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 8.122798804483e+05, best bound 8.122236778010e+05, gap 0.0069%
+
+Problem:
+- Name: x1
+  Lower bound: 812223.6778009805
+  Upper bound: 812279.8804483376
+  Number of objectives: 1
+  Number of constraints: 1571
+  Number of variables: 478
+  Number of binary variables: 50
+  Number of integer variables: 50
+  Number of continuous variables: 428
+  Number of nonzeros: 2990
+  Sense: minimize
+Solver:
+- Status: ok
+  Return code: 0
+  Message: Model was solved to optimality (subject to tolerances), and an optimal solution is available.
+  Termination condition: optimal
+  Termination message: Model was solved to optimality (subject to tolerances), and an optimal solution is available.
+  Wall time: 4.560999870300293
+  Error rc: 0
+  Time: 4.880589008331299
+Solution:
+- number of solutions: 0
+  number of solutions displayed: 0
+
+
+================================
+NETWORK OVERVIEW
+================================
+4 Component GDP Distillation Model
+*All Flow Units in [kmol/hr]*
+
+System Objective: $812,279.88
+
+CAPEX: $528,571.88
+OPEX: $765,328.20
+
+System Feed Total: ABCD (250.0 [kmol/hr])
+Feed A 62.5
+Feed B 62.5
+Feed C 62.5
+Feed D 62.5
+
+Active Separation Tasks
+================================
+A/B
+AB/CD
+C/D
+
+Column A/B:
+Column cost $105,688.32
+Number of trays: 22.0
+Column height: 12.2 [m]
+Column diameter: 1.2 [m^2]
+================================
+Feed flow (FT): 125.0000
+Distillate (DT): 62.3438
+Bottoms (BT): 62.6563
+
+Column AB/CD:
+Column cost $169,373.24
+Number of trays: 17.0
+Column height: 13.9 [m]
+Column diameter: 1.7 [m^2]
+================================
+Feed flow (FT): 250.0000
+Distillate (DT): 125.0000
+Bottoms (BT): 125.0000
+
+Column C/D:
+Column cost $133,458.34
+Number of trays: 9.0
+Column height: 8.1 [m]
+Column diameter: 1.9 [m^2]
+================================
+Feed flow (FT): 125.0000
+Distillate (DT): 62.6562
+Bottoms (BT): 62.3438
+
+================================
+DETAILED NETWORK VIEW
+================================
+
+
+================================
+Separation task A/B is active
+
+Total Flows for Column A/B [kmol/hr]:
+Feed flow (FT): 125.0000
+Distillate (DT): 62.3438
+Bottoms (BT): 62.6563
+
+================================
+Component Flows for Column A/B
+Feed Component Flows:
+Feed (A): 62.5000
+Feed (B): 59.3750
+Feed (C): 3.1250
+Feed (D): 0.0000
+
+Distillate Component Flows:
+Distillate (A): 59.3750
+Distillate (B): 2.9688
+Distillate (C): 0.0000
+Distillate (D): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 3.1250
+Bottoms (B): 56.4063
+Bottoms (C): 3.1250
+Bottoms (D): 0.0000
+
+Internal Flows of Column
+Vr 361.9
+Lr 299.6
+Vs 102.8
+Ls 165.5
+
+================================
+Separation task AB/CD is active
+
+Total Flows for Column AB/CD [kmol/hr]:
+Feed flow (FT): 250.0000
+Distillate (DT): 125.0000
+Bottoms (BT): 125.0000
+
+================================
+Component Flows for Column AB/CD
+Feed Component Flows:
+Feed (A): 62.5000
+Feed (B): 62.5000
+Feed (C): 62.5000
+Feed (D): 62.5000
+
+Distillate Component Flows:
+Distillate (A): 62.5000
+Distillate (B): 59.3750
+Distillate (C): 3.1250
+Distillate (D): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 3.1250
+Bottoms (C): 59.3750
+Bottoms (D): 62.5000
+
+Internal Flows of Column
+Vr 259.1
+Lr 134.1
+Vs 202.9
+Ls 327.9
+
+================================
+Separation task C/D is active
+
+Total Flows for Column C/D [kmol/hr]:
+Feed flow (FT): 125.0000
+Distillate (DT): 62.6562
+Bottoms (BT): 62.3438
+
+================================
+Component Flows for Column C/D
+Feed Component Flows:
+Feed (A): 0.0000
+Feed (B): 3.1250
+Feed (C): 59.3750
+Feed (D): 62.5000
+
+Distillate Component Flows:
+Distillate (A): 0.0000
+Distillate (B): 3.1250
+Distillate (C): 56.4063
+Distillate (D): 3.1250
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 0.0000
+Bottoms (C): 2.9688
+Bottoms (D): 59.3750
+
+Internal Flows of Column
+Vr 70.08
+Lr 7.424
+Vs 273.0
+Ls 335.4
+
+================================
+HEAT EXCHANGERS
+================================
+
+Final Product Heat Exchangers
+
+Final Product A has associated condenser
+Capital cost of condenser: $40,763.85
+Exchanger area: 279.44 [m^2]
+Heat Duty: 11,177.5 [10^3 kJ/hr]
+
+Final Product B has associated reboiler
+Capital cost of reboiler: $16,385.04
+Exchanger area: 21.06 [m^2]
+Heat Duty: 3,411.8 [10^3 kJ/hr]
+
+Final Product C has associated condenser
+Capital cost of condenser: $17,305.27
+Exchanger area: 62.25 [m^2]
+Heat Duty: 2,490.1 [10^3 kJ/hr]
+
+Final Product D has associated reboiler
+Capital cost of reboiler: $23,071.83
+Exchanger area: 62.24 [m^2]
+Heat Duty: 10,082.9 [10^3 kJ/hr]
+
+Intermediate Product Heat Exchangers
+
+Final heat exchanger active: A True
+Final heat exchanger active: B True
+Final heat exchanger active: C True
+Final heat exchanger active: D True
+
+Intermediate heat exchanger active: AB False
+Intermediate heat exchanger active: ABC False
+Intermediate heat exchanger active: BC False
+Intermediate heat exchanger active: BCD False
+Intermediate heat exchanger active: CD False
+
+Task (A/B): True
+Task (A/BC): False
+Task (A/BCD): False
+Task (AB/C): False
+Task (AB/CD): True
+Task (ABC/D): False
+Task (B/C): False
+Task (B/CD): False
+Task (BC/D): False
+Task (C/D): True

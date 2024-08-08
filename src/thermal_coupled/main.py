@@ -24,8 +24,8 @@ from thermal_coupled.therm_dist import build_model
 
 
 # specify number of components and data file name
-n = 6
-data_file_name = '6_comp_test.xlsx'
+n = 5
+data_file_name = '5_comp_hydrocarbon.xlsx'
 
 # import problem data for system and relevant species to data object
 hydrocarbon_data = Data(data_file_name)
@@ -55,14 +55,12 @@ mbigm.apply_to(model)
 
 # MODEL ANALYSIS
 # =================================================================
-print(report_statistics(model))
 
 print('Model size after transformation:')
 print(build_model_size_report(model))
 
 print()
-print(f'Model type after transformation: {get_model_type(model)}')
-
+# print(f'Model type after transformation: {get_model_type(model)}')
 
 solver = pyo.SolverFactory('gurobi')
 

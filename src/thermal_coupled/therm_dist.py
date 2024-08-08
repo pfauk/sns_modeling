@@ -6,17 +6,20 @@ Superstructure generation for separation network done in separate script
 
 Includes disjunction definitions for intermediate and final product heat exchangers
 
-Solvers are accessed through GAMS
+Current problem is reformulated to be an MIQCP to solve with Gurobi
 
-Reference:
+References:
 Caballero, J. A., & Grossmann, I. E. (2001). Generalized Disjunctive Programming Model
 for the Optimal Synthesis of Thermally Linked Distillation Columns. Industrial & Engineering
 Chemistry Research, 40(10), 2260-2274. https://doi.org/10.1021/ie000761a
 
+Caballero, J. A., & Grossmann, I. E. (2004). Design of distillation sequences: From conventional to
+fully thermally coupled distillation systems.Computers & Chemical Engineering,
+28(11), 2307–2329. https://doi.org/10.1016/j.compchemeng.2004.04.010
+
 """
 
 from math import pi
-import numpy as np
 import pyomo.environ as pyo
 from pyomo.gdp import Disjunct
 
@@ -74,8 +77,8 @@ def build_model(stn, data)->pyo.ConcreteModel:
     Hvap = data.Hvap
 
     # utility cost coefficients
-    C_cw = 1.5e3 / 1e6  # cost of cooling utilities [$/kJ]
-    C_h = 5.0e3 / 1e6  # cost of heating utilities [$/kJ]
+    C_cw = data.C_cw  # cost of cooling utilities [$/kJ]
+    C_h = data.C_h  # cost of heating utilities [$/kJ]
     op_time = 24 * 360  # assumed hours per year of column operating given some maintenance time
 
     # for use in calculating total annualized cost
@@ -87,7 +90,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
 
     # INDEX SETS
     # ================================================
-    m.Feed = pyo.Set(initialize=stn.FEED,
+    m.FEED = pyo.Set(initialize=stn.FEED,
                      doc='feed mixture to system')
 
     m.COMP = pyo.Set(initialize=stn.COMP,
@@ -135,7 +138,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
     m.ISTRIP_m = pyo.Set(m.STATES, initialize=stn.ISTRIPs,
                          doc="ISTRIP_m = {task t that produces intermediate state m from a stripping section}")
 
-    m.roots = pyo.Set(initialize=stn.r, doc="Underwood roots")
+    m.ROOTS = pyo.Set(initialize=stn.r, doc="Underwood roots")
 
     m.RUA = pyo.Set(m.TASKS, initialize=stn.RUA,
                     doc="active Underwood roots in column t")
@@ -147,7 +150,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Total molar flow rate entering column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/2
     )
 
@@ -156,7 +159,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Component molar flow rate of species i entering column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/N
     )
 
@@ -164,7 +167,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Total distillate molar flow rate of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/2
     )
 
@@ -173,7 +176,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Component distillate molar flow rate of species i for column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/N
     )
 
@@ -181,7 +184,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Total bottoms flow rate of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/2
     )
 
@@ -190,7 +193,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Component bottoms flow rate of species i for column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/N
     )
 
@@ -198,7 +201,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Molar flow rate of vapor in the rectifying section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/(2*N)
     )
 
@@ -206,7 +209,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Molar flow rate of Liquid in the rectifying section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/(2*N)
     )
 
@@ -214,7 +217,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Molar flow rate of vapor in the stripping section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/(2*N)
     )
 
@@ -222,7 +225,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Molar flow rate of Liquid in the stripping section of column t [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/(2*N)
     )
     
@@ -231,13 +234,13 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.TASKS,
         doc="Max molar vapor flow rate for 2 column sections; V_max == max{Vr, Vs} [kmol/hr]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10*F0),
+        bounds=(0, 20*F0),
         initialize=F0/(2*N)
     )
 
     m.rud = pyo.Var(
         m.TASKS,
-        m.roots,
+        m.ROOTS,
         doc="possible active Underwood root (r) in task t",
         within=pyo.NonNegativeReals,
     )
@@ -259,7 +262,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
     m.z = pyo.Var(
         m.COMP,
         m.TASKS,
-        m.roots,
+        m.ROOTS,
         doc='Intermediate variable for Underwood equations',
     )
     
@@ -316,7 +319,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.ISTATE,
         doc="heat exchange area of reboiler associated with intermediate product [m^2]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 100000),
+        bounds=(0, 1e6),
         initialize=100
     )
 
@@ -324,7 +327,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.ISTATE,
         doc="heat exchange area of condenser associated with intermediate product [m^2]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 100000),
+        bounds=(0, 1e6),
         initialize=100
     )
 
@@ -332,7 +335,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.COMP,
         doc="Capital cost of heat exchanger associated with final product i [$]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10000000),
+        bounds=(0, 1e8),
         initialize=100
     )
 
@@ -340,7 +343,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.COMP,
         doc="Capital cost of heat exchanger associated with final product i [$]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10000000),
+        bounds=(0, 1e8),
         initialize=10000
     )
 
@@ -348,7 +351,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.ISTATE,
         doc="Capital cost of heat exchanger associated with intermediate state s [$]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10000000),
+        bounds=(0, 1e8),
         initialize=10000
     )
 
@@ -356,7 +359,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         m.ISTATE,
         doc="Capital cost of heat exchanger associated with intermediate state s [$]",
         within=pyo.NonNegativeReals,
-        bounds=(0, 10000000),
+        bounds=(0, 1e8),
         initialize=10000
     )
 
@@ -419,14 +422,14 @@ def build_model(stn, data)->pyo.ConcreteModel:
     m.CAPEX = pyo.Var(
         doc="Total capital expense as sum of bare module purchase prices",
         within=pyo.NonNegativeReals,
-        bounds=(0, 100000000),
+        bounds=(0, 1e10),
         initialize=10000,
     )
 
     m.OPEX = pyo.Var(
         doc="Total system operating expenses as sum of reboiler and condenser expenses",
         within=pyo.NonNegativeReals,
-        bounds=(0, 100000000),
+        bounds=(0, 1e10),
         initialize=10000,
     )
 
@@ -473,7 +476,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
     @m.Constraint(m.STATES)
     def total_mb_between_cols(m, s):
         """Constraint links the total molar outflows of distillate and bottoms of one column to the feed of another"""
-        if s in m.Feed:
+        if s in m.FEED:
             return pyo.Constraint.Skip
 
         if s in m.TS_s:
@@ -496,7 +499,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
     @m.Constraint(m.STATES, m.COMP)
     def component_mb_between_cols(m, s, i):
         """Constraint links the component molar outflows of distillate and bottoms of one column to the feed of another"""
-        if s in m.Feed:
+        if s in m.FEED:
             return pyo.Constraint.Skip
 
         if s in m.TS_s:
@@ -1026,7 +1029,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
             None. Function adds constraints to the model but does not return a value
         """
 
-        # Constraints for heat exchangers associated with final states produced by a rectifying section (reboilers)
+        # Constraints for heat exchangers associated with final states produced by a rectifying section (condensers)
         if i in m.PRE_i:
             rect_tasks = m.PRE_i[i]
 
@@ -1040,7 +1043,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
                 """final product heat exchanger for a stream from a rectifying section is not selected"""
                 return m.Qcond[t] == 0
 
-        # Constraints for heat exchangers associated with final states produced by a stripping section (condensers)
+        # Constraints for heat exchangers associated with final states produced by a stripping section (reboilers)
         if i in m.PST_i:
             strip_tasks = m.PST_i[i]
 
@@ -1100,12 +1103,12 @@ def build_model(stn, data)->pyo.ConcreteModel:
         delta_LM_T_cond = 200
         delta_LM_T_reb = 270
 
-        # # if the final state is produced by a rectifying section, will have associated condenser
+        # if the final state is produced by a rectifying section, will have associated condenser
         if i in m.PRE_i:
 
             @heat_exchanger.Constraint()
             def condenser_area(_):
-                Qcon_inter = (sum(m.Qcond[t] for t in m.PRE_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
+                Qcon_inter = (sum(m.Qcond[t] for t in m.PRE_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/sec]
                 return m.area_final_condenser[i] == Qcon_inter / (Ucond * delta_LM_T_cond)
 
             @heat_exchanger.Constraint()
@@ -1122,7 +1125,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
 
             @heat_exchanger.Constraint()
             def reboiler_area(_):
-                Qreb_inter = (sum(m.Qreb[t] for t in m.PST_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/se0c]
+                Qreb_inter = (sum(m.Qreb[t] for t in m.PST_i[i]) * 1000)  # multiply by 1000 for unit conversion to [J/sec]
                 return m.area_final_reboiler[i] == Qreb_inter / (Ureb * delta_LM_T_reb)
 
             @heat_exchanger.Constraint()
@@ -1372,7 +1375,7 @@ def build_model(stn, data)->pyo.ConcreteModel:
         else:
             return pyo.Constraint.Skip
 
-    # Logic 2 and Logic 3: A given state can be produced by at most 2 tasks; one must
+    # Logic 2 and Logic 3: A given state can be produced by at most 2 tasks: one must
     # be from a rectifying section and one must be from a stripping section
 
     @m.Constraint(m.STATES,
@@ -1506,6 +1509,9 @@ def build_model(stn, data)->pyo.ConcreteModel:
     # OBJECTIVE
     # ================================================
     # multiply sum of bare module capital expenses by capital recovery factor (CRF) to get annualized cost
+
+    # testing superstructure variations by fixing some things as true or false
+    # m.column['A/BC'].indicator_var.fix(True)
 
     m.obj = pyo.Objective(expr= CRF * m.CAPEX + m.OPEX, sense=pyo.minimize)
 

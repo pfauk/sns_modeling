@@ -1,0 +1,243 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2025-06-24
+Read LP format model from file C:\Users\kevin\AppData\Local\Temp\tmp_fkszxwn.pyomo.lp
+Reading time = 0.01 seconds
+x1: 454 rows, 177 columns, 1082 nonzeros
+Set parameter NumericFocus to value 2
+Set parameter NonConvex to value 2
+Gurobi Optimizer version 11.0.2 build v11.0.2rc0 (win64 - Windows 11.0 (22631.2))
+
+CPU model: 12th Gen Intel(R) Core(TM) i5-1235U, instruction set [SSE2|AVX|AVX2]
+Thread count: 10 physical cores, 12 logical processors, using up to 12 threads
+
+Optimize a model with 454 rows, 177 columns and 1082 nonzeros
+Model fingerprint: 0xc9cbcf6c
+Model has 128 quadratic constraints
+Variable types: 150 continuous, 27 integer (27 binary)
+Coefficient statistics:
+  Matrix range     [6e-03, 1e+08]
+  QMatrix range    [5e-02, 4e+01]
+  QLMatrix range   [4e-01, 7e+10]
+  Objective range  [9e-02, 1e+00]
+  Bounds range     [1e-01, 1e+10]
+  RHS range        [1e+00, 1e+08]
+  QRHS range       [2e-03, 7e+10]
+Warning: Model contains large bounds
+Warning: Quadratic constraints contain large coefficients on linear part
+Warning: Model contains large rhs on quadratic constraints
+Presolve removed 333 rows and 70 columns
+Presolve time: 0.00s
+Presolved: 489 rows, 225 columns, 1318 nonzeros
+Presolved model has 12 SOS constraint(s)
+Presolved model has 30 quadratic constraint(s)
+Presolved model has 94 bilinear constraint(s)
+
+Solving non-convex MIQCP
+
+Variable types: 216 continuous, 9 integer (9 binary)
+Found heuristic solution: objective 705665.80142
+
+Root relaxation: objective 4.001851e+03, 62 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 4001.85148    0   17 705665.801 4001.85148  99.4%     -    0s
+     0     0 165391.089    0   19 705665.801 165391.089  76.6%     -    0s
+     0     0 165391.089    0   18 705665.801 165391.089  76.6%     -    0s
+     0     0 290052.072    0   49 705665.801 290052.072  58.9%     -    0s
+     0     0 290223.940    0   48 705665.801 290223.940  58.9%     -    0s
+     0     0 299597.015    0   49 705665.801 299597.015  57.5%     -    0s
+     0     0 483221.696    0   48 705665.801 483221.696  31.5%     -    0s
+     0     0 634049.997    0   48 705665.801 634049.997  10.1%     -    0s
+     0     0 650505.705    0   47 705665.801 650505.705  7.82%     -    0s
+     0     2 650505.705    0   47 705665.801 650505.705  7.82%     -    0s
+* 2887   148              34    705665.77123 705664.862  0.00%   5.9    1s
+* 2935   149              36    705665.76918 705664.923  0.00%   5.9    1s
+
+Cutting planes:
+  Implied bound: 65
+  MIR: 1
+  Flow cover: 7
+  RLT: 22
+  Relax-and-lift: 4
+  PSD: 3
+
+Explored 2985 nodes (18129 simplex iterations) in 1.50 seconds (0.39 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 3: 705666 705666 705666
+
+Optimal solution found (tolerance 1.00e-04)
+Warning: max constraint violation (1.8061e-06) exceeds tolerance
+Best objective 7.056657691774e+05, best bound 7.056650966860e+05, gap 0.0001%
+
+Problem:
+- Name: x1
+  Lower bound: 705665.0966860232
+  Upper bound: 705665.7691774081
+  Number of objectives: 1
+  Number of constraints: 582
+  Number of variables: 177
+  Number of binary variables: 27
+  Number of integer variables: 27
+  Number of continuous variables: 150
+  Number of nonzeros: 1082
+  Sense: minimize
+Solver:
+- Status: ok
+  Return code: 0
+  Message: Model was solved to optimality (subject to tolerances), and an optimal solution is available.
+  Termination condition: optimal
+  Termination message: Model was solved to optimality (subject to tolerances), and an optimal solution is available.
+  Wall time: 1.495999813079834
+  Error rc: 0
+  Time: 2.045297384262085
+Solution:
+- number of solutions: 0
+  number of solutions displayed: 0
+
+INFO:pyomo.util.infeasible:CONSTR _pyomo_gdp_bigm_reformulation.relaxedDisjuncts[4].transformedConstraints['intermediate_var_con[C,r2]_34',(C,r2),lb]: 1.0 </= 0.9999981938862654
+
+================================
+NETWORK OVERVIEW
+================================
+3 Component GDP Distillation Model
+*All Flow Units in [kmol/hr]*
+
+System Objective: $705,665.77
+
+CAPEX: $258,257.27
+OPEX: $682,725.44
+
+System Feed Total: ABC (250.0 [kmol/hr])
+Feed A 125.0
+Feed B 100.0
+Feed C 25.0
+
+Active Separation Tasks
+================================
+A/B
+AB/C
+
+Column A/B:
+Column cost $128,340.43
+Number of trays: 17.0
+Column height: 12.1 [m]
+Column diameter: 1.4 [m^2]
+================================
+Feed flow (FT): 221.2500
+Distillate (DT): 123.5000
+Bottoms (BT): 97.7500
+
+Column AB/C:
+Column cost $40,747.10
+Number of trays: 8.0
+Column height: 2.6 [m]
+Column diameter: 0.7 [m^2]
+================================
+Feed flow (FT): 250.0000
+Distillate (DT): 221.2500
+Bottoms (BT): 28.7500
+
+================================
+DETAILED NETWORK VIEW
+================================
+
+
+================================
+Separation task A/B is active
+
+Total Flows for Column A/B [kmol/hr]:
+Feed flow (FT): 221.2500
+Distillate (DT): 123.5000
+Bottoms (BT): 97.7500
+
+================================
+Component Flows for Column A/B
+Feed Component Flows:
+Feed (A): 125.0000
+Feed (B): 95.0000
+Feed (C): 1.2500
+
+Distillate Component Flows:
+Distillate (A): 118.7500
+Distillate (B): 4.7500
+Distillate (C): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 6.2500
+Bottoms (B): 90.2500
+Bottoms (C): 1.2500
+
+Internal Flows of Column
+Vr 445.5
+Lr 322.0
+Vs 164.8
+Ls 262.6
+
+================================
+Separation task AB/C is active
+
+Total Flows for Column AB/C [kmol/hr]:
+Feed flow (FT): 250.0000
+Distillate (DT): 221.2500
+Bottoms (BT): 28.7500
+
+================================
+Component Flows for Column AB/C
+Feed Component Flows:
+Feed (A): 125.0000
+Feed (B): 100.0000
+Feed (C): 25.0000
+
+Distillate Component Flows:
+Distillate (A): 125.0000
+Distillate (B): 95.0000
+Distillate (C): 1.2500
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 5.0000
+Bottoms (C): 23.7500
+
+Internal Flows of Column
+Vr 280.7
+Lr 59.46
+Vs 39.68
+Ls 68.43
+
+================================
+HEAT EXCHANGERS
+================================
+
+Final Product Heat Exchangers
+
+Final Prodcut A has associated condenser
+Capital cost of condenser: $46,745.97
+Exchanger area: 343.76 [m^2]
+Heat Duty: 13,750.3 [10^3 kJ/hr]
+
+Final Prodcut B has associated reboiler
+Capital cost of reboiler: $18,453.49
+Exchanger area: 33.64 [m^2]
+Heat Duty: 5,449.9 [10^3 kJ/hr]
+
+Final Prodcut C has associated reboiler
+Capital cost of reboiler: $14,316.28
+Exchanger area: 8.61 [m^2]
+Heat Duty: 1,395.3 [10^3 kJ/hr]
+
+Intermedaite Product Heat Exchangers
+
+Final heat exchanger active: A True
+Final heat exchanger active: B True
+Final heat exchanger active: C True
+
+Intermediate heat exchanger active: AB False
+Intermediate heat exchanger active: BC False
+
+Task (A/B): True
+Task (A/BC): False
+Task (AB/C): True
+Task (B/C): False
