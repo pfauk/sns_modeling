@@ -3,14 +3,14 @@
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
         None :     1 :    Any :    3 : {'A', 'B', 'C'}
+    FEED : feed mixture to system
+        Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain : Size : Members
+        None :     1 :    Any :    1 : {'ABC',}
     FS_F : FS_F = {Columns whose feed is the initial mixture}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
         None :     1 :    Any :    2 : {'A/BC', 'AB/C'}
-    Feed : feed mixture to system
-        Size=1, Index=None, Ordered=Insertion
-        Key  : Dimen : Domain : Size : Members
-        None :     1 :    Any :    1 : {'ABC',}
     HK : heavy key (HK) component in a given separation task
         Size=4, Index=TASKS, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -46,13 +46,17 @@
         Size=2, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           B :     1 :    Any :    1 : {'A/B',}
-          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
+          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
     RECT_s : RECT_s = {Tasks t that produces state s by a rectifying section}
         Size=3, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           A :     1 :    Any :    2 : {'A/BC', 'A/B'}
          AB :     1 :    Any :    1 : {'AB/C',}
           B :     1 :    Any :    1 : {'B/C',}
+    ROOTS : Underwood roots
+        Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain : Size : Members
+        None :     1 :    Any :    2 : {'r1', 'r2'}
     RUA : active Underwood roots in column t
         Size=4, Index=TASKS, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -69,7 +73,7 @@
         Key : Dimen : Domain : Size : Members
           B :     1 :    Any :    1 : {'A/B',}
          BC :     1 :    Any :    1 : {'A/BC',}
-          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
+          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
     ST_s : ST_s = {tasks t that are able to produce state s}
         Size=5, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
@@ -77,7 +81,7 @@
          AB :     1 :    Any :    1 : {'AB/C',}
           B :     1 :    Any :    2 : {'B/C', 'A/B'}
          BC :     1 :    Any :    1 : {'A/BC',}
-          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
+          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
     TASKS : TASKS {t|t is a separation task}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -88,22 +92,18 @@
          AB :     1 :    Any :    1 : {'A/B',}
         ABC :     1 :    Any :    2 : {'A/BC', 'AB/C'}
          BC :     1 :    Any :    1 : {'B/C',}
-    roots : Underwood roots
-        Size=1, Index=None, Ordered=Insertion
-        Key  : Dimen : Domain : Size : Members
-        None :     1 :    Any :    2 : {'r1', 'r2'}
 
 7 Param Declarations
     F0 : System inlet molar flow rate [kmol/hr]
         Size=1, Index=None, Domain=Any, Default=None, Mutable=False
         Key  : Value
-        None : 100.0
+        None : 250.0
     F0_comp : System inlet molar flow rate for each species i [kmol/hr]
         Size=3, Index=COMP, Domain=Any, Default=None, Mutable=False
         Key : Value
-          A :  50.0
-          B :  40.0
-          C :  10.0
+          A : 125.0
+          B : 100.0
+          C :  25.0
     Hvap : vaporization enthalpy for each species [KJ/mol]
         Size=3, Index=COMP, Domain=Any, Default=None, Mutable=False
         Key : Value
@@ -134,7 +134,7 @@
         AB/C : 2.943180269791525
          B/C : 2.943180269791525
 
-34 Var Declarations
+32 Var Declarations
     Area : Transversal area of column t [m^2]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -144,52 +144,52 @@
          B/C :     0 :    10 :  1000 : False : False : NonNegativeReals
     B : Component bottoms flow rate of species i for column t [kmol/hr]
         Size=12, Index=COMP*TASKS
-        Key           : Lower : Value              : Upper  : Fixed : Stale : Domain
-         ('A', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('A', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('A', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('A', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('B', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('B', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('B', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('B', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('C', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('C', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('C', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('C', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
+        Key           : Lower : Value             : Upper  : Fixed : Stale : Domain
+         ('A', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('A', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('A', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('A', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('B', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('B', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('B', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('B', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('C', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('C', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('C', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('C', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
     BT : Total bottoms flow rate of column t [kmol/hr]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper  : Fixed : Stale : Domain
-         A/B :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
+         A/B :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
     CAPEX : Total capital expense as sum of bare module purchase prices
         Size=1, Index=None
-        Key  : Lower : Value : Upper     : Fixed : Stale : Domain
-        None :     0 : 10000 : 100000000 : False : False : NonNegativeReals
+        Key  : Lower : Value : Upper         : Fixed : Stale : Domain
+        None :     0 : 10000 : 10000000000.0 : False : False : NonNegativeReals
     D : Component distillate molar flow rate of species i for column t [kmol/hr]
         Size=12, Index=COMP*TASKS
-        Key           : Lower : Value              : Upper  : Fixed : Stale : Domain
-         ('A', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('A', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('A', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('A', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('B', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('B', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('B', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('B', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('C', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('C', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('C', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('C', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
+        Key           : Lower : Value             : Upper  : Fixed : Stale : Domain
+         ('A', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('A', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('A', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('A', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('B', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('B', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('B', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('B', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('C', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('C', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('C', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('C', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
     DT : Total distillate molar flow rate of column t [kmol/hr]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper  : Fixed : Stale : Domain
-         A/B :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
+         A/B :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
     Diameter : Diameter of column t [m]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -199,40 +199,40 @@
          B/C :     0 :    10 :    50 : False : False : NonNegativeReals
     F : Component molar flow rate of species i entering column t [kmol/hr]
         Size=12, Index=COMP*TASKS
-        Key           : Lower : Value              : Upper  : Fixed : Stale : Domain
-         ('A', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('A', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('A', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('A', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('B', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('B', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('B', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('B', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('C', 'A/B') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('C', 'A/BC') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-        ('C', 'AB/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
-         ('C', 'B/C') :     0 : 3.3333333333333335 : 1000.0 : False : False : NonNegativeReals
+        Key           : Lower : Value             : Upper  : Fixed : Stale : Domain
+         ('A', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('A', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('A', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('A', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('B', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('B', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('B', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('B', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('C', 'A/B') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('C', 'A/BC') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+        ('C', 'AB/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
+         ('C', 'B/C') :     0 : 8.333333333333334 : 5000.0 : False : False : NonNegativeReals
     FT : Total molar flow rate entering column t [kmol/hr]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper  : Fixed : Stale : Domain
-         A/B :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 :  50.0 : 1000.0 : False : False : NonNegativeReals
+         A/B :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 125.0 : 5000.0 : False : False : NonNegativeReals
     Lr : Molar flow rate of Liquid in the rectifying section of column t [kmol/hr]
         Size=4, Index=TASKS
-        Key  : Lower : Value              : Upper  : Fixed : Stale : Domain
-         A/B :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
+        Key  : Lower : Value             : Upper  : Fixed : Stale : Domain
+         A/B :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
     Ls : Molar flow rate of Liquid in the stripping section of column t [kmol/hr]
         Size=4, Index=TASKS
-        Key  : Lower : Value              : Upper  : Fixed : Stale : Domain
-         A/B :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
+        Key  : Lower : Value             : Upper  : Fixed : Stale : Domain
+         A/B :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
     Ntray : Number of trays in column t
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -242,8 +242,8 @@
          B/C :     0 :    15 :   100 : False : False : NonNegativeReals
     OPEX : Total system operating expenses as sum of reboiler and condenser expenses
         Size=1, Index=None
-        Key  : Lower : Value : Upper     : Fixed : Stale : Domain
-        None :     0 : 10000 : 100000000 : False : False : NonNegativeReals
+        Key  : Lower : Value : Upper         : Fixed : Stale : Domain
+        None :     0 : 10000 : 10000000000.0 : False : False : NonNegativeReals
     Qcond : condenser heat duty for column t [10^3 kJ/hr]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper    : Fixed : Stale : Domain
@@ -260,11 +260,11 @@
          B/C :     0 :  1000 : 10000000 : False : False : NonNegativeReals
     V_max : Max molar vapor flow rate for 2 column sections; V_max == max{Vr, Vs} [kmol/hr]
         Size=4, Index=TASKS
-        Key  : Lower : Value              : Upper  : Fixed : Stale : Domain
-         A/B :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
+        Key  : Lower : Value             : Upper  : Fixed : Stale : Domain
+         A/B :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
     Vol : volume of column t [m^3]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper  : Fixed : Stale : Domain
@@ -274,36 +274,18 @@
          B/C :     0 :   100 : 100000 : False : False : NonNegativeReals
     Vr : Molar flow rate of vapor in the rectifying section of column t [kmol/hr]
         Size=4, Index=TASKS
-        Key  : Lower : Value              : Upper  : Fixed : Stale : Domain
-         A/B :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
+        Key  : Lower : Value             : Upper  : Fixed : Stale : Domain
+         A/B :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
     Vs : Molar flow rate of vapor in the stripping section of column t [kmol/hr]
         Size=4, Index=TASKS
-        Key  : Lower : Value              : Upper  : Fixed : Stale : Domain
-         A/B :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        A/BC :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-        AB/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-         B/C :     0 : 1.6666666666666667 : 1000.0 : False : False : NonNegativeReals
-    W_C : Binary for if a heat exchanger is a condenser
-        Size=6, Index=STATES
-        Key : Lower : Value : Upper : Fixed : Stale : Domain
-          A :     0 :     0 :     1 : False : False : Binary
-         AB :     0 :     0 :     1 : False : False : Binary
-        ABC :     0 :     0 :     1 : False : False : Binary
-          B :     0 :     0 :     1 : False : False : Binary
-         BC :     0 :     0 :     1 : False : False : Binary
-          C :     0 :     0 :     1 : False : False : Binary
-    W_R : Binary for if a heat exchanger is a reboiler
-        Size=6, Index=STATES
-        Key : Lower : Value : Upper : Fixed : Stale : Domain
-          A :     0 :     0 :     1 : False : False : Binary
-         AB :     0 :     0 :     1 : False : False : Binary
-        ABC :     0 :     0 :     1 : False : False : Binary
-          B :     0 :     0 :     1 : False : False : Binary
-         BC :     0 :     0 :     1 : False : False : Binary
-          C :     0 :     0 :     1 : False : False : Binary
+        Key  : Lower : Value             : Upper  : Fixed : Stale : Domain
+         A/B :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        A/BC :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+        AB/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
+         B/C :     0 : 4.166666666666667 : 5000.0 : False : False : NonNegativeReals
     area_final_condenser : heat exchange area of condenser associated with final product [m^2]
         Size=3, Index=COMP
         Key : Lower : Value : Upper  : Fixed : Stale : Domain
@@ -318,14 +300,14 @@
           C :     0 :   100 : 100000 : False : False : NonNegativeReals
     area_intermediate_condenser : heat exchange area of condenser associated with intermediate product [m^2]
         Size=2, Index=ISTATE
-        Key : Lower : Value : Upper  : Fixed : Stale : Domain
-         AB :     0 :   100 : 100000 : False : False : NonNegativeReals
-         BC :     0 :   100 : 100000 : False : False : NonNegativeReals
+        Key : Lower : Value : Upper     : Fixed : Stale : Domain
+         AB :     0 :   100 : 1000000.0 : False : False : NonNegativeReals
+         BC :     0 :   100 : 1000000.0 : False : False : NonNegativeReals
     area_intermediate_reboiler : heat exchange area of reboiler associated with intermediate product [m^2]
         Size=2, Index=ISTATE
-        Key : Lower : Value : Upper  : Fixed : Stale : Domain
-         AB :     0 :   100 : 100000 : False : False : NonNegativeReals
-         BC :     0 :   100 : 100000 : False : False : NonNegativeReals
+        Key : Lower : Value : Upper     : Fixed : Stale : Domain
+         AB :     0 :   100 : 1000000.0 : False : False : NonNegativeReals
+         BC :     0 :   100 : 1000000.0 : False : False : NonNegativeReals
     column_cost : Capital cost of column t [$]
         Size=4, Index=TASKS
         Key  : Lower : Value     : Upper    : Fixed : Stale : Domain
@@ -342,16 +324,16 @@
          B/C :     0 : 100000.0 : 10000000 : False : False : NonNegativeReals
     final_condenser_cost : Capital cost of heat exchanger associated with final product i [$]
         Size=3, Index=COMP
-        Key : Lower : Value : Upper    : Fixed : Stale : Domain
-          A :     0 :   100 : 10000000 : False : False : NonNegativeReals
-          B :     0 :   100 : 10000000 : False : False : NonNegativeReals
-          C :     0 :   100 : 10000000 : False : False : NonNegativeReals
+        Key : Lower : Value : Upper       : Fixed : Stale : Domain
+          A :     0 :   100 : 100000000.0 : False : False : NonNegativeReals
+          B :     0 :   100 : 100000000.0 : False : False : NonNegativeReals
+          C :     0 :   100 : 100000000.0 : False : False : NonNegativeReals
     final_reboiler_cost : Capital cost of heat exchanger associated with final product i [$]
         Size=3, Index=COMP
-        Key : Lower : Value : Upper    : Fixed : Stale : Domain
-          A :     0 : 10000 : 10000000 : False : False : NonNegativeReals
-          B :     0 : 10000 : 10000000 : False : False : NonNegativeReals
-          C :     0 : 10000 : 10000000 : False : False : NonNegativeReals
+        Key : Lower : Value : Upper       : Fixed : Stale : Domain
+          A :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
+          B :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
+          C :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
     height : height of column t [m]
         Size=4, Index=TASKS
         Key  : Lower : Value : Upper : Fixed : Stale : Domain
@@ -361,16 +343,16 @@
          B/C :     0 :    15 :   200 : False : False : NonNegativeReals
     inter_condenser_cost : Capital cost of heat exchanger associated with intermediate state s [$]
         Size=2, Index=ISTATE
-        Key : Lower : Value : Upper    : Fixed : Stale : Domain
-         AB :     0 : 10000 : 10000000 : False : False : NonNegativeReals
-         BC :     0 : 10000 : 10000000 : False : False : NonNegativeReals
+        Key : Lower : Value : Upper       : Fixed : Stale : Domain
+         AB :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
+         BC :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
     inter_reboiler_cost : Capital cost of heat exchanger associated with intermediate state s [$]
         Size=2, Index=ISTATE
-        Key : Lower : Value : Upper    : Fixed : Stale : Domain
-         AB :     0 : 10000 : 10000000 : False : False : NonNegativeReals
-         BC :     0 : 10000 : 10000000 : False : False : NonNegativeReals
+        Key : Lower : Value : Upper       : Fixed : Stale : Domain
+         AB :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
+         BC :     0 : 10000 : 100000000.0 : False : False : NonNegativeReals
     rud : possible active Underwood root (r) in task t
-        Size=8, Index=TASKS*roots
+        Size=8, Index=TASKS*ROOTS
         Key            : Lower : Value : Upper : Fixed : Stale : Domain
          ('A/B', 'r1') :  5.01 :   7.5 :  9.99 : False : False : NonNegativeReals
          ('A/B', 'r2') :  1.01 :   3.0 :  4.99 : False : False : NonNegativeReals
@@ -381,7 +363,7 @@
          ('B/C', 'r1') :  5.01 :   7.5 :  9.99 : False : False : NonNegativeReals
          ('B/C', 'r2') :  1.01 :   3.0 :  4.99 : False : False : NonNegativeReals
     z : Intermediate variable for Underwood equations
-        Size=24, Index=COMP*TASKS*roots
+        Size=24, Index=COMP*TASKS*ROOTS
         Key                 : Lower                : Value               : Upper                : Fixed : Stale : Domain
          ('A', 'A/B', 'r1') :   0.2004008016032064 :   50.10020040080267 :   100.00000000000213 : False : False :  Reals
          ('A', 'A/B', 'r2') :  0.11123470522803114 : 0.15541775181561238 :   0.1996007984031936 : False : False :  Reals
@@ -461,13 +443,13 @@
         Key : Lower : Body                                                                 : Upper : Active
           B :  -Inf :                                     column[A/B].binary_indicator_var :   1.0 :   True
          BC :  -Inf :                                    column[A/BC].binary_indicator_var :   1.0 :   True
-          C :  -Inf : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
+          C :  -Inf : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
     logic4 : All products must be produced by at least one task
         Size=3, Index=COMP, Active=True
         Key : Lower : Body                                                                 : Upper : Active
           A :   1.0 : column[A/BC].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
           B :   1.0 :  column[B/C].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
-          C :   1.0 : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :  +Inf :   True
+          C :   1.0 : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :  +Inf :   True
     logic5 : Pure product i can only be produced by at most 1 rectifying section
         Size=2, Index=COMP, Active=True
         Key : Lower : Body                                                                 : Upper : Active
@@ -477,7 +459,7 @@
         Size=2, Index=COMP, Active=True
         Key : Lower : Body                                                                 : Upper : Active
           B :  -Inf :                                     column[A/B].binary_indicator_var :   1.0 :   True
-          C :  -Inf : column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
+          C :  -Inf : column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
     logic9 : Size=2, Index=ISTATE, Active=True
         Key : Lower : Body                                                                                : Upper : Active
          AB :   1.0 : 1 - int_heat_exchanger[AB].binary_indicator_var + column[AB/C].binary_indicator_var :  +Inf :   True
@@ -487,12 +469,12 @@
         None :   0.0 : OPEX - (12.96*(Qreb[A/B] + Qreb[A/BC] + Qreb[AB/C] + Qreb[B/C]) + 43.2*(Qcond[A/B] + Qcond[A/BC] + Qcond[AB/C] + Qcond[B/C])) :   0.0 :   True
     system_feed_component_mb : Size=3, Index=COMP, Active=True
         Key : Lower : Body                  : Upper : Active
-          A :  50.0 : F[A,A/BC] + F[A,AB/C] :  50.0 :   True
-          B :  40.0 : F[B,A/BC] + F[B,AB/C] :  40.0 :   True
-          C :  10.0 : F[C,A/BC] + F[C,AB/C] :  10.0 :   True
+          A : 125.0 : F[A,A/BC] + F[A,AB/C] : 125.0 :   True
+          B : 100.0 : F[B,A/BC] + F[B,AB/C] : 100.0 :   True
+          C :  25.0 : F[C,A/BC] + F[C,AB/C] :  25.0 :   True
     system_feed_total_mb : Size=1, Index=None, Active=True
         Key  : Lower : Body                : Upper : Active
-        None : 100.0 : FT[A/BC] + FT[AB/C] : 100.0 :   True
+        None : 250.0 : FT[A/BC] + FT[AB/C] : 250.0 :   True
     total_mb_between_cols : Size=2, Index=STATES, Active=True
         Key : Lower : Body               : Upper : Active
          AB :   0.0 : FT[A/B] - DT[AB/C] :   0.0 :   True
@@ -908,7 +890,7 @@
             3 Constraint Declarations
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                          : Upper : Active
-                    None :   0.0 : area_final_reboiler[C] - (Qreb[B/C] + Qreb[AB/C])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[C] - (Qreb[AB/C] + Qreb[B/C])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[C] - (-0.0710805909*area_final_reboiler[C]**2 + 168.303402*area_final_reboiler[C] + 12871.9934) :   0.0 :   True
@@ -1467,13 +1449,13 @@
         Key : Body                                                                                                            : Active
           A : (exactly(1: [column[A/BC].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[A].indicator_var :   True
           B :  (exactly(1: [column[B/C].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[B].indicator_var :   True
-          C : (exactly(1: [column[B/C].indicator_var, column[AB/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
+          C : (exactly(1: [column[AB/C].indicator_var, column[B/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
     logic8 : If a given final state is produced by 2 tasks,
                                  then there is no heat exchanger associated with that state
         Size=3, Index=COMP, Active=True
         Key : Body                                                                                              : Active
           A : column[A/BC].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[A].indicator_var :   True
           B :  column[B/C].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[B].indicator_var :   True
-          C : column[B/C].indicator_var ∧ column[AB/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
+          C : column[AB/C].indicator_var ∧ column[B/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
 
-89 Declarations: Feed COMP TASKS STATES FS_F TS_s ST_s ISTATE PRE_i PST_i RECT_s STRIP_s LK HK IREC_m ISTRIP_m roots RUA FT F DT D BT B Vr Lr Vs Ls V_max rud z column_cost cost_per_tray area_final_reboiler area_final_condenser area_intermediate_reboiler area_intermediate_condenser final_condenser_cost final_reboiler_cost inter_condenser_cost inter_reboiler_cost W_C W_R Ntray height Area Diameter Vol Qreb Qcond CAPEX OPEX F0 F0_comp rec_comp alpha PPM rho_V Hvap system_feed_total_mb system_feed_component_mb total_mb_between_cols component_mb_between_cols feed_comp_mb_global distillate_comp_mb_global bottoms_comp_mb_global column no_column column_no_column final_heat_exchanger no_final_heat_exchanger final_heat_exchange_no_final_heat_exchange int_heat_exchanger no_int_heat_exchanger int_heat_exchange_no_final_heat_exchange logic1 logic2 logic3 logic4 logic5 logic6 logic7 logic8 logic9 logic10 logic11 capex_def opex_def obj
+87 Declarations: FEED COMP TASKS STATES FS_F TS_s ST_s ISTATE PRE_i PST_i RECT_s STRIP_s LK HK IREC_m ISTRIP_m ROOTS RUA FT F DT D BT B Vr Lr Vs Ls V_max rud z column_cost cost_per_tray area_final_reboiler area_final_condenser area_intermediate_reboiler area_intermediate_condenser final_condenser_cost final_reboiler_cost inter_condenser_cost inter_reboiler_cost Ntray height Area Diameter Vol Qreb Qcond CAPEX OPEX F0 F0_comp rec_comp alpha PPM rho_V Hvap system_feed_total_mb system_feed_component_mb total_mb_between_cols component_mb_between_cols feed_comp_mb_global distillate_comp_mb_global bottoms_comp_mb_global column no_column column_no_column final_heat_exchanger no_final_heat_exchanger final_heat_exchange_no_final_heat_exchange int_heat_exchanger no_int_heat_exchanger int_heat_exchange_no_final_heat_exchange logic1 logic2 logic3 logic4 logic5 logic6 logic7 logic8 logic9 logic10 logic11 capex_def opex_def obj
