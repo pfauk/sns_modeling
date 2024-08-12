@@ -5,6 +5,7 @@ from math import pi
 import pandas as pd
 import pyomo.environ as pyo
 from pyomo.core.expr.visitor import polynomial_degree
+from pyomo.gdp import Disjunct
 import numpy as np
 from typing import Tuple, Dict
 
@@ -536,7 +537,7 @@ class Data:
 
 # utility functions to examine model type
 def get_var_type(model: pyo.ConcreteModel) -> dict:
-    """retruns the domain of each variable in a Pyomo model 
+    """returns the domain of each variable in a Pyomo model 
 
     Args:
         model (pyo.ConcreteModel): Pyomo model object
@@ -544,7 +545,7 @@ def get_var_type(model: pyo.ConcreteModel) -> dict:
     Returns:
         dict: dictionary where keys are (variable, index) and values are 
     """
-    # diciontary to store variable types in
+    # dictionary to store variable types in
     variables = {}
 
     for variable in model.component_objects(pyo.Var, active=True):
@@ -586,6 +587,33 @@ def get_constraint_type(model: pyo.ConcreteModel) -> dict:
 
     return constraints
 
+def get_objective_type(model: pyo.ConcreteModel) -> str:
+    """returns the equation type of the objective function in a Pyomo model.
+    
+    Objective can be: linear, quadratic, nth degree polynomial, or nonlinear
+
+    Args:
+        model (pyo.ConcreteModel): Pyomo model object
+
+    Returns:
+        dict: dictionary where keys are (constraint, index) and values are 
+    """
+
+    # get degree / type of model objective
+    for obj in model.component_objects(pyo.Objective, active=True):
+        obj_degree = polynomial_degree(obj.expr)
+        if obj_degree == 1:
+            return 'Linear'
+        elif obj_degree == 2:
+            return 'Quadratic'
+        elif isinstance(obj_degree, int) and obj_degree > 2:
+            return f'Degree {obj_degree} Polynomial'
+        elif obj_degree is None:
+            return 'Nonlinear'
+
+    return 'Unknown'
+
+
 def print_constraint_type(model: pyo.ConcreteModel) -> None:
     """displays constraints in model based on type of equation
 
@@ -595,7 +623,7 @@ def print_constraint_type(model: pyo.ConcreteModel) -> None:
         model (pyo.ConcreteModel): Pyomo model object
     
     Returns:
-        None: prints contraints and returns None
+        None: prints constraints and returns None
     """
 
     linear_constraints = {}
@@ -655,33 +683,6 @@ def print_constraint_type(model: pyo.ConcreteModel) -> None:
 
     return None
 
-def get_objective_type(model: pyo.ConcreteModel) -> str:
-    """returns the equation type of the objective function in a Pyomo model.
-    
-    Objective can be: linear, quadratic, nth degree polynomial, or nonlinear
-
-    Args:
-        model (pyo.ConcreteModel): Pyomo model object
-
-    Returns:
-        dict: dictionary where keys are (constraint, index) and values are 
-    """
-
-    # get degree / type of model objective
-    for obj in model.component_objects(pyo.Objective, active=True):
-        obj_degree = polynomial_degree(obj.expr)
-        obj_type = None
-        if obj_degree == 1:
-            obj_type = 'Linear'
-        elif obj_degree == 2:
-            obj_type = ' Quadratic'
-        elif isinstance(obj_degree, int) and obj_degree > 2:
-            obj_type = f'Degree {obj_degree} Polynomial'
-        elif obj_degree is None:
-            obj_type = 'Nonlinear'
-
-    return obj_type
-
 
 def get_model_type(model: pyo.ConcreteModel) -> str:
     """Determine the type of model
@@ -690,8 +691,8 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
         model (pyo.ConcreteModel): Pyomo model object
 
     Returns:
-        str: Type of mathemtical program contained in the Pyomo model object
-        LP, QP, IP, QP, NLP, MILP, MIQCP, MINLP, GDP
+        str: Type of mathematical program contained in the Pyomo model object
+        LP, IP, QP, QCP, QCQP, NLP, MILP, MIQP, MIQCP, MINLP, GDP
     """
 
     # domains of discrete variables in a Pyomo model
@@ -700,10 +701,15 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
     var_types = {'Continuous': False, 'Discrete': False}
     constraint_types = {'Linear': False, 'Quadratic': False, 'Nonlinear': False}
 
-    # get dictionaries of the variables, constratinst, and objective and type/domain
+    # get dictionaries of the variables, constraint, and objective and type/domain
     variables = get_var_type(model)
     constraints = get_constraint_type(model)
     objective = get_objective_type(model)
+
+    # check if the model has disjuncts
+    for comp in model.component_objects(Disjunct):
+        if comp.active is True:
+            return 'GDP'
 
     # check if there are any any continuous or discrete variables
     for value in variables.values():
@@ -721,33 +727,43 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
         elif value == 'Nonlinear' or value.startswith('Degree'):
             constraint_types['Nonlinear'] = True
 
-    if objective == 'Nonlinear' or constraint_types['Nonlinear'] is True:
+    if objective == 'Nonlinear' or objective.startswith('Degree') or constraint_types['Nonlinear'] is True:
         if var_types['Discrete'] is True:
-            model_type = 'MINLP'
+            return 'MINLP'
 
     if objective == 'Linear':
         if constraint_types['Linear'] is True and constraint_types['Quadratic'] is False and constraint_types['Nonlinear'] is False:
             if var_types['Continuous'] is True and var_types['Discrete'] is False:
-                model_type = 'LP'
+                return 'LP'
             elif var_types['Discrete'] is True and var_types['Continuous'] is True:
-                model_type = 'MILP'
+                return 'MILP'
             elif var_types['Discrete'] is True and var_types['Continuous'] is False:
-                model_type = 'IP'
-
-    if objective == 'Quadratic' or constraint_types['Quadratic'] is True:
-        if constraint_types['Nonlinear'] is False:
+                return 'IP'
+            
+        if constraint_types['Quadratic'] is True and constraint_types['Nonlinear'] is False:
             if var_types['Continuous'] is True and var_types['Discrete'] is False:
-                model_type = 'QP'
+                return 'QCP'
+            elif var_types['Discrete'] is True and var_types['Continuous'] is True:
+                return 'MIQCP'
+            
+
+    if objective == 'Quadratic':
+
+        if constraint_types['Linear'] is True and constraint_types['Quadratic'] is False and constraint_types['Nonlinear'] is False:
+            if var_types['Continuous'] is True and var_types['Discrete'] is False:
+                return 'QP'
             elif var_types['Discrete'] is True:
-                model_type = 'MIQCP'
+                return 'MIQP'
+        
+        if constraint_types['Quadratic'] is True and constraint_types['Nonlinear'] is False:
+            if var_types['Continuous'] is True and var_types['Discrete'] is False:
+                return 'QCQP'
+            elif var_types['Discrete'] is True:
+                return 'MIQCP'
 
     if var_types['Continuous'] is True and var_types['Discrete'] is False:
-        if objective == 'Nonlinear' or constraint_types['Nonlinear'] is True:
-            model_type = 'NLP'
-
-
-
-    return  model_type
+        if objective == 'Nonlinear' or objective.startswith('Degree') or constraint_types['Nonlinear'] is True:
+            return 'NLP'
 
 
 
