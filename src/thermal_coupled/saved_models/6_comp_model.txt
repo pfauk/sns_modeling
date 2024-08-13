@@ -52,14 +52,14 @@
     IREC_m : IREC_m = {task t that produces intermediate state m from a rectifying section}
         Size=10, Index=STATES, Ordered=Insertion
         Key   : Dimen : Domain : Size : Members
-           AB :     1 :    Any :    4 : {'AB/CDE', 'AB/CD', 'AB/C', 'AB/CDEF'}
-          ABC :     1 :    Any :    3 : {'ABC/DE', 'ABC/DEF', 'ABC/D'}
+           AB :     1 :    Any :    4 : {'AB/C', 'AB/CDEF', 'AB/CDE', 'AB/CD'}
+          ABC :     1 :    Any :    3 : {'ABC/DEF', 'ABC/D', 'ABC/DE'}
          ABCD :     1 :    Any :    2 : {'ABCD/E', 'ABCD/EF'}
         ABCDE :     1 :    Any :    1 : {'ABCDE/F',}
-           BC :     1 :    Any :    3 : {'BC/DEF', 'BC/DE', 'BC/D'}
-          BCD :     1 :    Any :    2 : {'BCD/EF', 'BCD/E'}
+           BC :     1 :    Any :    3 : {'BC/D', 'BC/DEF', 'BC/DE'}
+          BCD :     1 :    Any :    2 : {'BCD/E', 'BCD/EF'}
          BCDE :     1 :    Any :    1 : {'BCDE/F',}
-           CD :     1 :    Any :    2 : {'CD/E', 'CD/EF'}
+           CD :     1 :    Any :    2 : {'CD/EF', 'CD/E'}
           CDE :     1 :    Any :    1 : {'CDE/F',}
            DE :     1 :    Any :    1 : {'DE/F',}
     ISTATE : ISTATE = {m | m is an intermediate state}
@@ -75,10 +75,10 @@
         BCDEF :     1 :    Any :    1 : {'A/BCDEF',}
            CD :     1 :    Any :    2 : {'B/CD', 'AB/CD'}
           CDE :     1 :    Any :    2 : {'AB/CDE', 'B/CDE'}
-         CDEF :     1 :    Any :    2 : {'B/CDEF', 'AB/CDEF'}
-           DE :     1 :    Any :    3 : {'ABC/DE', 'C/DE', 'BC/DE'}
-          DEF :     1 :    Any :    3 : {'ABC/DEF', 'BC/DEF', 'C/DEF'}
-           EF :     1 :    Any :    4 : {'ABCD/EF', 'BCD/EF', 'D/EF', 'CD/EF'}
+         CDEF :     1 :    Any :    2 : {'AB/CDEF', 'B/CDEF'}
+           DE :     1 :    Any :    3 : {'C/DE', 'ABC/DE', 'BC/DE'}
+          DEF :     1 :    Any :    3 : {'ABC/DEF', 'C/DEF', 'BC/DEF'}
+           EF :     1 :    Any :    4 : {'D/EF', 'CD/EF', 'ABCD/EF', 'BCD/EF'}
     LK : light key (LK) component in a give separation task
         Size=35, Index=TASKS, Ordered=Insertion
         Key     : Dimen : Domain : Size : Members
@@ -120,35 +120,35 @@
     PRE_i : PRE_i = {Tasks t that produce final product i through a rectifying section}
         Size=5, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
-          A :     1 :    Any :    5 : {'A/BCDEF', 'A/B', 'A/BCD', 'A/BC', 'A/BCDE'}
-          B :     1 :    Any :    4 : {'B/CDEF', 'B/C', 'B/CDE', 'B/CD'}
-          C :     1 :    Any :    3 : {'C/DE', 'C/DEF', 'C/D'}
-          D :     1 :    Any :    2 : {'D/E', 'D/EF'}
+          A :     1 :    Any :    5 : {'A/BC', 'A/BCDE', 'A/B', 'A/BCDEF', 'A/BCD'}
+          B :     1 :    Any :    4 : {'B/C', 'B/CDE', 'B/CD', 'B/CDEF'}
+          C :     1 :    Any :    3 : {'C/DE', 'C/D', 'C/DEF'}
+          D :     1 :    Any :    2 : {'D/EF', 'D/E'}
           E :     1 :    Any :    1 : {'E/F',}
     PST_i : PST_i  = {Tasks t that produce final product i through a stripping section}
         Size=5, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           B :     1 :    Any :    1 : {'A/B',}
-          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
-          D :     1 :    Any :    3 : {'ABC/D', 'C/D', 'BC/D'}
-          E :     1 :    Any :    4 : {'CD/E', 'D/E', 'ABCD/E', 'BCD/E'}
-          F :     1 :    Any :    5 : {'DE/F', 'CDE/F', 'ABCDE/F', 'E/F', 'BCDE/F'}
+          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
+          D :     1 :    Any :    3 : {'BC/D', 'C/D', 'ABC/D'}
+          E :     1 :    Any :    4 : {'D/E', 'CD/E', 'BCD/E', 'ABCD/E'}
+          F :     1 :    Any :    5 : {'DE/F', 'ABCDE/F', 'E/F', 'CDE/F', 'BCDE/F'}
     RECT_s : RECT_s = {Tasks t that produces state s by a rectifying section}
         Size=15, Index=STATES, Ordered=Insertion
         Key   : Dimen : Domain : Size : Members
-            A :     1 :    Any :    5 : {'A/BCDEF', 'A/B', 'A/BCD', 'A/BC', 'A/BCDE'}
-           AB :     1 :    Any :    4 : {'AB/CDE', 'AB/CD', 'AB/C', 'AB/CDEF'}
-          ABC :     1 :    Any :    3 : {'ABC/DE', 'ABC/DEF', 'ABC/D'}
+            A :     1 :    Any :    5 : {'A/BC', 'A/BCDE', 'A/B', 'A/BCDEF', 'A/BCD'}
+           AB :     1 :    Any :    4 : {'AB/C', 'AB/CDEF', 'AB/CDE', 'AB/CD'}
+          ABC :     1 :    Any :    3 : {'ABC/DEF', 'ABC/D', 'ABC/DE'}
          ABCD :     1 :    Any :    2 : {'ABCD/E', 'ABCD/EF'}
         ABCDE :     1 :    Any :    1 : {'ABCDE/F',}
-            B :     1 :    Any :    4 : {'B/CDEF', 'B/C', 'B/CDE', 'B/CD'}
-           BC :     1 :    Any :    3 : {'BC/DEF', 'BC/DE', 'BC/D'}
-          BCD :     1 :    Any :    2 : {'BCD/EF', 'BCD/E'}
+            B :     1 :    Any :    4 : {'B/C', 'B/CDE', 'B/CD', 'B/CDEF'}
+           BC :     1 :    Any :    3 : {'BC/D', 'BC/DEF', 'BC/DE'}
+          BCD :     1 :    Any :    2 : {'BCD/E', 'BCD/EF'}
          BCDE :     1 :    Any :    1 : {'BCDE/F',}
-            C :     1 :    Any :    3 : {'C/DE', 'C/DEF', 'C/D'}
-           CD :     1 :    Any :    2 : {'CD/E', 'CD/EF'}
+            C :     1 :    Any :    3 : {'C/DE', 'C/D', 'C/DEF'}
+           CD :     1 :    Any :    2 : {'CD/EF', 'CD/E'}
           CDE :     1 :    Any :    1 : {'CDE/F',}
-            D :     1 :    Any :    2 : {'D/E', 'D/EF'}
+            D :     1 :    Any :    2 : {'D/EF', 'D/E'}
            DE :     1 :    Any :    1 : {'DE/F',}
             E :     1 :    Any :    1 : {'E/F',}
     ROOTS : Underwood roots
@@ -205,39 +205,39 @@
           BCD :     1 :    Any :    1 : {'A/BCD',}
          BCDE :     1 :    Any :    1 : {'A/BCDE',}
         BCDEF :     1 :    Any :    1 : {'A/BCDEF',}
-            C :     1 :    Any :    2 : {'B/C', 'AB/C'}
+            C :     1 :    Any :    2 : {'AB/C', 'B/C'}
            CD :     1 :    Any :    2 : {'B/CD', 'AB/CD'}
           CDE :     1 :    Any :    2 : {'AB/CDE', 'B/CDE'}
-         CDEF :     1 :    Any :    2 : {'B/CDEF', 'AB/CDEF'}
-            D :     1 :    Any :    3 : {'ABC/D', 'C/D', 'BC/D'}
-           DE :     1 :    Any :    3 : {'ABC/DE', 'C/DE', 'BC/DE'}
-          DEF :     1 :    Any :    3 : {'ABC/DEF', 'BC/DEF', 'C/DEF'}
-            E :     1 :    Any :    4 : {'CD/E', 'D/E', 'ABCD/E', 'BCD/E'}
-           EF :     1 :    Any :    4 : {'ABCD/EF', 'BCD/EF', 'D/EF', 'CD/EF'}
-            F :     1 :    Any :    5 : {'DE/F', 'CDE/F', 'ABCDE/F', 'E/F', 'BCDE/F'}
+         CDEF :     1 :    Any :    2 : {'AB/CDEF', 'B/CDEF'}
+            D :     1 :    Any :    3 : {'BC/D', 'C/D', 'ABC/D'}
+           DE :     1 :    Any :    3 : {'C/DE', 'ABC/DE', 'BC/DE'}
+          DEF :     1 :    Any :    3 : {'ABC/DEF', 'C/DEF', 'BC/DEF'}
+            E :     1 :    Any :    4 : {'D/E', 'CD/E', 'BCD/E', 'ABCD/E'}
+           EF :     1 :    Any :    4 : {'D/EF', 'CD/EF', 'ABCD/EF', 'BCD/EF'}
+            F :     1 :    Any :    5 : {'DE/F', 'ABCDE/F', 'E/F', 'CDE/F', 'BCDE/F'}
     ST_s : ST_s = {tasks t that are able to produce state s}
         Size=20, Index=STATES, Ordered=Insertion
         Key   : Dimen : Domain : Size : Members
-            A :     1 :    Any :    5 : {'A/BCDEF', 'A/B', 'A/BCD', 'A/BC', 'A/BCDE'}
-           AB :     1 :    Any :    4 : {'AB/CDE', 'AB/CD', 'AB/C', 'AB/CDEF'}
-          ABC :     1 :    Any :    3 : {'ABC/DE', 'ABC/DEF', 'ABC/D'}
+            A :     1 :    Any :    5 : {'A/BC', 'A/BCDE', 'A/B', 'A/BCDEF', 'A/BCD'}
+           AB :     1 :    Any :    4 : {'AB/C', 'AB/CDEF', 'AB/CDE', 'AB/CD'}
+          ABC :     1 :    Any :    3 : {'ABC/DEF', 'ABC/D', 'ABC/DE'}
          ABCD :     1 :    Any :    2 : {'ABCD/E', 'ABCD/EF'}
         ABCDE :     1 :    Any :    1 : {'ABCDE/F',}
-            B :     1 :    Any :    5 : {'A/B', 'B/CD', 'B/CDEF', 'B/C', 'B/CDE'}
-           BC :     1 :    Any :    4 : {'A/BC', 'BC/DEF', 'BC/DE', 'BC/D'}
-          BCD :     1 :    Any :    3 : {'BCD/EF', 'A/BCD', 'BCD/E'}
+            B :     1 :    Any :    5 : {'A/B', 'B/CD', 'B/CDE', 'B/CDEF', 'B/C'}
+           BC :     1 :    Any :    4 : {'BC/D', 'A/BC', 'BC/DEF', 'BC/DE'}
+          BCD :     1 :    Any :    3 : {'A/BCD', 'BCD/E', 'BCD/EF'}
          BCDE :     1 :    Any :    2 : {'A/BCDE', 'BCDE/F'}
         BCDEF :     1 :    Any :    1 : {'A/BCDEF',}
-            C :     1 :    Any :    5 : {'C/D', 'B/C', 'AB/C', 'C/DEF', 'C/DE'}
-           CD :     1 :    Any :    4 : {'CD/E', 'B/CD', 'AB/CD', 'CD/EF'}
+            C :     1 :    Any :    5 : {'AB/C', 'C/DE', 'C/D', 'C/DEF', 'B/C'}
+           CD :     1 :    Any :    4 : {'B/CD', 'CD/EF', 'CD/E', 'AB/CD'}
           CDE :     1 :    Any :    3 : {'AB/CDE', 'B/CDE', 'CDE/F'}
-         CDEF :     1 :    Any :    2 : {'B/CDEF', 'AB/CDEF'}
-            D :     1 :    Any :    5 : {'C/D', 'D/E', 'D/EF', 'ABC/D', 'BC/D'}
-           DE :     1 :    Any :    4 : {'ABC/DE', 'C/DE', 'BC/DE', 'DE/F'}
-          DEF :     1 :    Any :    3 : {'ABC/DEF', 'BC/DEF', 'C/DEF'}
-            E :     1 :    Any :    5 : {'D/E', 'CD/E', 'ABCD/E', 'E/F', 'BCD/E'}
-           EF :     1 :    Any :    4 : {'ABCD/EF', 'BCD/EF', 'D/EF', 'CD/EF'}
-            F :     1 :    Any :    5 : {'DE/F', 'CDE/F', 'ABCDE/F', 'E/F', 'BCDE/F'}
+         CDEF :     1 :    Any :    2 : {'AB/CDEF', 'B/CDEF'}
+            D :     1 :    Any :    5 : {'D/EF', 'BC/D', 'C/D', 'D/E', 'ABC/D'}
+           DE :     1 :    Any :    4 : {'DE/F', 'C/DE', 'ABC/DE', 'BC/DE'}
+          DEF :     1 :    Any :    3 : {'ABC/DEF', 'C/DEF', 'BC/DEF'}
+            E :     1 :    Any :    5 : {'CD/E', 'BCD/E', 'ABCD/E', 'D/E', 'E/F'}
+           EF :     1 :    Any :    4 : {'D/EF', 'CD/EF', 'ABCD/EF', 'BCD/EF'}
+            F :     1 :    Any :    5 : {'DE/F', 'ABCDE/F', 'E/F', 'CDE/F', 'BCDE/F'}
     TASKS : TASKS {t|t is a separation task}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -3023,18 +3023,18 @@
         None :   0.0 : CAPEX - (column_cost[A/B] + column_cost[A/BC] + column_cost[A/BCD] + column_cost[A/BCDE] + column_cost[A/BCDEF] + column_cost[AB/C] + column_cost[AB/CD] + column_cost[AB/CDE] + column_cost[AB/CDEF] + column_cost[ABC/D] + column_cost[ABC/DE] + column_cost[ABC/DEF] + column_cost[ABCD/E] + column_cost[ABCD/EF] + column_cost[ABCDE/F] + column_cost[B/C] + column_cost[B/CD] + column_cost[B/CDE] + column_cost[B/CDEF] + column_cost[BC/D] + column_cost[BC/DE] + column_cost[BC/DEF] + column_cost[BCD/E] + column_cost[BCD/EF] + column_cost[BCDE/F] + column_cost[C/D] + column_cost[C/DE] + column_cost[C/DEF] + column_cost[CD/E] + column_cost[CD/EF] + column_cost[CDE/F] + column_cost[D/E] + column_cost[D/EF] + column_cost[DE/F] + column_cost[E/F] + final_reboiler_cost[A] + final_condenser_cost[A] + final_reboiler_cost[B] + final_condenser_cost[B] + final_reboiler_cost[C] + final_condenser_cost[C] + final_reboiler_cost[D] + final_condenser_cost[D] + final_reboiler_cost[E] + final_condenser_cost[E] + final_reboiler_cost[F] + final_condenser_cost[F] + inter_reboiler_cost[AB] + inter_condenser_cost[AB] + inter_reboiler_cost[ABC] + inter_condenser_cost[ABC] + inter_reboiler_cost[ABCD] + inter_condenser_cost[ABCD] + inter_reboiler_cost[ABCDE] + inter_condenser_cost[ABCDE] + inter_reboiler_cost[BC] + inter_condenser_cost[BC] + inter_reboiler_cost[BCD] + inter_condenser_cost[BCD] + inter_reboiler_cost[BCDE] + inter_condenser_cost[BCDE] + inter_reboiler_cost[BCDEF] + inter_condenser_cost[BCDEF] + inter_reboiler_cost[CD] + inter_condenser_cost[CD] + inter_reboiler_cost[CDE] + inter_condenser_cost[CDE] + inter_reboiler_cost[CDEF] + inter_condenser_cost[CDEF] + inter_reboiler_cost[DE] + inter_condenser_cost[DE] + inter_reboiler_cost[DEF] + inter_condenser_cost[DEF] + inter_reboiler_cost[EF] + inter_condenser_cost[EF]) :   0.0 :   True
     component_mb_between_cols : Size=84, Index=STATES*COMP, Active=True
         Key            : Lower : Body                                                                 : Upper : Active
-           ('AB', 'A') :   0.0 :     F[A,A/B] - (D[A,AB/CDE] + D[A,AB/CD] + D[A,AB/C] + D[A,AB/CDEF]) :   0.0 :   True
-           ('AB', 'B') :   0.0 :     F[B,A/B] - (D[B,AB/CDE] + D[B,AB/CD] + D[B,AB/C] + D[B,AB/CDEF]) :   0.0 :   True
-           ('AB', 'C') :   0.0 :     F[C,A/B] - (D[C,AB/CDE] + D[C,AB/CD] + D[C,AB/C] + D[C,AB/CDEF]) :   0.0 :   True
-           ('AB', 'D') :   0.0 :     F[D,A/B] - (D[D,AB/CDE] + D[D,AB/CD] + D[D,AB/C] + D[D,AB/CDEF]) :   0.0 :   True
-           ('AB', 'E') :   0.0 :     F[E,A/B] - (D[E,AB/CDE] + D[E,AB/CD] + D[E,AB/C] + D[E,AB/CDEF]) :   0.0 :   True
-           ('AB', 'F') :   0.0 :     F[F,A/B] - (D[F,AB/CDE] + D[F,AB/CD] + D[F,AB/C] + D[F,AB/CDEF]) :   0.0 :   True
-          ('ABC', 'A') :   0.0 :    F[A,A/BC] + F[A,AB/C] - (D[A,ABC/DE] + D[A,ABC/DEF] + D[A,ABC/D]) :   0.0 :   True
-          ('ABC', 'B') :   0.0 :    F[B,A/BC] + F[B,AB/C] - (D[B,ABC/DE] + D[B,ABC/DEF] + D[B,ABC/D]) :   0.0 :   True
-          ('ABC', 'C') :   0.0 :    F[C,A/BC] + F[C,AB/C] - (D[C,ABC/DE] + D[C,ABC/DEF] + D[C,ABC/D]) :   0.0 :   True
-          ('ABC', 'D') :   0.0 :    F[D,A/BC] + F[D,AB/C] - (D[D,ABC/DE] + D[D,ABC/DEF] + D[D,ABC/D]) :   0.0 :   True
-          ('ABC', 'E') :   0.0 :    F[E,A/BC] + F[E,AB/C] - (D[E,ABC/DE] + D[E,ABC/DEF] + D[E,ABC/D]) :   0.0 :   True
-          ('ABC', 'F') :   0.0 :    F[F,A/BC] + F[F,AB/C] - (D[F,ABC/DE] + D[F,ABC/DEF] + D[F,ABC/D]) :   0.0 :   True
+           ('AB', 'A') :   0.0 :     F[A,A/B] - (D[A,AB/C] + D[A,AB/CDEF] + D[A,AB/CDE] + D[A,AB/CD]) :   0.0 :   True
+           ('AB', 'B') :   0.0 :     F[B,A/B] - (D[B,AB/C] + D[B,AB/CDEF] + D[B,AB/CDE] + D[B,AB/CD]) :   0.0 :   True
+           ('AB', 'C') :   0.0 :     F[C,A/B] - (D[C,AB/C] + D[C,AB/CDEF] + D[C,AB/CDE] + D[C,AB/CD]) :   0.0 :   True
+           ('AB', 'D') :   0.0 :     F[D,A/B] - (D[D,AB/C] + D[D,AB/CDEF] + D[D,AB/CDE] + D[D,AB/CD]) :   0.0 :   True
+           ('AB', 'E') :   0.0 :     F[E,A/B] - (D[E,AB/C] + D[E,AB/CDEF] + D[E,AB/CDE] + D[E,AB/CD]) :   0.0 :   True
+           ('AB', 'F') :   0.0 :     F[F,A/B] - (D[F,AB/C] + D[F,AB/CDEF] + D[F,AB/CDE] + D[F,AB/CD]) :   0.0 :   True
+          ('ABC', 'A') :   0.0 :    F[A,A/BC] + F[A,AB/C] - (D[A,ABC/DEF] + D[A,ABC/D] + D[A,ABC/DE]) :   0.0 :   True
+          ('ABC', 'B') :   0.0 :    F[B,A/BC] + F[B,AB/C] - (D[B,ABC/DEF] + D[B,ABC/D] + D[B,ABC/DE]) :   0.0 :   True
+          ('ABC', 'C') :   0.0 :    F[C,A/BC] + F[C,AB/C] - (D[C,ABC/DEF] + D[C,ABC/D] + D[C,ABC/DE]) :   0.0 :   True
+          ('ABC', 'D') :   0.0 :    F[D,A/BC] + F[D,AB/C] - (D[D,ABC/DEF] + D[D,ABC/D] + D[D,ABC/DE]) :   0.0 :   True
+          ('ABC', 'E') :   0.0 :    F[E,A/BC] + F[E,AB/C] - (D[E,ABC/DEF] + D[E,ABC/D] + D[E,ABC/DE]) :   0.0 :   True
+          ('ABC', 'F') :   0.0 :    F[F,A/BC] + F[F,AB/C] - (D[F,ABC/DEF] + D[F,ABC/D] + D[F,ABC/DE]) :   0.0 :   True
          ('ABCD', 'A') :   0.0 :  F[A,A/BCD] + F[A,AB/CD] + F[A,ABC/D] - (D[A,ABCD/E] + D[A,ABCD/EF]) :   0.0 :   True
          ('ABCD', 'B') :   0.0 :  F[B,A/BCD] + F[B,AB/CD] + F[B,ABC/D] - (D[B,ABCD/E] + D[B,ABCD/EF]) :   0.0 :   True
          ('ABCD', 'C') :   0.0 :  F[C,A/BCD] + F[C,AB/CD] + F[C,ABC/D] - (D[C,ABCD/E] + D[C,ABCD/EF]) :   0.0 :   True
@@ -3047,18 +3047,18 @@
         ('ABCDE', 'D') :   0.0 : F[D,A/BCDE] + F[D,AB/CDE] + F[D,ABC/DE] + F[D,ABCD/E] - D[D,ABCDE/F] :   0.0 :   True
         ('ABCDE', 'E') :   0.0 : F[E,A/BCDE] + F[E,AB/CDE] + F[E,ABC/DE] + F[E,ABCD/E] - D[E,ABCDE/F] :   0.0 :   True
         ('ABCDE', 'F') :   0.0 : F[F,A/BCDE] + F[F,AB/CDE] + F[F,ABC/DE] + F[F,ABCD/E] - D[F,ABCDE/F] :   0.0 :   True
-           ('BC', 'A') :   0.0 :        F[A,B/C] - (D[A,BC/DEF] + D[A,BC/DE] + D[A,BC/D] + B[A,A/BC]) :   0.0 :   True
-           ('BC', 'B') :   0.0 :        F[B,B/C] - (D[B,BC/DEF] + D[B,BC/DE] + D[B,BC/D] + B[B,A/BC]) :   0.0 :   True
-           ('BC', 'C') :   0.0 :        F[C,B/C] - (D[C,BC/DEF] + D[C,BC/DE] + D[C,BC/D] + B[C,A/BC]) :   0.0 :   True
-           ('BC', 'D') :   0.0 :        F[D,B/C] - (D[D,BC/DEF] + D[D,BC/DE] + D[D,BC/D] + B[D,A/BC]) :   0.0 :   True
-           ('BC', 'E') :   0.0 :        F[E,B/C] - (D[E,BC/DEF] + D[E,BC/DE] + D[E,BC/D] + B[E,A/BC]) :   0.0 :   True
-           ('BC', 'F') :   0.0 :        F[F,B/C] - (D[F,BC/DEF] + D[F,BC/DE] + D[F,BC/D] + B[F,A/BC]) :   0.0 :   True
-          ('BCD', 'A') :   0.0 :      F[A,B/CD] + F[A,BC/D] - (D[A,BCD/EF] + D[A,BCD/E] + B[A,A/BCD]) :   0.0 :   True
-          ('BCD', 'B') :   0.0 :      F[B,B/CD] + F[B,BC/D] - (D[B,BCD/EF] + D[B,BCD/E] + B[B,A/BCD]) :   0.0 :   True
-          ('BCD', 'C') :   0.0 :      F[C,B/CD] + F[C,BC/D] - (D[C,BCD/EF] + D[C,BCD/E] + B[C,A/BCD]) :   0.0 :   True
-          ('BCD', 'D') :   0.0 :      F[D,B/CD] + F[D,BC/D] - (D[D,BCD/EF] + D[D,BCD/E] + B[D,A/BCD]) :   0.0 :   True
-          ('BCD', 'E') :   0.0 :      F[E,B/CD] + F[E,BC/D] - (D[E,BCD/EF] + D[E,BCD/E] + B[E,A/BCD]) :   0.0 :   True
-          ('BCD', 'F') :   0.0 :      F[F,B/CD] + F[F,BC/D] - (D[F,BCD/EF] + D[F,BCD/E] + B[F,A/BCD]) :   0.0 :   True
+           ('BC', 'A') :   0.0 :        F[A,B/C] - (D[A,BC/D] + D[A,BC/DEF] + D[A,BC/DE] + B[A,A/BC]) :   0.0 :   True
+           ('BC', 'B') :   0.0 :        F[B,B/C] - (D[B,BC/D] + D[B,BC/DEF] + D[B,BC/DE] + B[B,A/BC]) :   0.0 :   True
+           ('BC', 'C') :   0.0 :        F[C,B/C] - (D[C,BC/D] + D[C,BC/DEF] + D[C,BC/DE] + B[C,A/BC]) :   0.0 :   True
+           ('BC', 'D') :   0.0 :        F[D,B/C] - (D[D,BC/D] + D[D,BC/DEF] + D[D,BC/DE] + B[D,A/BC]) :   0.0 :   True
+           ('BC', 'E') :   0.0 :        F[E,B/C] - (D[E,BC/D] + D[E,BC/DEF] + D[E,BC/DE] + B[E,A/BC]) :   0.0 :   True
+           ('BC', 'F') :   0.0 :        F[F,B/C] - (D[F,BC/D] + D[F,BC/DEF] + D[F,BC/DE] + B[F,A/BC]) :   0.0 :   True
+          ('BCD', 'A') :   0.0 :      F[A,B/CD] + F[A,BC/D] - (D[A,BCD/E] + D[A,BCD/EF] + B[A,A/BCD]) :   0.0 :   True
+          ('BCD', 'B') :   0.0 :      F[B,B/CD] + F[B,BC/D] - (D[B,BCD/E] + D[B,BCD/EF] + B[B,A/BCD]) :   0.0 :   True
+          ('BCD', 'C') :   0.0 :      F[C,B/CD] + F[C,BC/D] - (D[C,BCD/E] + D[C,BCD/EF] + B[C,A/BCD]) :   0.0 :   True
+          ('BCD', 'D') :   0.0 :      F[D,B/CD] + F[D,BC/D] - (D[D,BCD/E] + D[D,BCD/EF] + B[D,A/BCD]) :   0.0 :   True
+          ('BCD', 'E') :   0.0 :      F[E,B/CD] + F[E,BC/D] - (D[E,BCD/E] + D[E,BCD/EF] + B[E,A/BCD]) :   0.0 :   True
+          ('BCD', 'F') :   0.0 :      F[F,B/CD] + F[F,BC/D] - (D[F,BCD/E] + D[F,BCD/EF] + B[F,A/BCD]) :   0.0 :   True
          ('BCDE', 'A') :   0.0 :   F[A,B/CDE] + F[A,BC/DE] + F[A,BCD/E] - (D[A,BCDE/F] + B[A,A/BCDE]) :   0.0 :   True
          ('BCDE', 'B') :   0.0 :   F[B,B/CDE] + F[B,BC/DE] + F[B,BCD/E] - (D[B,BCDE/F] + B[B,A/BCDE]) :   0.0 :   True
          ('BCDE', 'C') :   0.0 :   F[C,B/CDE] + F[C,BC/DE] + F[C,BCD/E] - (D[C,BCDE/F] + B[C,A/BCDE]) :   0.0 :   True
@@ -3071,42 +3071,42 @@
         ('BCDEF', 'D') :   0.0 : F[D,B/CDEF] + F[D,BC/DEF] + F[D,BCD/EF] + F[D,BCDE/F] - B[D,A/BCDEF] :   0.0 :   True
         ('BCDEF', 'E') :   0.0 : F[E,B/CDEF] + F[E,BC/DEF] + F[E,BCD/EF] + F[E,BCDE/F] - B[E,A/BCDEF] :   0.0 :   True
         ('BCDEF', 'F') :   0.0 : F[F,B/CDEF] + F[F,BC/DEF] + F[F,BCD/EF] + F[F,BCDE/F] - B[F,A/BCDEF] :   0.0 :   True
-           ('CD', 'A') :   0.0 :         F[A,C/D] - (D[A,CD/E] + D[A,CD/EF] + B[A,B/CD] + B[A,AB/CD]) :   0.0 :   True
-           ('CD', 'B') :   0.0 :         F[B,C/D] - (D[B,CD/E] + D[B,CD/EF] + B[B,B/CD] + B[B,AB/CD]) :   0.0 :   True
-           ('CD', 'C') :   0.0 :         F[C,C/D] - (D[C,CD/E] + D[C,CD/EF] + B[C,B/CD] + B[C,AB/CD]) :   0.0 :   True
-           ('CD', 'D') :   0.0 :         F[D,C/D] - (D[D,CD/E] + D[D,CD/EF] + B[D,B/CD] + B[D,AB/CD]) :   0.0 :   True
-           ('CD', 'E') :   0.0 :         F[E,C/D] - (D[E,CD/E] + D[E,CD/EF] + B[E,B/CD] + B[E,AB/CD]) :   0.0 :   True
-           ('CD', 'F') :   0.0 :         F[F,C/D] - (D[F,CD/E] + D[F,CD/EF] + B[F,B/CD] + B[F,AB/CD]) :   0.0 :   True
+           ('CD', 'A') :   0.0 :         F[A,C/D] - (D[A,CD/EF] + D[A,CD/E] + B[A,B/CD] + B[A,AB/CD]) :   0.0 :   True
+           ('CD', 'B') :   0.0 :         F[B,C/D] - (D[B,CD/EF] + D[B,CD/E] + B[B,B/CD] + B[B,AB/CD]) :   0.0 :   True
+           ('CD', 'C') :   0.0 :         F[C,C/D] - (D[C,CD/EF] + D[C,CD/E] + B[C,B/CD] + B[C,AB/CD]) :   0.0 :   True
+           ('CD', 'D') :   0.0 :         F[D,C/D] - (D[D,CD/EF] + D[D,CD/E] + B[D,B/CD] + B[D,AB/CD]) :   0.0 :   True
+           ('CD', 'E') :   0.0 :         F[E,C/D] - (D[E,CD/EF] + D[E,CD/E] + B[E,B/CD] + B[E,AB/CD]) :   0.0 :   True
+           ('CD', 'F') :   0.0 :         F[F,C/D] - (D[F,CD/EF] + D[F,CD/E] + B[F,B/CD] + B[F,AB/CD]) :   0.0 :   True
           ('CDE', 'A') :   0.0 :      F[A,C/DE] + F[A,CD/E] - (B[A,AB/CDE] + B[A,B/CDE] + D[A,CDE/F]) :   0.0 :   True
           ('CDE', 'B') :   0.0 :      F[B,C/DE] + F[B,CD/E] - (B[B,AB/CDE] + B[B,B/CDE] + D[B,CDE/F]) :   0.0 :   True
           ('CDE', 'C') :   0.0 :      F[C,C/DE] + F[C,CD/E] - (B[C,AB/CDE] + B[C,B/CDE] + D[C,CDE/F]) :   0.0 :   True
           ('CDE', 'D') :   0.0 :      F[D,C/DE] + F[D,CD/E] - (B[D,AB/CDE] + B[D,B/CDE] + D[D,CDE/F]) :   0.0 :   True
           ('CDE', 'E') :   0.0 :      F[E,C/DE] + F[E,CD/E] - (B[E,AB/CDE] + B[E,B/CDE] + D[E,CDE/F]) :   0.0 :   True
           ('CDE', 'F') :   0.0 :      F[F,C/DE] + F[F,CD/E] - (B[F,AB/CDE] + B[F,B/CDE] + D[F,CDE/F]) :   0.0 :   True
-         ('CDEF', 'A') :   0.0 :  F[A,C/DEF] + F[A,CD/EF] + F[A,CDE/F] - (B[A,B/CDEF] + B[A,AB/CDEF]) :   0.0 :   True
-         ('CDEF', 'B') :   0.0 :  F[B,C/DEF] + F[B,CD/EF] + F[B,CDE/F] - (B[B,B/CDEF] + B[B,AB/CDEF]) :   0.0 :   True
-         ('CDEF', 'C') :   0.0 :  F[C,C/DEF] + F[C,CD/EF] + F[C,CDE/F] - (B[C,B/CDEF] + B[C,AB/CDEF]) :   0.0 :   True
-         ('CDEF', 'D') :   0.0 :  F[D,C/DEF] + F[D,CD/EF] + F[D,CDE/F] - (B[D,B/CDEF] + B[D,AB/CDEF]) :   0.0 :   True
-         ('CDEF', 'E') :   0.0 :  F[E,C/DEF] + F[E,CD/EF] + F[E,CDE/F] - (B[E,B/CDEF] + B[E,AB/CDEF]) :   0.0 :   True
-         ('CDEF', 'F') :   0.0 :  F[F,C/DEF] + F[F,CD/EF] + F[F,CDE/F] - (B[F,B/CDEF] + B[F,AB/CDEF]) :   0.0 :   True
-           ('DE', 'A') :   0.0 :        F[A,D/E] - (B[A,ABC/DE] + B[A,C/DE] + B[A,BC/DE] + D[A,DE/F]) :   0.0 :   True
-           ('DE', 'B') :   0.0 :        F[B,D/E] - (B[B,ABC/DE] + B[B,C/DE] + B[B,BC/DE] + D[B,DE/F]) :   0.0 :   True
-           ('DE', 'C') :   0.0 :        F[C,D/E] - (B[C,ABC/DE] + B[C,C/DE] + B[C,BC/DE] + D[C,DE/F]) :   0.0 :   True
-           ('DE', 'D') :   0.0 :        F[D,D/E] - (B[D,ABC/DE] + B[D,C/DE] + B[D,BC/DE] + D[D,DE/F]) :   0.0 :   True
-           ('DE', 'E') :   0.0 :        F[E,D/E] - (B[E,ABC/DE] + B[E,C/DE] + B[E,BC/DE] + D[E,DE/F]) :   0.0 :   True
-           ('DE', 'F') :   0.0 :        F[F,D/E] - (B[F,ABC/DE] + B[F,C/DE] + B[F,BC/DE] + D[F,DE/F]) :   0.0 :   True
-          ('DEF', 'A') :   0.0 :    F[A,D/EF] + F[A,DE/F] - (B[A,ABC/DEF] + B[A,BC/DEF] + B[A,C/DEF]) :   0.0 :   True
-          ('DEF', 'B') :   0.0 :    F[B,D/EF] + F[B,DE/F] - (B[B,ABC/DEF] + B[B,BC/DEF] + B[B,C/DEF]) :   0.0 :   True
-          ('DEF', 'C') :   0.0 :    F[C,D/EF] + F[C,DE/F] - (B[C,ABC/DEF] + B[C,BC/DEF] + B[C,C/DEF]) :   0.0 :   True
-          ('DEF', 'D') :   0.0 :    F[D,D/EF] + F[D,DE/F] - (B[D,ABC/DEF] + B[D,BC/DEF] + B[D,C/DEF]) :   0.0 :   True
-          ('DEF', 'E') :   0.0 :    F[E,D/EF] + F[E,DE/F] - (B[E,ABC/DEF] + B[E,BC/DEF] + B[E,C/DEF]) :   0.0 :   True
-          ('DEF', 'F') :   0.0 :    F[F,D/EF] + F[F,DE/F] - (B[F,ABC/DEF] + B[F,BC/DEF] + B[F,C/DEF]) :   0.0 :   True
-           ('EF', 'A') :   0.0 :     F[A,E/F] - (B[A,ABCD/EF] + B[A,BCD/EF] + B[A,D/EF] + B[A,CD/EF]) :   0.0 :   True
-           ('EF', 'B') :   0.0 :     F[B,E/F] - (B[B,ABCD/EF] + B[B,BCD/EF] + B[B,D/EF] + B[B,CD/EF]) :   0.0 :   True
-           ('EF', 'C') :   0.0 :     F[C,E/F] - (B[C,ABCD/EF] + B[C,BCD/EF] + B[C,D/EF] + B[C,CD/EF]) :   0.0 :   True
-           ('EF', 'D') :   0.0 :     F[D,E/F] - (B[D,ABCD/EF] + B[D,BCD/EF] + B[D,D/EF] + B[D,CD/EF]) :   0.0 :   True
-           ('EF', 'E') :   0.0 :     F[E,E/F] - (B[E,ABCD/EF] + B[E,BCD/EF] + B[E,D/EF] + B[E,CD/EF]) :   0.0 :   True
-           ('EF', 'F') :   0.0 :     F[F,E/F] - (B[F,ABCD/EF] + B[F,BCD/EF] + B[F,D/EF] + B[F,CD/EF]) :   0.0 :   True
+         ('CDEF', 'A') :   0.0 :  F[A,C/DEF] + F[A,CD/EF] + F[A,CDE/F] - (B[A,AB/CDEF] + B[A,B/CDEF]) :   0.0 :   True
+         ('CDEF', 'B') :   0.0 :  F[B,C/DEF] + F[B,CD/EF] + F[B,CDE/F] - (B[B,AB/CDEF] + B[B,B/CDEF]) :   0.0 :   True
+         ('CDEF', 'C') :   0.0 :  F[C,C/DEF] + F[C,CD/EF] + F[C,CDE/F] - (B[C,AB/CDEF] + B[C,B/CDEF]) :   0.0 :   True
+         ('CDEF', 'D') :   0.0 :  F[D,C/DEF] + F[D,CD/EF] + F[D,CDE/F] - (B[D,AB/CDEF] + B[D,B/CDEF]) :   0.0 :   True
+         ('CDEF', 'E') :   0.0 :  F[E,C/DEF] + F[E,CD/EF] + F[E,CDE/F] - (B[E,AB/CDEF] + B[E,B/CDEF]) :   0.0 :   True
+         ('CDEF', 'F') :   0.0 :  F[F,C/DEF] + F[F,CD/EF] + F[F,CDE/F] - (B[F,AB/CDEF] + B[F,B/CDEF]) :   0.0 :   True
+           ('DE', 'A') :   0.0 :        F[A,D/E] - (B[A,C/DE] + B[A,ABC/DE] + B[A,BC/DE] + D[A,DE/F]) :   0.0 :   True
+           ('DE', 'B') :   0.0 :        F[B,D/E] - (B[B,C/DE] + B[B,ABC/DE] + B[B,BC/DE] + D[B,DE/F]) :   0.0 :   True
+           ('DE', 'C') :   0.0 :        F[C,D/E] - (B[C,C/DE] + B[C,ABC/DE] + B[C,BC/DE] + D[C,DE/F]) :   0.0 :   True
+           ('DE', 'D') :   0.0 :        F[D,D/E] - (B[D,C/DE] + B[D,ABC/DE] + B[D,BC/DE] + D[D,DE/F]) :   0.0 :   True
+           ('DE', 'E') :   0.0 :        F[E,D/E] - (B[E,C/DE] + B[E,ABC/DE] + B[E,BC/DE] + D[E,DE/F]) :   0.0 :   True
+           ('DE', 'F') :   0.0 :        F[F,D/E] - (B[F,C/DE] + B[F,ABC/DE] + B[F,BC/DE] + D[F,DE/F]) :   0.0 :   True
+          ('DEF', 'A') :   0.0 :    F[A,D/EF] + F[A,DE/F] - (B[A,ABC/DEF] + B[A,C/DEF] + B[A,BC/DEF]) :   0.0 :   True
+          ('DEF', 'B') :   0.0 :    F[B,D/EF] + F[B,DE/F] - (B[B,ABC/DEF] + B[B,C/DEF] + B[B,BC/DEF]) :   0.0 :   True
+          ('DEF', 'C') :   0.0 :    F[C,D/EF] + F[C,DE/F] - (B[C,ABC/DEF] + B[C,C/DEF] + B[C,BC/DEF]) :   0.0 :   True
+          ('DEF', 'D') :   0.0 :    F[D,D/EF] + F[D,DE/F] - (B[D,ABC/DEF] + B[D,C/DEF] + B[D,BC/DEF]) :   0.0 :   True
+          ('DEF', 'E') :   0.0 :    F[E,D/EF] + F[E,DE/F] - (B[E,ABC/DEF] + B[E,C/DEF] + B[E,BC/DEF]) :   0.0 :   True
+          ('DEF', 'F') :   0.0 :    F[F,D/EF] + F[F,DE/F] - (B[F,ABC/DEF] + B[F,C/DEF] + B[F,BC/DEF]) :   0.0 :   True
+           ('EF', 'A') :   0.0 :     F[A,E/F] - (B[A,D/EF] + B[A,CD/EF] + B[A,ABCD/EF] + B[A,BCD/EF]) :   0.0 :   True
+           ('EF', 'B') :   0.0 :     F[B,E/F] - (B[B,D/EF] + B[B,CD/EF] + B[B,ABCD/EF] + B[B,BCD/EF]) :   0.0 :   True
+           ('EF', 'C') :   0.0 :     F[C,E/F] - (B[C,D/EF] + B[C,CD/EF] + B[C,ABCD/EF] + B[C,BCD/EF]) :   0.0 :   True
+           ('EF', 'D') :   0.0 :     F[D,E/F] - (B[D,D/EF] + B[D,CD/EF] + B[D,ABCD/EF] + B[D,BCD/EF]) :   0.0 :   True
+           ('EF', 'E') :   0.0 :     F[E,E/F] - (B[E,D/EF] + B[E,CD/EF] + B[E,ABCD/EF] + B[E,BCD/EF]) :   0.0 :   True
+           ('EF', 'F') :   0.0 :     F[F,E/F] - (B[F,D/EF] + B[F,CD/EF] + B[F,ABCD/EF] + B[F,BCD/EF]) :   0.0 :   True
     distillate_comp_mb_global : Size=35, Index=TASKS, Active=True
         Key     : Lower : Body                                                                                                    : Upper : Active
             A/B :   0.0 :                             DT[A/B] - (D[A,A/B] + D[B,A/B] + D[C,A/B] + D[D,A/B] + D[E,A/B] + D[F,A/B]) :   0.0 :   True
@@ -3203,19 +3203,19 @@
     logic2 : State generated by rectifying section
         Size=15, Index=STATES, Active=True
         Key   : Lower : Body                                                                                                                                                                                   : Upper : Active
-            A :  -Inf : column[A/BCDEF].binary_indicator_var + column[A/B].binary_indicator_var + column[A/BCD].binary_indicator_var + column[A/BC].binary_indicator_var + column[A/BCDE].binary_indicator_var :   1.0 :   True
-           AB :  -Inf :                                    column[AB/CDE].binary_indicator_var + column[AB/CD].binary_indicator_var + column[AB/C].binary_indicator_var + column[AB/CDEF].binary_indicator_var :   1.0 :   True
-          ABC :  -Inf :                                                                        column[ABC/DE].binary_indicator_var + column[ABC/DEF].binary_indicator_var + column[ABC/D].binary_indicator_var :   1.0 :   True
+            A :  -Inf : column[A/BC].binary_indicator_var + column[A/BCDE].binary_indicator_var + column[A/B].binary_indicator_var + column[A/BCDEF].binary_indicator_var + column[A/BCD].binary_indicator_var :   1.0 :   True
+           AB :  -Inf :                                    column[AB/C].binary_indicator_var + column[AB/CDEF].binary_indicator_var + column[AB/CDE].binary_indicator_var + column[AB/CD].binary_indicator_var :   1.0 :   True
+          ABC :  -Inf :                                                                        column[ABC/DEF].binary_indicator_var + column[ABC/D].binary_indicator_var + column[ABC/DE].binary_indicator_var :   1.0 :   True
          ABCD :  -Inf :                                                                                                             column[ABCD/E].binary_indicator_var + column[ABCD/EF].binary_indicator_var :   1.0 :   True
         ABCDE :  -Inf :                                                                                                                                                   column[ABCDE/F].binary_indicator_var :   1.0 :   True
-            B :  -Inf :                                        column[B/CDEF].binary_indicator_var + column[B/C].binary_indicator_var + column[B/CDE].binary_indicator_var + column[B/CD].binary_indicator_var :   1.0 :   True
-           BC :  -Inf :                                                                           column[BC/DEF].binary_indicator_var + column[BC/DE].binary_indicator_var + column[BC/D].binary_indicator_var :   1.0 :   True
-          BCD :  -Inf :                                                                                                               column[BCD/EF].binary_indicator_var + column[BCD/E].binary_indicator_var :   1.0 :   True
+            B :  -Inf :                                        column[B/C].binary_indicator_var + column[B/CDE].binary_indicator_var + column[B/CD].binary_indicator_var + column[B/CDEF].binary_indicator_var :   1.0 :   True
+           BC :  -Inf :                                                                           column[BC/D].binary_indicator_var + column[BC/DEF].binary_indicator_var + column[BC/DE].binary_indicator_var :   1.0 :   True
+          BCD :  -Inf :                                                                                                               column[BCD/E].binary_indicator_var + column[BCD/EF].binary_indicator_var :   1.0 :   True
          BCDE :  -Inf :                                                                                                                                                    column[BCDE/F].binary_indicator_var :   1.0 :   True
-            C :  -Inf :                                                                              column[C/DE].binary_indicator_var + column[C/DEF].binary_indicator_var + column[C/D].binary_indicator_var :   1.0 :   True
-           CD :  -Inf :                                                                                                                 column[CD/E].binary_indicator_var + column[CD/EF].binary_indicator_var :   1.0 :   True
+            C :  -Inf :                                                                              column[C/DE].binary_indicator_var + column[C/D].binary_indicator_var + column[C/DEF].binary_indicator_var :   1.0 :   True
+           CD :  -Inf :                                                                                                                 column[CD/EF].binary_indicator_var + column[CD/E].binary_indicator_var :   1.0 :   True
           CDE :  -Inf :                                                                                                                                                     column[CDE/F].binary_indicator_var :   1.0 :   True
-            D :  -Inf :                                                                                                                   column[D/E].binary_indicator_var + column[D/EF].binary_indicator_var :   1.0 :   True
+            D :  -Inf :                                                                                                                   column[D/EF].binary_indicator_var + column[D/E].binary_indicator_var :   1.0 :   True
            DE :  -Inf :                                                                                                                                                      column[DE/F].binary_indicator_var :   1.0 :   True
             E :  -Inf :                                                                                                                                                       column[E/F].binary_indicator_var :   1.0 :   True
     logic3 : State generated by stripping section
@@ -3226,57 +3226,57 @@
           BCD :  -Inf :                                                                                                                                                     column[A/BCD].binary_indicator_var :   1.0 :   True
          BCDE :  -Inf :                                                                                                                                                    column[A/BCDE].binary_indicator_var :   1.0 :   True
         BCDEF :  -Inf :                                                                                                                                                   column[A/BCDEF].binary_indicator_var :   1.0 :   True
-            C :  -Inf :                                                                                                                   column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
+            C :  -Inf :                                                                                                                   column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
            CD :  -Inf :                                                                                                                 column[B/CD].binary_indicator_var + column[AB/CD].binary_indicator_var :   1.0 :   True
           CDE :  -Inf :                                                                                                               column[AB/CDE].binary_indicator_var + column[B/CDE].binary_indicator_var :   1.0 :   True
-         CDEF :  -Inf :                                                                                                             column[B/CDEF].binary_indicator_var + column[AB/CDEF].binary_indicator_var :   1.0 :   True
-            D :  -Inf :                                                                              column[ABC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[BC/D].binary_indicator_var :   1.0 :   True
-           DE :  -Inf :                                                                           column[ABC/DE].binary_indicator_var + column[C/DE].binary_indicator_var + column[BC/DE].binary_indicator_var :   1.0 :   True
-          DEF :  -Inf :                                                                        column[ABC/DEF].binary_indicator_var + column[BC/DEF].binary_indicator_var + column[C/DEF].binary_indicator_var :   1.0 :   True
-            E :  -Inf :                                        column[CD/E].binary_indicator_var + column[D/E].binary_indicator_var + column[ABCD/E].binary_indicator_var + column[BCD/E].binary_indicator_var :   1.0 :   True
-           EF :  -Inf :                                    column[ABCD/EF].binary_indicator_var + column[BCD/EF].binary_indicator_var + column[D/EF].binary_indicator_var + column[CD/EF].binary_indicator_var :   1.0 :   True
-            F :  -Inf : column[DE/F].binary_indicator_var + column[CDE/F].binary_indicator_var + column[ABCDE/F].binary_indicator_var + column[E/F].binary_indicator_var + column[BCDE/F].binary_indicator_var :   1.0 :   True
+         CDEF :  -Inf :                                                                                                             column[AB/CDEF].binary_indicator_var + column[B/CDEF].binary_indicator_var :   1.0 :   True
+            D :  -Inf :                                                                              column[BC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[ABC/D].binary_indicator_var :   1.0 :   True
+           DE :  -Inf :                                                                           column[C/DE].binary_indicator_var + column[ABC/DE].binary_indicator_var + column[BC/DE].binary_indicator_var :   1.0 :   True
+          DEF :  -Inf :                                                                        column[ABC/DEF].binary_indicator_var + column[C/DEF].binary_indicator_var + column[BC/DEF].binary_indicator_var :   1.0 :   True
+            E :  -Inf :                                        column[D/E].binary_indicator_var + column[CD/E].binary_indicator_var + column[BCD/E].binary_indicator_var + column[ABCD/E].binary_indicator_var :   1.0 :   True
+           EF :  -Inf :                                    column[D/EF].binary_indicator_var + column[CD/EF].binary_indicator_var + column[ABCD/EF].binary_indicator_var + column[BCD/EF].binary_indicator_var :   1.0 :   True
+            F :  -Inf : column[DE/F].binary_indicator_var + column[ABCDE/F].binary_indicator_var + column[E/F].binary_indicator_var + column[CDE/F].binary_indicator_var + column[BCDE/F].binary_indicator_var :   1.0 :   True
     logic4 : All products must be produced by at least one task
         Size=6, Index=COMP, Active=True
         Key : Lower : Body                                                                                                                                                                                   : Upper : Active
-          A :   1.0 : column[A/BCDEF].binary_indicator_var + column[A/B].binary_indicator_var + column[A/BCD].binary_indicator_var + column[A/BC].binary_indicator_var + column[A/BCDE].binary_indicator_var :  +Inf :   True
-          B :   1.0 :     column[B/CDEF].binary_indicator_var + column[B/C].binary_indicator_var + column[B/CDE].binary_indicator_var + column[B/CD].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
-          C :   1.0 :       column[C/DE].binary_indicator_var + column[C/DEF].binary_indicator_var + column[C/D].binary_indicator_var + column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :  +Inf :   True
-          D :   1.0 :       column[D/E].binary_indicator_var + column[D/EF].binary_indicator_var + column[ABC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[BC/D].binary_indicator_var :  +Inf :   True
-          E :   1.0 :     column[CD/E].binary_indicator_var + column[D/E].binary_indicator_var + column[ABCD/E].binary_indicator_var + column[BCD/E].binary_indicator_var + column[E/F].binary_indicator_var :  +Inf :   True
-          F :   1.0 : column[DE/F].binary_indicator_var + column[CDE/F].binary_indicator_var + column[ABCDE/F].binary_indicator_var + column[E/F].binary_indicator_var + column[BCDE/F].binary_indicator_var :  +Inf :   True
+          A :   1.0 : column[A/BC].binary_indicator_var + column[A/BCDE].binary_indicator_var + column[A/B].binary_indicator_var + column[A/BCDEF].binary_indicator_var + column[A/BCD].binary_indicator_var :  +Inf :   True
+          B :   1.0 :     column[B/C].binary_indicator_var + column[B/CDE].binary_indicator_var + column[B/CD].binary_indicator_var + column[B/CDEF].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
+          C :   1.0 :       column[C/DE].binary_indicator_var + column[C/D].binary_indicator_var + column[C/DEF].binary_indicator_var + column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :  +Inf :   True
+          D :   1.0 :       column[D/EF].binary_indicator_var + column[D/E].binary_indicator_var + column[BC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[ABC/D].binary_indicator_var :  +Inf :   True
+          E :   1.0 :     column[D/E].binary_indicator_var + column[CD/E].binary_indicator_var + column[BCD/E].binary_indicator_var + column[ABCD/E].binary_indicator_var + column[E/F].binary_indicator_var :  +Inf :   True
+          F :   1.0 : column[DE/F].binary_indicator_var + column[ABCDE/F].binary_indicator_var + column[E/F].binary_indicator_var + column[CDE/F].binary_indicator_var + column[BCDE/F].binary_indicator_var :  +Inf :   True
     logic5 : Pure product i can only be produced by at most 1 rectifying section
         Size=5, Index=COMP, Active=True
         Key : Lower : Body                                                                                                                                                                                   : Upper : Active
-          A :  -Inf : column[A/BCDEF].binary_indicator_var + column[A/B].binary_indicator_var + column[A/BCD].binary_indicator_var + column[A/BC].binary_indicator_var + column[A/BCDE].binary_indicator_var :   1.0 :   True
-          B :  -Inf :                                        column[B/CDEF].binary_indicator_var + column[B/C].binary_indicator_var + column[B/CDE].binary_indicator_var + column[B/CD].binary_indicator_var :   1.0 :   True
-          C :  -Inf :                                                                              column[C/DE].binary_indicator_var + column[C/DEF].binary_indicator_var + column[C/D].binary_indicator_var :   1.0 :   True
-          D :  -Inf :                                                                                                                   column[D/E].binary_indicator_var + column[D/EF].binary_indicator_var :   1.0 :   True
+          A :  -Inf : column[A/BC].binary_indicator_var + column[A/BCDE].binary_indicator_var + column[A/B].binary_indicator_var + column[A/BCDEF].binary_indicator_var + column[A/BCD].binary_indicator_var :   1.0 :   True
+          B :  -Inf :                                        column[B/C].binary_indicator_var + column[B/CDE].binary_indicator_var + column[B/CD].binary_indicator_var + column[B/CDEF].binary_indicator_var :   1.0 :   True
+          C :  -Inf :                                                                              column[C/DE].binary_indicator_var + column[C/D].binary_indicator_var + column[C/DEF].binary_indicator_var :   1.0 :   True
+          D :  -Inf :                                                                                                                   column[D/EF].binary_indicator_var + column[D/E].binary_indicator_var :   1.0 :   True
           E :  -Inf :                                                                                                                                                       column[E/F].binary_indicator_var :   1.0 :   True
     logic6 : Pure product i can only be produced by at most 1 stripping section
         Size=5, Index=COMP, Active=True
         Key : Lower : Body                                                                                                                                                                                   : Upper : Active
           B :  -Inf :                                                                                                                                                       column[A/B].binary_indicator_var :   1.0 :   True
-          C :  -Inf :                                                                                                                   column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
-          D :  -Inf :                                                                              column[ABC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[BC/D].binary_indicator_var :   1.0 :   True
-          E :  -Inf :                                        column[CD/E].binary_indicator_var + column[D/E].binary_indicator_var + column[ABCD/E].binary_indicator_var + column[BCD/E].binary_indicator_var :   1.0 :   True
-          F :  -Inf : column[DE/F].binary_indicator_var + column[CDE/F].binary_indicator_var + column[ABCDE/F].binary_indicator_var + column[E/F].binary_indicator_var + column[BCDE/F].binary_indicator_var :   1.0 :   True
+          C :  -Inf :                                                                                                                   column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
+          D :  -Inf :                                                                              column[BC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[ABC/D].binary_indicator_var :   1.0 :   True
+          E :  -Inf :                                        column[D/E].binary_indicator_var + column[CD/E].binary_indicator_var + column[BCD/E].binary_indicator_var + column[ABCD/E].binary_indicator_var :   1.0 :   True
+          F :  -Inf : column[DE/F].binary_indicator_var + column[ABCDE/F].binary_indicator_var + column[E/F].binary_indicator_var + column[CDE/F].binary_indicator_var + column[BCDE/F].binary_indicator_var :   1.0 :   True
     logic9 : Size=14, Index=ISTATE, Active=True
         Key   : Lower : Body                                                                                                                                                                                                  : Upper : Active
-           AB :   1.0 : 1 - int_heat_exchanger[AB].binary_indicator_var + column[AB/CDE].binary_indicator_var + column[AB/CD].binary_indicator_var + column[AB/C].binary_indicator_var + column[AB/CDEF].binary_indicator_var :  +Inf :   True
-          ABC :   1.0 :                                    1 - int_heat_exchanger[ABC].binary_indicator_var + column[ABC/DE].binary_indicator_var + column[ABC/DEF].binary_indicator_var + column[ABC/D].binary_indicator_var :  +Inf :   True
+           AB :   1.0 : 1 - int_heat_exchanger[AB].binary_indicator_var + column[AB/C].binary_indicator_var + column[AB/CDEF].binary_indicator_var + column[AB/CDE].binary_indicator_var + column[AB/CD].binary_indicator_var :  +Inf :   True
+          ABC :   1.0 :                                    1 - int_heat_exchanger[ABC].binary_indicator_var + column[ABC/DEF].binary_indicator_var + column[ABC/D].binary_indicator_var + column[ABC/DE].binary_indicator_var :  +Inf :   True
          ABCD :   1.0 :                                                                        1 - int_heat_exchanger[ABCD].binary_indicator_var + column[ABCD/E].binary_indicator_var + column[ABCD/EF].binary_indicator_var :  +Inf :   True
         ABCDE :   1.0 :                                                                                                             1 - int_heat_exchanger[ABCDE].binary_indicator_var + column[ABCDE/F].binary_indicator_var :  +Inf :   True
-           BC :   1.0 :    1 - int_heat_exchanger[BC].binary_indicator_var + column[A/BC].binary_indicator_var + column[BC/DEF].binary_indicator_var + column[BC/DE].binary_indicator_var + column[BC/D].binary_indicator_var :  +Inf :   True
-          BCD :   1.0 :                                      1 - int_heat_exchanger[BCD].binary_indicator_var + column[BCD/EF].binary_indicator_var + column[A/BCD].binary_indicator_var + column[BCD/E].binary_indicator_var :  +Inf :   True
+           BC :   1.0 :    1 - int_heat_exchanger[BC].binary_indicator_var + column[BC/D].binary_indicator_var + column[A/BC].binary_indicator_var + column[BC/DEF].binary_indicator_var + column[BC/DE].binary_indicator_var :  +Inf :   True
+          BCD :   1.0 :                                      1 - int_heat_exchanger[BCD].binary_indicator_var + column[A/BCD].binary_indicator_var + column[BCD/E].binary_indicator_var + column[BCD/EF].binary_indicator_var :  +Inf :   True
          BCDE :   1.0 :                                                                         1 - int_heat_exchanger[BCDE].binary_indicator_var + column[A/BCDE].binary_indicator_var + column[BCDE/F].binary_indicator_var :  +Inf :   True
         BCDEF :   1.0 :                                                                                                             1 - int_heat_exchanger[BCDEF].binary_indicator_var + column[A/BCDEF].binary_indicator_var :  +Inf :   True
-           CD :   1.0 :     1 - int_heat_exchanger[CD].binary_indicator_var + column[CD/E].binary_indicator_var + column[B/CD].binary_indicator_var + column[AB/CD].binary_indicator_var + column[CD/EF].binary_indicator_var :  +Inf :   True
+           CD :   1.0 :     1 - int_heat_exchanger[CD].binary_indicator_var + column[B/CD].binary_indicator_var + column[CD/EF].binary_indicator_var + column[CD/E].binary_indicator_var + column[AB/CD].binary_indicator_var :  +Inf :   True
           CDE :   1.0 :                                      1 - int_heat_exchanger[CDE].binary_indicator_var + column[AB/CDE].binary_indicator_var + column[B/CDE].binary_indicator_var + column[CDE/F].binary_indicator_var :  +Inf :   True
-         CDEF :   1.0 :                                                                        1 - int_heat_exchanger[CDEF].binary_indicator_var + column[B/CDEF].binary_indicator_var + column[AB/CDEF].binary_indicator_var :  +Inf :   True
-           DE :   1.0 :    1 - int_heat_exchanger[DE].binary_indicator_var + column[ABC/DE].binary_indicator_var + column[C/DE].binary_indicator_var + column[BC/DE].binary_indicator_var + column[DE/F].binary_indicator_var :  +Inf :   True
-          DEF :   1.0 :                                    1 - int_heat_exchanger[DEF].binary_indicator_var + column[ABC/DEF].binary_indicator_var + column[BC/DEF].binary_indicator_var + column[C/DEF].binary_indicator_var :  +Inf :   True
-           EF :   1.0 : 1 - int_heat_exchanger[EF].binary_indicator_var + column[ABCD/EF].binary_indicator_var + column[BCD/EF].binary_indicator_var + column[D/EF].binary_indicator_var + column[CD/EF].binary_indicator_var :  +Inf :   True
+         CDEF :   1.0 :                                                                        1 - int_heat_exchanger[CDEF].binary_indicator_var + column[AB/CDEF].binary_indicator_var + column[B/CDEF].binary_indicator_var :  +Inf :   True
+           DE :   1.0 :    1 - int_heat_exchanger[DE].binary_indicator_var + column[DE/F].binary_indicator_var + column[C/DE].binary_indicator_var + column[ABC/DE].binary_indicator_var + column[BC/DE].binary_indicator_var :  +Inf :   True
+          DEF :   1.0 :                                    1 - int_heat_exchanger[DEF].binary_indicator_var + column[ABC/DEF].binary_indicator_var + column[C/DEF].binary_indicator_var + column[BC/DEF].binary_indicator_var :  +Inf :   True
+           EF :   1.0 : 1 - int_heat_exchanger[EF].binary_indicator_var + column[D/EF].binary_indicator_var + column[CD/EF].binary_indicator_var + column[ABCD/EF].binary_indicator_var + column[BCD/EF].binary_indicator_var :  +Inf :   True
     opex_def : Size=1, Index=None, Active=True
         Key  : Lower : Body                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         : Upper : Active
         None :   0.0 : OPEX - (12.96*(Qreb[A/B] + Qreb[A/BC] + Qreb[A/BCD] + Qreb[A/BCDE] + Qreb[A/BCDEF] + Qreb[AB/C] + Qreb[AB/CD] + Qreb[AB/CDE] + Qreb[AB/CDEF] + Qreb[ABC/D] + Qreb[ABC/DE] + Qreb[ABC/DEF] + Qreb[ABCD/E] + Qreb[ABCD/EF] + Qreb[ABCDE/F] + Qreb[B/C] + Qreb[B/CD] + Qreb[B/CDE] + Qreb[B/CDEF] + Qreb[BC/D] + Qreb[BC/DE] + Qreb[BC/DEF] + Qreb[BCD/E] + Qreb[BCD/EF] + Qreb[BCDE/F] + Qreb[C/D] + Qreb[C/DE] + Qreb[C/DEF] + Qreb[CD/E] + Qreb[CD/EF] + Qreb[CDE/F] + Qreb[D/E] + Qreb[D/EF] + Qreb[DE/F] + Qreb[E/F]) + 43.2*(Qcond[A/B] + Qcond[A/BC] + Qcond[A/BCD] + Qcond[A/BCDE] + Qcond[A/BCDEF] + Qcond[AB/C] + Qcond[AB/CD] + Qcond[AB/CDE] + Qcond[AB/CDEF] + Qcond[ABC/D] + Qcond[ABC/DE] + Qcond[ABC/DEF] + Qcond[ABCD/E] + Qcond[ABCD/EF] + Qcond[ABCDE/F] + Qcond[B/C] + Qcond[B/CD] + Qcond[B/CDE] + Qcond[B/CDEF] + Qcond[BC/D] + Qcond[BC/DE] + Qcond[BC/DEF] + Qcond[BCD/E] + Qcond[BCD/EF] + Qcond[BCDE/F] + Qcond[C/D] + Qcond[C/DE] + Qcond[C/DEF] + Qcond[CD/E] + Qcond[CD/EF] + Qcond[CDE/F] + Qcond[D/E] + Qcond[D/EF] + Qcond[DE/F] + Qcond[E/F])) :   0.0 :   True
@@ -3293,20 +3293,20 @@
         None : 250.0 : FT[A/BCDEF] + FT[AB/CDEF] + FT[ABC/DEF] + FT[ABCD/EF] + FT[ABCDE/F] : 250.0 :   True
     total_mb_between_cols : Size=14, Index=STATES, Active=True
         Key   : Lower : Body                                                            : Upper : Active
-           AB :   0.0 :     FT[A/B] - (DT[AB/CDE] + DT[AB/CD] + DT[AB/C] + DT[AB/CDEF]) :   0.0 :   True
-          ABC :   0.0 :    FT[A/BC] + FT[AB/C] - (DT[ABC/DE] + DT[ABC/DEF] + DT[ABC/D]) :   0.0 :   True
+           AB :   0.0 :     FT[A/B] - (DT[AB/C] + DT[AB/CDEF] + DT[AB/CDE] + DT[AB/CD]) :   0.0 :   True
+          ABC :   0.0 :    FT[A/BC] + FT[AB/C] - (DT[ABC/DEF] + DT[ABC/D] + DT[ABC/DE]) :   0.0 :   True
          ABCD :   0.0 :  FT[A/BCD] + FT[AB/CD] + FT[ABC/D] - (DT[ABCD/E] + DT[ABCD/EF]) :   0.0 :   True
         ABCDE :   0.0 : FT[A/BCDE] + FT[AB/CDE] + FT[ABC/DE] + FT[ABCD/E] - DT[ABCDE/F] :   0.0 :   True
-           BC :   0.0 :        FT[B/C] - (DT[BC/DEF] + DT[BC/DE] + DT[BC/D] + BT[A/BC]) :   0.0 :   True
-          BCD :   0.0 :      FT[B/CD] + FT[BC/D] - (DT[BCD/EF] + DT[BCD/E] + BT[A/BCD]) :   0.0 :   True
+           BC :   0.0 :        FT[B/C] - (DT[BC/D] + DT[BC/DEF] + DT[BC/DE] + BT[A/BC]) :   0.0 :   True
+          BCD :   0.0 :      FT[B/CD] + FT[BC/D] - (DT[BCD/E] + DT[BCD/EF] + BT[A/BCD]) :   0.0 :   True
          BCDE :   0.0 :   FT[B/CDE] + FT[BC/DE] + FT[BCD/E] - (DT[BCDE/F] + BT[A/BCDE]) :   0.0 :   True
         BCDEF :   0.0 : FT[B/CDEF] + FT[BC/DEF] + FT[BCD/EF] + FT[BCDE/F] - BT[A/BCDEF] :   0.0 :   True
-           CD :   0.0 :         FT[C/D] - (DT[CD/E] + DT[CD/EF] + BT[B/CD] + BT[AB/CD]) :   0.0 :   True
+           CD :   0.0 :         FT[C/D] - (DT[CD/EF] + DT[CD/E] + BT[B/CD] + BT[AB/CD]) :   0.0 :   True
           CDE :   0.0 :      FT[C/DE] + FT[CD/E] - (BT[AB/CDE] + BT[B/CDE] + DT[CDE/F]) :   0.0 :   True
-         CDEF :   0.0 :  FT[C/DEF] + FT[CD/EF] + FT[CDE/F] - (BT[B/CDEF] + BT[AB/CDEF]) :   0.0 :   True
-           DE :   0.0 :        FT[D/E] - (BT[ABC/DE] + BT[C/DE] + BT[BC/DE] + DT[DE/F]) :   0.0 :   True
-          DEF :   0.0 :    FT[D/EF] + FT[DE/F] - (BT[ABC/DEF] + BT[BC/DEF] + BT[C/DEF]) :   0.0 :   True
-           EF :   0.0 :     FT[E/F] - (BT[ABCD/EF] + BT[BCD/EF] + BT[D/EF] + BT[CD/EF]) :   0.0 :   True
+         CDEF :   0.0 :  FT[C/DEF] + FT[CD/EF] + FT[CDE/F] - (BT[AB/CDEF] + BT[B/CDEF]) :   0.0 :   True
+           DE :   0.0 :        FT[D/E] - (BT[C/DE] + BT[ABC/DE] + BT[BC/DE] + DT[DE/F]) :   0.0 :   True
+          DEF :   0.0 :    FT[D/EF] + FT[DE/F] - (BT[ABC/DEF] + BT[C/DEF] + BT[BC/DEF]) :   0.0 :   True
+           EF :   0.0 :     FT[E/F] - (BT[D/EF] + BT[CD/EF] + BT[ABCD/EF] + BT[BCD/EF]) :   0.0 :   True
 
 6 Disjunct Declarations
     column : Disjunct for column existence
@@ -7137,7 +7137,7 @@
             3 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                            : Upper : Active
-                    None :   0.0 : area_final_condenser[A] - (Qcond[A/BCDEF] + Qcond[A/B] + Qcond[A/BCD] + Qcond[A/BC] + Qcond[A/BCDE])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_final_condenser[A] - (Qcond[A/BC] + Qcond[A/BCDE] + Qcond[A/B] + Qcond[A/BCDEF] + Qcond[A/BCD])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                   : Upper : Active
                     None :   0.0 : final_condenser_cost[A] - (-0.0533104431*area_final_condenser[A]**2 + 126.227551*area_final_condenser[A] + 9653.99504) :   0.0 :   True
@@ -7164,7 +7164,7 @@
             6 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                           : Upper : Active
-                    None :   0.0 : area_final_condenser[B] - (Qcond[B/CDEF] + Qcond[B/C] + Qcond[B/CDE] + Qcond[B/CD])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_final_condenser[B] - (Qcond[B/C] + Qcond[B/CDE] + Qcond[B/CD] + Qcond[B/CDEF])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                   : Upper : Active
                     None :   0.0 : final_condenser_cost[B] - (-0.0533104431*area_final_condenser[B]**2 + 126.227551*area_final_condenser[B] + 9653.99504) :   0.0 :   True
@@ -7199,7 +7199,7 @@
             6 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                           : Upper : Active
-                    None :   0.0 : area_final_condenser[C] - (Qcond[C/DE] + Qcond[C/DEF] + Qcond[C/D])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_final_condenser[C] - (Qcond[C/DE] + Qcond[C/D] + Qcond[C/DEF])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                   : Upper : Active
                     None :   0.0 : final_condenser_cost[C] - (-0.0533104431*area_final_condenser[C]**2 + 126.227551*area_final_condenser[C] + 9653.99504) :   0.0 :   True
@@ -7210,7 +7210,7 @@
                     C/DEF :   0.0 : Qcond[C/DEF]*DT[C/DEF] - (30.77*D[A,C/DEF]*Vr[C/DEF] + 33.19*D[B,C/DEF]*Vr[C/DEF] + 35.58*D[C,C/DEF]*Vr[C/DEF] + 37.0*D[D,C/DEF]*Vr[C/DEF] + 40.0*D[E,C/DEF]*Vr[C/DEF] + 42.0*D[F,C/DEF]*Vr[C/DEF]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                          : Upper : Active
-                    None :   0.0 : area_final_reboiler[C] - (Qreb[B/C] + Qreb[AB/C])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[C] - (Qreb[AB/C] + Qreb[B/C])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[C] - (-0.0710805909*area_final_reboiler[C]**2 + 168.303402*area_final_reboiler[C] + 12871.9934) :   0.0 :   True
@@ -7234,7 +7234,7 @@
             6 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                            : Upper : Active
-                    None :   0.0 : area_final_condenser[D] - (Qcond[D/E] + Qcond[D/EF])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_final_condenser[D] - (Qcond[D/EF] + Qcond[D/E])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                   : Upper : Active
                     None :   0.0 : final_condenser_cost[D] - (-0.0533104431*area_final_condenser[D]**2 + 126.227551*area_final_condenser[D] + 9653.99504) :   0.0 :   True
@@ -7244,7 +7244,7 @@
                     D/EF :   0.0 : Qcond[D/EF]*DT[D/EF] - (30.77*D[A,D/EF]*Vr[D/EF] + 33.19*D[B,D/EF]*Vr[D/EF] + 35.58*D[C,D/EF]*Vr[D/EF] + 37.0*D[D,D/EF]*Vr[D/EF] + 40.0*D[E,D/EF]*Vr[D/EF] + 42.0*D[F,D/EF]*Vr[D/EF]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                        : Upper : Active
-                    None :   0.0 : area_final_reboiler[D] - (Qreb[ABC/D] + Qreb[C/D] + Qreb[BC/D])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[D] - (Qreb[BC/D] + Qreb[C/D] + Qreb[ABC/D])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[D] - (-0.0710805909*area_final_reboiler[D]**2 + 168.303402*area_final_reboiler[D] + 12871.9934) :   0.0 :   True
@@ -7278,7 +7278,7 @@
                     E/F :   0.0 : Qcond[E/F]*DT[E/F] - (30.77*D[A,E/F]*Vr[E/F] + 33.19*D[B,E/F]*Vr[E/F] + 35.58*D[C,E/F]*Vr[E/F] + 37.0*D[D,E/F]*Vr[E/F] + 40.0*D[E,E/F]*Vr[E/F] + 42.0*D[F,E/F]*Vr[E/F]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                       : Upper : Active
-                    None :   0.0 : area_final_reboiler[E] - (Qreb[CD/E] + Qreb[D/E] + Qreb[ABCD/E] + Qreb[BCD/E])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[E] - (Qreb[D/E] + Qreb[CD/E] + Qreb[BCD/E] + Qreb[ABCD/E])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[E] - (-0.0710805909*area_final_reboiler[E]**2 + 168.303402*area_final_reboiler[E] + 12871.9934) :   0.0 :   True
@@ -7304,7 +7304,7 @@
             3 Constraint Declarations
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                       : Upper : Active
-                    None :   0.0 : area_final_reboiler[F] - (Qreb[DE/F] + Qreb[CDE/F] + Qreb[ABCDE/F] + Qreb[E/F] + Qreb[BCDE/F])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[F] - (Qreb[DE/F] + Qreb[ABCDE/F] + Qreb[E/F] + Qreb[CDE/F] + Qreb[BCDE/F])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[F] - (-0.0710805909*area_final_reboiler[F]**2 + 168.303402*area_final_reboiler[F] + 12871.9934) :   0.0 :   True
@@ -7333,7 +7333,7 @@
             4 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                       : Upper : Active
-                    None :   0.0 : area_intermediate_condenser[AB] - (Qcond[AB/CDE] + Qcond[AB/CD] + Qcond[AB/C] + Qcond[AB/CDEF])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_condenser[AB] - (Qcond[AB/C] + Qcond[AB/CDEF] + Qcond[AB/CDE] + Qcond[AB/CD])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                    : Upper : Active
                     None :   0.0 : inter_condenser_cost[AB] - (-0.0533104431*area_intermediate_condenser[AB]**2 + 126.227551*area_intermediate_condenser[AB] + 9653.99504) :   0.0 :   True
@@ -7362,7 +7362,7 @@
             4 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                          : Upper : Active
-                    None :   0.0 : area_intermediate_condenser[ABC] - (Qcond[ABC/DE] + Qcond[ABC/DEF] + Qcond[ABC/D])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_condenser[ABC] - (Qcond[ABC/DEF] + Qcond[ABC/D] + Qcond[ABC/DE])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                       : Upper : Active
                     None :   0.0 : inter_condenser_cost[ABC] - (-0.0533104431*area_intermediate_condenser[ABC]**2 + 126.227551*area_intermediate_condenser[ABC] + 9653.99504) :   0.0 :   True
@@ -7449,7 +7449,7 @@
             7 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                      : Upper : Active
-                    None :   0.0 : area_intermediate_condenser[BC] - (Qcond[BC/DEF] + Qcond[BC/DE] + Qcond[BC/D])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_condenser[BC] - (Qcond[BC/D] + Qcond[BC/DEF] + Qcond[BC/DE])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                    : Upper : Active
                     None :   0.0 : inter_condenser_cost[BC] - (-0.0533104431*area_intermediate_condenser[BC]**2 + 126.227551*area_intermediate_condenser[BC] + 9653.99504) :   0.0 :   True
@@ -7486,7 +7486,7 @@
             7 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                         : Upper : Active
-                    None :   0.0 : area_intermediate_condenser[BCD] - (Qcond[BCD/EF] + Qcond[BCD/E])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_condenser[BCD] - (Qcond[BCD/E] + Qcond[BCD/EF])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                       : Upper : Active
                     None :   0.0 : inter_condenser_cost[BCD] - (-0.0533104431*area_intermediate_condenser[BCD]**2 + 126.227551*area_intermediate_condenser[BCD] + 9653.99504) :   0.0 :   True
@@ -7589,7 +7589,7 @@
             7 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                      : Upper : Active
-                    None :   0.0 : area_intermediate_condenser[CD] - (Qcond[CD/E] + Qcond[CD/EF])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_condenser[CD] - (Qcond[CD/EF] + Qcond[CD/E])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                    : Upper : Active
                     None :   0.0 : inter_condenser_cost[CD] - (-0.0533104431*area_intermediate_condenser[CD]**2 + 126.227551*area_intermediate_condenser[CD] + 9653.99504) :   0.0 :   True
@@ -7672,7 +7672,7 @@
                      B/CDEF :   0.0 :               Qreb[B/CDEF]*BT[B/CDEF] - (30.77*B[A,B/CDEF]*Vr[B/CDEF] + 33.19*B[B,B/CDEF]*Vr[B/CDEF] + 35.58*B[C,B/CDEF]*Vr[B/CDEF] + 37.0*B[D,B/CDEF]*Vr[B/CDEF] + 40.0*B[E,B/CDEF]*Vr[B/CDEF] + 42.0*B[F,B/CDEF]*Vr[B/CDEF]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                          : Upper : Active
-                    None :   0.0 : area_intermediate_reboiler[CDEF] - (Qreb[B/CDEF] + Qreb[AB/CDEF])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_reboiler[CDEF] - (Qreb[AB/CDEF] + Qreb[B/CDEF])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                       : Upper : Active
                     None :   0.0 : inter_reboiler_cost[CDEF] - (-0.0710805909*area_intermediate_reboiler[CDEF]**2 + 168.303402*area_intermediate_reboiler[CDEF] + 12871.9934) :   0.0 :   True
@@ -7709,7 +7709,7 @@
                       C/DE :   0.0 :                             Qreb[C/DE]*BT[C/DE] - (30.77*B[A,C/DE]*Vr[C/DE] + 33.19*B[B,C/DE]*Vr[C/DE] + 35.58*B[C,C/DE]*Vr[C/DE] + 37.0*B[D,C/DE]*Vr[C/DE] + 40.0*B[E,C/DE]*Vr[C/DE] + 42.0*B[F,C/DE]*Vr[C/DE]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                   : Upper : Active
-                    None :   0.0 : area_intermediate_reboiler[DE] - (Qreb[ABC/DE] + Qreb[C/DE] + Qreb[BC/DE])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_reboiler[DE] - (Qreb[C/DE] + Qreb[ABC/DE] + Qreb[BC/DE])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                 : Upper : Active
                     None :   0.0 : inter_reboiler_cost[DE] - (-0.0710805909*area_intermediate_reboiler[DE]**2 + 168.303402*area_intermediate_reboiler[DE] + 12871.9934) :   0.0 :   True
@@ -7738,7 +7738,7 @@
                       C/DEF :   0.0 :                             Qreb[C/DEF]*BT[C/DEF] - (30.77*B[A,C/DEF]*Vr[C/DEF] + 33.19*B[B,C/DEF]*Vr[C/DEF] + 35.58*B[C,C/DEF]*Vr[C/DEF] + 37.0*B[D,C/DEF]*Vr[C/DEF] + 40.0*B[E,C/DEF]*Vr[C/DEF] + 42.0*B[F,C/DEF]*Vr[C/DEF]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                       : Upper : Active
-                    None :   0.0 : area_intermediate_reboiler[DEF] - (Qreb[ABC/DEF] + Qreb[BC/DEF] + Qreb[C/DEF])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_reboiler[DEF] - (Qreb[ABC/DEF] + Qreb[C/DEF] + Qreb[BC/DEF])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                    : Upper : Active
                     None :   0.0 : inter_reboiler_cost[DEF] - (-0.0710805909*area_intermediate_reboiler[DEF]**2 + 168.303402*area_intermediate_reboiler[DEF] + 12871.9934) :   0.0 :   True
@@ -7767,7 +7767,7 @@
                        D/EF :   0.0 :                                           Qreb[D/EF]*BT[D/EF] - (30.77*B[A,D/EF]*Vr[D/EF] + 33.19*B[B,D/EF]*Vr[D/EF] + 35.58*B[C,D/EF]*Vr[D/EF] + 37.0*B[D,D/EF]*Vr[D/EF] + 40.0*B[E,D/EF]*Vr[D/EF] + 42.0*B[F,D/EF]*Vr[D/EF]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                   : Upper : Active
-                    None :   0.0 : area_intermediate_reboiler[EF] - (Qreb[ABCD/EF] + Qreb[BCD/EF] + Qreb[D/EF] + Qreb[CD/EF])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_reboiler[EF] - (Qreb[D/EF] + Qreb[CD/EF] + Qreb[ABCD/EF] + Qreb[BCD/EF])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                 : Upper : Active
                     None :   0.0 : inter_reboiler_cost[EF] - (-0.0710805909*area_intermediate_reboiler[EF]**2 + 168.303402*area_intermediate_reboiler[EF] + 12871.9934) :   0.0 :   True
@@ -10805,10 +10805,10 @@
                     None :   0.0 : inter_condenser_cost[AB] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                  : Upper : Active
-                    None :   0.0 : Lr[A/B] - Ls[A/B] - (Lr[AB/CDE] + Lr[AB/CD] + Lr[AB/C] + Lr[AB/CDEF]) :   0.0 :   True
+                    None :   0.0 : Lr[A/B] - Ls[A/B] - (Lr[AB/C] + Lr[AB/CDEF] + Lr[AB/CDE] + Lr[AB/CD]) :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                  : Upper : Active
-                    None :   0.0 : Vr[A/B] - Vs[A/B] - (Vr[AB/CDE] + Vr[AB/CD] + Vr[AB/C] + Vr[AB/CDEF]) :   0.0 :   True
+                    None :   0.0 : Vr[A/B] - Vs[A/B] - (Vr[AB/C] + Vr[AB/CDEF] + Vr[AB/CDE] + Vr[AB/CD]) :   0.0 :   True
                 inactive_intermediate_condenser : Size=4, Index=IREC_m[AB], Active=True
                     Key     : Lower : Body           : Upper : Active
                        AB/C :   0.0 :    Qcond[AB/C] :   0.0 :   True
@@ -10843,10 +10843,10 @@
                     None :   0.0 : inter_condenser_cost[ABC] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                               : Upper : Active
-                    None :   0.0 : Lr[A/BC] - Ls[A/BC] + Lr[AB/C] - Ls[AB/C] - (Lr[ABC/DE] + Lr[ABC/DEF] + Lr[ABC/D]) :   0.0 :   True
+                    None :   0.0 : Lr[A/BC] - Ls[A/BC] + Lr[AB/C] - Ls[AB/C] - (Lr[ABC/DEF] + Lr[ABC/D] + Lr[ABC/DE]) :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                               : Upper : Active
-                    None :   0.0 : Vr[A/BC] - Vs[A/BC] + Vr[AB/C] - Vs[AB/C] - (Vr[ABC/DE] + Vr[ABC/DEF] + Vr[ABC/D]) :   0.0 :   True
+                    None :   0.0 : Vr[A/BC] - Vs[A/BC] + Vr[AB/C] - Vs[AB/C] - (Vr[ABC/DEF] + Vr[ABC/D] + Vr[ABC/DE]) :   0.0 :   True
                 inactive_intermediate_condenser : Size=3, Index=IREC_m[ABC], Active=True
                     Key     : Lower : Body           : Upper : Active
                       ABC/D :   0.0 :   Qcond[ABC/D] :   0.0 :   True
@@ -10951,10 +10951,10 @@
                     None :   0.0 : inter_condenser_cost[BC] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                               : Upper : Active
-                    None :   0.0 : Lr[B/C] - Ls[B/C] + Ls[A/BC] - (Lr[BC/DEF] + Lr[BC/DE] + Lr[BC/D]) :   0.0 :   True
+                    None :   0.0 : Lr[B/C] - Ls[B/C] + Ls[A/BC] - (Lr[BC/D] + Lr[BC/DEF] + Lr[BC/DE]) :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                               : Upper : Active
-                    None :   0.0 : Vr[B/C] - Vs[B/C] + Vs[A/BC] - (Vr[BC/DEF] + Vr[BC/DE] + Vr[BC/D]) :   0.0 :   True
+                    None :   0.0 : Vr[B/C] - Vs[B/C] + Vs[A/BC] - (Vr[BC/D] + Vr[BC/DEF] + Vr[BC/DE]) :   0.0 :   True
                 inactive_intermediate_condenser : Size=3, Index=IREC_m[BC], Active=True
                     Key    : Lower : Body          : Upper : Active
                       BC/D :   0.0 :   Qcond[BC/D] :   0.0 :   True
@@ -10991,10 +10991,10 @@
                     None :   0.0 : inter_condenser_cost[BCD] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                             : Upper : Active
-                    None :   0.0 : Lr[B/CD] - Ls[B/CD] + Lr[BC/D] - Ls[BC/D] + Ls[A/BCD] - (Lr[BCD/EF] + Lr[BCD/E]) :   0.0 :   True
+                    None :   0.0 : Lr[B/CD] - Ls[B/CD] + Lr[BC/D] - Ls[BC/D] + Ls[A/BCD] - (Lr[BCD/E] + Lr[BCD/EF]) :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                             : Upper : Active
-                    None :   0.0 : Vr[B/CD] - Vs[B/CD] + Vr[BC/D] - Vs[BC/D] + Vs[A/BCD] - (Vr[BCD/EF] + Vr[BCD/E]) :   0.0 :   True
+                    None :   0.0 : Vr[B/CD] - Vs[B/CD] + Vr[BC/D] - Vs[BC/D] + Vs[A/BCD] - (Vr[BCD/E] + Vr[BCD/EF]) :   0.0 :   True
                 inactive_intermediate_condenser : Size=2, Index=IREC_m[BCD], Active=True
                     Key    : Lower : Body          : Upper : Active
                      BCD/E :   0.0 :  Qcond[BCD/E] :   0.0 :   True
@@ -11103,10 +11103,10 @@
                     None :   0.0 : inter_condenser_cost[CD] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                              : Upper : Active
-                    None :   0.0 : Lr[C/D] - Ls[C/D] + Ls[B/CD] + Ls[AB/CD] - (Lr[CD/E] + Lr[CD/EF]) :   0.0 :   True
+                    None :   0.0 : Lr[C/D] - Ls[C/D] + Ls[B/CD] + Ls[AB/CD] - (Lr[CD/EF] + Lr[CD/E]) :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                              : Upper : Active
-                    None :   0.0 : Vr[C/D] - Vs[C/D] + Vs[B/CD] + Vs[AB/CD] - (Vr[CD/E] + Vr[CD/EF]) :   0.0 :   True
+                    None :   0.0 : Vr[C/D] - Vs[C/D] + Vs[B/CD] + Vs[AB/CD] - (Vr[CD/EF] + Vr[CD/E]) :   0.0 :   True
                 inactive_intermediate_condenser : Size=2, Index=IREC_m[CD], Active=True
                     Key   : Lower : Body         : Upper : Active
                      CD/E :   0.0 :  Qcond[CD/E] :   0.0 :   True
@@ -11182,10 +11182,10 @@
                     None :   0.0 : inter_condenser_cost[CDEF] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                             : Upper : Active
-                    None :   0.0 : Lr[C/DEF] - Ls[C/DEF] + Lr[CD/EF] - Ls[CD/EF] + Lr[CDE/F] - Ls[CDE/F] + Ls[B/CDEF] + Ls[AB/CDEF] :   0.0 :   True
+                    None :   0.0 : Lr[C/DEF] - Ls[C/DEF] + Lr[CD/EF] - Ls[CD/EF] + Lr[CDE/F] - Ls[CDE/F] + Ls[AB/CDEF] + Ls[B/CDEF] :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                             : Upper : Active
-                    None :   0.0 : Vr[C/DEF] - Vs[C/DEF] + Vr[CD/EF] - Vs[CD/EF] + Vr[CDE/F] - Vs[CDE/F] + Vs[B/CDEF] + Vs[AB/CDEF] :   0.0 :   True
+                    None :   0.0 : Vr[C/DEF] - Vs[C/DEF] + Vr[CD/EF] - Vs[CD/EF] + Vr[CDE/F] - Vs[CDE/F] + Vs[AB/CDEF] + Vs[B/CDEF] :   0.0 :   True
                 inactive_intermediate_reboiler : Size=2, Index=ISTRIP_m[CDEF], Active=True
                     Key     : Lower : Body          : Upper : Active
                     AB/CDEF :   0.0 : Qreb[AB/CDEF] :   0.0 :   True
@@ -11218,10 +11218,10 @@
                     None :   0.0 : inter_condenser_cost[DE] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                             : Upper : Active
-                    None :   0.0 : Lr[D/E] - Ls[D/E] + Ls[ABC/DE] + Ls[C/DE] + Ls[BC/DE] - Lr[DE/F] :   0.0 :   True
+                    None :   0.0 : Lr[D/E] - Ls[D/E] + Ls[C/DE] + Ls[ABC/DE] + Ls[BC/DE] - Lr[DE/F] :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                             : Upper : Active
-                    None :   0.0 : Vr[D/E] - Vs[D/E] + Vs[ABC/DE] + Vs[C/DE] + Vs[BC/DE] - Vr[DE/F] :   0.0 :   True
+                    None :   0.0 : Vr[D/E] - Vs[D/E] + Vs[C/DE] + Vs[ABC/DE] + Vs[BC/DE] - Vr[DE/F] :   0.0 :   True
                 inactive_intermediate_condenser : Size=1, Index=IREC_m[DE], Active=True
                     Key  : Lower : Body        : Upper : Active
                     DE/F :   0.0 : Qcond[DE/F] :   0.0 :   True
@@ -11258,10 +11258,10 @@
                     None :   0.0 : inter_condenser_cost[DEF] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                             : Upper : Active
-                    None :   0.0 : Lr[D/EF] - Ls[D/EF] + Lr[DE/F] - Ls[DE/F] + Ls[ABC/DEF] + Ls[BC/DEF] + Ls[C/DEF] :   0.0 :   True
+                    None :   0.0 : Lr[D/EF] - Ls[D/EF] + Lr[DE/F] - Ls[DE/F] + Ls[ABC/DEF] + Ls[C/DEF] + Ls[BC/DEF] :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                             : Upper : Active
-                    None :   0.0 : Vr[D/EF] - Vs[D/EF] + Vr[DE/F] - Vs[DE/F] + Vs[ABC/DEF] + Vs[BC/DEF] + Vs[C/DEF] :   0.0 :   True
+                    None :   0.0 : Vr[D/EF] - Vs[D/EF] + Vr[DE/F] - Vs[DE/F] + Vs[ABC/DEF] + Vs[C/DEF] + Vs[BC/DEF] :   0.0 :   True
                 inactive_intermediate_reboiler : Size=3, Index=ISTRIP_m[DEF], Active=True
                     Key     : Lower : Body          : Upper : Active
                     ABC/DEF :   0.0 : Qreb[ABC/DEF] :   0.0 :   True
@@ -11295,10 +11295,10 @@
                     None :   0.0 : inter_condenser_cost[EF] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                : Upper : Active
-                    None :   0.0 : Lr[E/F] - Ls[E/F] + Ls[ABCD/EF] + Ls[BCD/EF] + Ls[D/EF] + Ls[CD/EF] :   0.0 :   True
+                    None :   0.0 : Lr[E/F] - Ls[E/F] + Ls[D/EF] + Ls[CD/EF] + Ls[ABCD/EF] + Ls[BCD/EF] :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                : Upper : Active
-                    None :   0.0 : Vr[E/F] - Vs[E/F] + Vs[ABCD/EF] + Vs[BCD/EF] + Vs[D/EF] + Vs[CD/EF] :   0.0 :   True
+                    None :   0.0 : Vr[E/F] - Vs[E/F] + Vs[D/EF] + Vs[CD/EF] + Vs[ABCD/EF] + Vs[BCD/EF] :   0.0 :   True
                 inactive_intermediate_reboiler : Size=4, Index=ISTRIP_m[EF], Active=True
                     Key     : Lower : Body          : Upper : Active
                     ABCD/EF :   0.0 : Qreb[ABCD/EF] :   0.0 :   True
@@ -11432,9 +11432,9 @@
     logic11 : Connectivity relations e.g. A/B implies AB/C
         Size=30, Index=STATES*TASKS, Active=True
         Key                 : Body                                                                                                                                                  : Active
-              ('AB', 'A/B') : column[A/B].indicator_var --> column[AB/CDE].indicator_var ∨ column[AB/CD].indicator_var ∨ column[AB/C].indicator_var ∨ column[AB/CDEF].indicator_var :   True
-            ('ABC', 'A/BC') :                             column[A/BC].indicator_var --> column[ABC/DE].indicator_var ∨ column[ABC/DEF].indicator_var ∨ column[ABC/D].indicator_var :   True
-            ('ABC', 'AB/C') :                             column[AB/C].indicator_var --> column[ABC/DE].indicator_var ∨ column[ABC/DEF].indicator_var ∨ column[ABC/D].indicator_var :   True
+              ('AB', 'A/B') : column[A/B].indicator_var --> column[AB/C].indicator_var ∨ column[AB/CDEF].indicator_var ∨ column[AB/CDE].indicator_var ∨ column[AB/CD].indicator_var :   True
+            ('ABC', 'A/BC') :                             column[A/BC].indicator_var --> column[ABC/DEF].indicator_var ∨ column[ABC/D].indicator_var ∨ column[ABC/DE].indicator_var :   True
+            ('ABC', 'AB/C') :                             column[AB/C].indicator_var --> column[ABC/DEF].indicator_var ∨ column[ABC/D].indicator_var ∨ column[ABC/DE].indicator_var :   True
           ('ABCD', 'A/BCD') :                                                          column[A/BCD].indicator_var --> column[ABCD/E].indicator_var ∨ column[ABCD/EF].indicator_var :   True
           ('ABCD', 'AB/CD') :                                                          column[AB/CD].indicator_var --> column[ABCD/E].indicator_var ∨ column[ABCD/EF].indicator_var :   True
           ('ABCD', 'ABC/D') :                                                          column[ABC/D].indicator_var --> column[ABCD/E].indicator_var ∨ column[ABCD/EF].indicator_var :   True
@@ -11442,9 +11442,9 @@
         ('ABCDE', 'AB/CDE') :                                                                                        column[AB/CDE].indicator_var --> column[ABCDE/F].indicator_var :   True
         ('ABCDE', 'ABC/DE') :                                                                                        column[ABC/DE].indicator_var --> column[ABCDE/F].indicator_var :   True
         ('ABCDE', 'ABCD/E') :                                                                                        column[ABCD/E].indicator_var --> column[ABCDE/F].indicator_var :   True
-              ('BC', 'B/C') :    column[B/C].indicator_var --> column[A/BC].indicator_var ∨ column[BC/DEF].indicator_var ∨ column[BC/DE].indicator_var ∨ column[BC/D].indicator_var :   True
-            ('BCD', 'B/CD') :                               column[B/CD].indicator_var --> column[BCD/EF].indicator_var ∨ column[A/BCD].indicator_var ∨ column[BCD/E].indicator_var :   True
-            ('BCD', 'BC/D') :                               column[BC/D].indicator_var --> column[BCD/EF].indicator_var ∨ column[A/BCD].indicator_var ∨ column[BCD/E].indicator_var :   True
+              ('BC', 'B/C') :    column[B/C].indicator_var --> column[BC/D].indicator_var ∨ column[A/BC].indicator_var ∨ column[BC/DEF].indicator_var ∨ column[BC/DE].indicator_var :   True
+            ('BCD', 'B/CD') :                               column[B/CD].indicator_var --> column[A/BCD].indicator_var ∨ column[BCD/E].indicator_var ∨ column[BCD/EF].indicator_var :   True
+            ('BCD', 'BC/D') :                               column[BC/D].indicator_var --> column[A/BCD].indicator_var ∨ column[BCD/E].indicator_var ∨ column[BCD/EF].indicator_var :   True
           ('BCDE', 'B/CDE') :                                                           column[B/CDE].indicator_var --> column[A/BCDE].indicator_var ∨ column[BCDE/F].indicator_var :   True
           ('BCDE', 'BC/DE') :                                                           column[BC/DE].indicator_var --> column[A/BCDE].indicator_var ∨ column[BCDE/F].indicator_var :   True
           ('BCDE', 'BCD/E') :                                                           column[BCD/E].indicator_var --> column[A/BCDE].indicator_var ∨ column[BCDE/F].indicator_var :   True
@@ -11452,35 +11452,35 @@
         ('BCDEF', 'BC/DEF') :                                                                                        column[BC/DEF].indicator_var --> column[A/BCDEF].indicator_var :   True
         ('BCDEF', 'BCD/EF') :                                                                                        column[BCD/EF].indicator_var --> column[A/BCDEF].indicator_var :   True
         ('BCDEF', 'BCDE/F') :                                                                                        column[BCDE/F].indicator_var --> column[A/BCDEF].indicator_var :   True
-              ('CD', 'C/D') :     column[C/D].indicator_var --> column[CD/E].indicator_var ∨ column[B/CD].indicator_var ∨ column[AB/CD].indicator_var ∨ column[CD/EF].indicator_var :   True
+              ('CD', 'C/D') :     column[C/D].indicator_var --> column[B/CD].indicator_var ∨ column[CD/EF].indicator_var ∨ column[CD/E].indicator_var ∨ column[AB/CD].indicator_var :   True
             ('CDE', 'C/DE') :                               column[C/DE].indicator_var --> column[AB/CDE].indicator_var ∨ column[B/CDE].indicator_var ∨ column[CDE/F].indicator_var :   True
             ('CDE', 'CD/E') :                               column[CD/E].indicator_var --> column[AB/CDE].indicator_var ∨ column[B/CDE].indicator_var ∨ column[CDE/F].indicator_var :   True
-          ('CDEF', 'C/DEF') :                                                          column[C/DEF].indicator_var --> column[B/CDEF].indicator_var ∨ column[AB/CDEF].indicator_var :   True
-          ('CDEF', 'CD/EF') :                                                          column[CD/EF].indicator_var --> column[B/CDEF].indicator_var ∨ column[AB/CDEF].indicator_var :   True
-          ('CDEF', 'CDE/F') :                                                          column[CDE/F].indicator_var --> column[B/CDEF].indicator_var ∨ column[AB/CDEF].indicator_var :   True
-              ('DE', 'D/E') :    column[D/E].indicator_var --> column[ABC/DE].indicator_var ∨ column[C/DE].indicator_var ∨ column[BC/DE].indicator_var ∨ column[DE/F].indicator_var :   True
-            ('DEF', 'D/EF') :                             column[D/EF].indicator_var --> column[ABC/DEF].indicator_var ∨ column[BC/DEF].indicator_var ∨ column[C/DEF].indicator_var :   True
-            ('DEF', 'DE/F') :                             column[DE/F].indicator_var --> column[ABC/DEF].indicator_var ∨ column[BC/DEF].indicator_var ∨ column[C/DEF].indicator_var :   True
-              ('EF', 'E/F') : column[E/F].indicator_var --> column[ABCD/EF].indicator_var ∨ column[BCD/EF].indicator_var ∨ column[D/EF].indicator_var ∨ column[CD/EF].indicator_var :   True
+          ('CDEF', 'C/DEF') :                                                          column[C/DEF].indicator_var --> column[AB/CDEF].indicator_var ∨ column[B/CDEF].indicator_var :   True
+          ('CDEF', 'CD/EF') :                                                          column[CD/EF].indicator_var --> column[AB/CDEF].indicator_var ∨ column[B/CDEF].indicator_var :   True
+          ('CDEF', 'CDE/F') :                                                          column[CDE/F].indicator_var --> column[AB/CDEF].indicator_var ∨ column[B/CDEF].indicator_var :   True
+              ('DE', 'D/E') :    column[D/E].indicator_var --> column[DE/F].indicator_var ∨ column[C/DE].indicator_var ∨ column[ABC/DE].indicator_var ∨ column[BC/DE].indicator_var :   True
+            ('DEF', 'D/EF') :                             column[D/EF].indicator_var --> column[ABC/DEF].indicator_var ∨ column[C/DEF].indicator_var ∨ column[BC/DEF].indicator_var :   True
+            ('DEF', 'DE/F') :                             column[DE/F].indicator_var --> column[ABC/DEF].indicator_var ∨ column[C/DEF].indicator_var ∨ column[BC/DEF].indicator_var :   True
+              ('EF', 'E/F') : column[E/F].indicator_var --> column[D/EF].indicator_var ∨ column[CD/EF].indicator_var ∨ column[ABCD/EF].indicator_var ∨ column[BCD/EF].indicator_var :   True
     logic7 : If a final product is produced by exactly one contribution, the heat exchanger associated with
                                  this product must be selected
         Size=6, Index=COMP, Active=True
         Key : Body                                                                                                                                                                                                      : Active
-          A : (exactly(1: [column[A/BCDEF].indicator_var, column[A/B].indicator_var, column[A/BCD].indicator_var, column[A/BC].indicator_var, column[A/BCDE].indicator_var])) --> final_heat_exchanger[A].indicator_var :   True
-          B :     (exactly(1: [column[B/CDEF].indicator_var, column[B/C].indicator_var, column[B/CDE].indicator_var, column[B/CD].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[B].indicator_var :   True
-          C :       (exactly(1: [column[C/DE].indicator_var, column[C/DEF].indicator_var, column[C/D].indicator_var, column[B/C].indicator_var, column[AB/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
-          D :       (exactly(1: [column[D/E].indicator_var, column[D/EF].indicator_var, column[ABC/D].indicator_var, column[C/D].indicator_var, column[BC/D].indicator_var])) --> final_heat_exchanger[D].indicator_var :   True
-          E :     (exactly(1: [column[E/F].indicator_var, column[CD/E].indicator_var, column[D/E].indicator_var, column[ABCD/E].indicator_var, column[BCD/E].indicator_var])) --> final_heat_exchanger[E].indicator_var :   True
-          F : (exactly(1: [column[DE/F].indicator_var, column[CDE/F].indicator_var, column[ABCDE/F].indicator_var, column[E/F].indicator_var, column[BCDE/F].indicator_var])) --> final_heat_exchanger[F].indicator_var :   True
+          A : (exactly(1: [column[A/BC].indicator_var, column[A/BCDE].indicator_var, column[A/B].indicator_var, column[A/BCDEF].indicator_var, column[A/BCD].indicator_var])) --> final_heat_exchanger[A].indicator_var :   True
+          B :     (exactly(1: [column[B/C].indicator_var, column[B/CDE].indicator_var, column[B/CD].indicator_var, column[B/CDEF].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[B].indicator_var :   True
+          C :       (exactly(1: [column[C/DE].indicator_var, column[C/D].indicator_var, column[C/DEF].indicator_var, column[AB/C].indicator_var, column[B/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
+          D :       (exactly(1: [column[D/EF].indicator_var, column[D/E].indicator_var, column[BC/D].indicator_var, column[C/D].indicator_var, column[ABC/D].indicator_var])) --> final_heat_exchanger[D].indicator_var :   True
+          E :     (exactly(1: [column[E/F].indicator_var, column[D/E].indicator_var, column[CD/E].indicator_var, column[BCD/E].indicator_var, column[ABCD/E].indicator_var])) --> final_heat_exchanger[E].indicator_var :   True
+          F : (exactly(1: [column[DE/F].indicator_var, column[ABCDE/F].indicator_var, column[E/F].indicator_var, column[CDE/F].indicator_var, column[BCDE/F].indicator_var])) --> final_heat_exchanger[F].indicator_var :   True
     logic8 : If a given final state is produced by 2 tasks,
                                  then there is no heat exchanger associated with that state
         Size=6, Index=COMP, Active=True
         Key : Body                                                                                                                                                                                           : Active
-          A : column[A/BCDEF].indicator_var ∧ column[A/B].indicator_var ∧ column[A/BCD].indicator_var ∧ column[A/BC].indicator_var ∧ column[A/BCDE].indicator_var --> ~final_heat_exchanger[A].indicator_var :   True
-          B :     column[B/CDEF].indicator_var ∧ column[B/C].indicator_var ∧ column[B/CDE].indicator_var ∧ column[B/CD].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[B].indicator_var :   True
-          C :       column[C/DE].indicator_var ∧ column[C/DEF].indicator_var ∧ column[C/D].indicator_var ∧ column[B/C].indicator_var ∧ column[AB/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
-          D :       column[D/E].indicator_var ∧ column[D/EF].indicator_var ∧ column[ABC/D].indicator_var ∧ column[C/D].indicator_var ∧ column[BC/D].indicator_var --> ~final_heat_exchanger[D].indicator_var :   True
-          E :     column[E/F].indicator_var ∧ column[CD/E].indicator_var ∧ column[D/E].indicator_var ∧ column[ABCD/E].indicator_var ∧ column[BCD/E].indicator_var --> ~final_heat_exchanger[E].indicator_var :   True
-          F : column[DE/F].indicator_var ∧ column[CDE/F].indicator_var ∧ column[ABCDE/F].indicator_var ∧ column[E/F].indicator_var ∧ column[BCDE/F].indicator_var --> ~final_heat_exchanger[F].indicator_var :   True
+          A : column[A/BC].indicator_var ∧ column[A/BCDE].indicator_var ∧ column[A/B].indicator_var ∧ column[A/BCDEF].indicator_var ∧ column[A/BCD].indicator_var --> ~final_heat_exchanger[A].indicator_var :   True
+          B :     column[B/C].indicator_var ∧ column[B/CDE].indicator_var ∧ column[B/CD].indicator_var ∧ column[B/CDEF].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[B].indicator_var :   True
+          C :       column[C/DE].indicator_var ∧ column[C/D].indicator_var ∧ column[C/DEF].indicator_var ∧ column[AB/C].indicator_var ∧ column[B/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
+          D :       column[D/EF].indicator_var ∧ column[D/E].indicator_var ∧ column[BC/D].indicator_var ∧ column[C/D].indicator_var ∧ column[ABC/D].indicator_var --> ~final_heat_exchanger[D].indicator_var :   True
+          E :     column[E/F].indicator_var ∧ column[D/E].indicator_var ∧ column[CD/E].indicator_var ∧ column[BCD/E].indicator_var ∧ column[ABCD/E].indicator_var --> ~final_heat_exchanger[E].indicator_var :   True
+          F : column[DE/F].indicator_var ∧ column[ABCDE/F].indicator_var ∧ column[E/F].indicator_var ∧ column[CDE/F].indicator_var ∧ column[BCDE/F].indicator_var --> ~final_heat_exchanger[F].indicator_var :   True
 
 87 Declarations: FEED COMP TASKS STATES FS_F TS_s ST_s ISTATE PRE_i PST_i RECT_s STRIP_s LK HK IREC_m ISTRIP_m ROOTS RUA FT F DT D BT B Vr Lr Vs Ls V_max rud z column_cost cost_per_tray area_final_reboiler area_final_condenser area_intermediate_reboiler area_intermediate_condenser final_condenser_cost final_reboiler_cost inter_condenser_cost inter_reboiler_cost Ntray height Area Diameter Vol Qreb Qcond CAPEX OPEX F0 F0_comp rec_comp alpha PPM rho_V Hvap system_feed_total_mb system_feed_component_mb total_mb_between_cols component_mb_between_cols feed_comp_mb_global distillate_comp_mb_global bottoms_comp_mb_global column no_column column_no_column final_heat_exchanger no_final_heat_exchanger final_heat_exchange_no_final_heat_exchange int_heat_exchanger no_int_heat_exchanger int_heat_exchange_no_final_heat_exchange logic1 logic2 logic3 logic4 logic5 logic6 logic7 logic8 logic9 logic10 logic11 capex_def opex_def obj

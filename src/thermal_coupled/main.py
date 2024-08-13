@@ -24,8 +24,8 @@ from thermal_coupled.therm_dist import build_model
 
 
 # specify number of components and data file name
-n = 3
-data_file_name = '3_comp_test.xlsx'
+n = 4
+data_file_name = '4_comp_test.xlsx'
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
@@ -51,7 +51,7 @@ print()
 print(f'Model type before transformation: {get_model_type(model)}')
 
 # saving the pyomo model to a file
-save_model_to_file(model, '3_comp_model')
+save_model_to_file(model, '4_comp_model')
 
 # SOLUTION
 # ================================================
@@ -73,11 +73,11 @@ print('Model size after transformation:')
 print(build_model_size_report(model))
 
 # solving model
-solver = pyo.SolverFactory('gams:baron')
+solver = pyo.SolverFactory('gurobi')
 
-# # Gurobi solver options
-# solver.options = {'NumericFocus': 2,
-#                   'nonConvex': 2}
+# Gurobi solver options
+solver.options = {'NumericFocus': 2,
+                  'nonConvex': 2}
 
 results = solver.solve(model, tee=True)
 
@@ -91,7 +91,7 @@ find_infeasible_constraints(model)
 pprint_network(model)
 
 # uncomment below line to save the solution output to a txt file
-# save_solution_to_file(model, '4_comp_solution')
+save_solution_to_file(model, '4_comp_solution')
 
 # save_model_to_file(model, '3_comp_pyomo_model_solution')
 
