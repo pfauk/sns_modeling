@@ -1,0 +1,188 @@
+
+================================
+NETWORK OVERVIEW
+================================
+4 Component GDP Distillation Model
+*All Flow Units in [kmol/hr]*
+
+System Objective: $1,420,827.32
+
+CAPEX: $1,180,998.38
+OPEX: $1,315,922.27
+
+System Feed Total: ABCD (300.0 [kmol/hr])
+Feed A 30.0
+Feed B 120.0
+Feed C 90.0
+Feed D 60.0
+
+Active Separation Tasks
+================================
+A/B
+AB/C
+ABC/D
+
+Column A/B:
+Column cost $47,089.08
+Number of trays: 13.0
+Column height: 4.1 [m]
+Column diameter: 0.7 [m^2]
+================================
+Feed flow (FT): 148.2751
+Distillate (DT): 28.5000
+Bottoms (BT): 119.7751
+
+Column AB/C:
+Column cost $55,543.90
+Number of trays: 15.0
+Column height: 5.7 [m]
+Column diameter: 0.8 [m^2]
+================================
+Feed flow (FT): 238.5012
+Distillate (DT): 148.2751
+Bottoms (BT): 90.2261
+
+Column ABC/D:
+Column cost $934,236.50
+Number of trays: 40.0
+Column height: 47.3 [m]
+Column diameter: 2.4 [m^2]
+================================
+Feed flow (FT): 300.0000
+Distillate (DT): 238.5012
+Bottoms (BT): 61.4988
+
+================================
+DETAILED NETWORK VIEW
+================================
+
+
+================================
+Separation task A/B is active
+
+Total Flows for Column A/B [kmol/hr]:
+Feed flow (FT): 148.2751
+Distillate (DT): 28.5000
+Bottoms (BT): 119.7751
+
+================================
+Component Flows for Column A/B
+Feed Component Flows:
+Feed (A): 30.0000
+Feed (B): 114.0000
+Feed (C): 4.2751
+Feed (D): 0.0000
+
+Distillate Component Flows:
+Distillate (A): 28.5000
+Distillate (B): 0.0000
+Distillate (C): 0.0000
+Distillate (D): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 1.5000
+Bottoms (B): 114.0000
+Bottoms (C): 4.2751
+Bottoms (D): 0.0000
+
+Internal Flows of Column
+Vr 808.3
+Lr 779.8
+Vs 33.99
+Ls 153.8
+
+================================
+Separation task AB/C is active
+
+Total Flows for Column AB/C [kmol/hr]:
+Feed flow (FT): 238.5012
+Distillate (DT): 148.2751
+Bottoms (BT): 90.2261
+
+================================
+Component Flows for Column AB/C
+Feed Component Flows:
+Feed (A): 30.0000
+Feed (B): 120.0000
+Feed (C): 85.5012
+Feed (D): 3.0000
+
+Distillate Component Flows:
+Distillate (A): 30.0000
+Distillate (B): 114.0000
+Distillate (C): 4.2751
+Distillate (D): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 6.0000
+Bottoms (C): 81.2261
+Bottoms (D): 3.0000
+
+Internal Flows of Column
+Vr 774.3
+Lr 626.0
+Vs 49.77
+Ls 140.0
+
+================================
+Separation task ABC/D is active
+
+Total Flows for Column ABC/D [kmol/hr]:
+Feed flow (FT): 300.0000
+Distillate (DT): 238.5012
+Bottoms (BT): 61.4988
+
+================================
+Component Flows for Column ABC/D
+Feed Component Flows:
+Feed (A): 30.0000
+Feed (B): 120.0000
+Feed (C): 90.0000
+Feed (D): 60.0000
+
+Distillate Component Flows:
+Distillate (A): 30.0000
+Distillate (B): 120.0000
+Distillate (C): 85.5012
+Distillate (D): 3.0000
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 0.0000
+Bottoms (C): 4.4988
+Bottoms (D): 57.0000
+
+Internal Flows of Column
+Vr 724.5
+Lr 486.0
+Vs 428.4
+Ls 489.9
+
+================================
+HEAT EXCHANGERS
+================================
+
+Final Product Heat Exchangers
+
+Final Product A has associated condenser
+Capital cost of condenser: $67,529.34
+Exchanger area: 621.78 [m^2]
+Heat Duty: 24,871.2 [10^3 kJ/hr]
+
+Final Product B has associated reboiler
+Capital cost of reboiler: $14,042.55
+Exchanger area: 6.98 [m^2]
+Heat Duty: 1,130.0 [10^3 kJ/hr]
+
+Final Product C has associated reboiler
+Capital cost of reboiler: $14,697.17
+Exchanger area: 10.89 [m^2]
+Heat Duty: 1,764.9 [10^3 kJ/hr]
+
+Final Product D has associated reboiler
+Capital cost of reboiler: $28,551.84
+Exchanger area: 97.15 [m^2]
+Heat Duty: 15,738.3 [10^3 kJ/hr]
+
+Intermediate Product Heat Exchangers

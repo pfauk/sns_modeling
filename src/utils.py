@@ -153,7 +153,7 @@ class IntHeatExchanger:
         if self.active:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
-                self.cost = mdl.inter_condenser_cost[s]
+                self.cost = pyo.value(mdl.inter_condenser_cost[s])
                 self.exchanger_area = pyo.value(mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
                 condenser_duty = pyo.value(sum(mdl.Qcond[t] for t in active_rec_tasks))
             else:

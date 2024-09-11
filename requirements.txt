@@ -1,5 +1,7 @@
 numpy
+pandas
 pyomo
 pytest
 matplotlib
-networkx
+gurobipy
+idaes-pse
