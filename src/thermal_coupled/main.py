@@ -24,8 +24,8 @@ from thermal_coupled.therm_dist import build_model
 
 
 # specify number of components and data file name
-n = 6
-data_file_name = '6_comp_alkanes.xlsx'
+n = 4
+data_file_name = '4_comp_hydrocarbon_1.xlsx'
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
