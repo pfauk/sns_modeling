@@ -1,8 +1,9 @@
 """Script file contains functionality for generating state task networks with 
-splits between consecutive key components
+splits between non-consecutive key components
 
-e.g. for the separation task 'AB/C' 'A' is the light key component, 'B' is the heavy
-key component."""
+e.g. for the separation task 'AB/BC' 'A' is the light key component, 'C' is the heavy
+key component and any components between ('B') are allowed to distribute between the distillate 
+and bottoms"""
 
 import string
 import networkx as nx
@@ -66,7 +67,7 @@ class Task:
             State object representing the mixture produced in the bottoms of the separation task
     """
 
-    def __init__(self, task):
+    def __init__(self, task, light_key=None, heavy_key=None):
         for char in task:
             if not ((char.isalpha()) or char == "/"):
                 raise ValueError(
@@ -79,6 +80,8 @@ class Task:
         self.children = []
         self.dist = None
         self.bot = None
+        self.light_key = light_key
+        self.heavy_key = heavy_key
 
     def add_child_state(self, node, **kwargs):
         self.children.append(node)
@@ -90,7 +93,7 @@ class Task:
     def __repr__(self):
         return f"Task({self.task})"
 
-class stn:
+class stn_nonconsecutive:
     """
     A class to represent a state-task network for the separation of an N-component zeotropic mixture with splits between consecutive key components.
 
@@ -233,30 +236,44 @@ class stn:
 
         return feed_mixture, components
 
-    def _generate_tree(self, initial_state):
-        """"
-        Create separation tree for a given initial state
-
-        Takes an initial state ('ABCD') and recursively builds a tree of alternating state and task nodes.
-        Returns the root node in the tree.
+    def _generate_tree(self, initial_state:str)->State:
+        """
+        Create separation tree for a given initial state.
+        Takes an initial state (e.g., 'ABCD') and recursively builds a tree of alternating state and task nodes.
+        Includes non-consecutive splits between components.
         """
         if len(initial_state) == 1:
             return State(initial_state, is_final=True)
 
         state_node = State(initial_state, is_final=False)
-        for i in range(1, len(initial_state)):
-            distillate = initial_state[:i]
-            bottoms = initial_state[i:]
 
-            task_node = Task(f"{distillate}/{bottoms}")
+        # Loop through the state to generate splits
+        for i, light_key in enumerate(initial_state):
+            for j, heavy_key in enumerate(initial_state[i+1:], start=i+1):
+                # Distillate: components lighter than the light key + the light key
+                distillate = initial_state[:i+1]  # Light key and all lighter components
 
-            distillate_state = self._generate_tree(distillate)
-            bottoms_state = self._generate_tree(bottoms)
+                # Add components between light key and heavy key (shared in both distillate and bottoms)
+                shared_components = initial_state[i+1:j]
+                distillate += shared_components
 
-            task_node.add_child_state(distillate_state, dist=True)
-            task_node.add_child_state(bottoms_state, bottoms=True)
+                # Bottoms: shared components + the heavy key + components heavier than the heavy key
+                bottoms = shared_components
+                bottoms += initial_state[j:]  # Heavy key and all heavier components
 
-            state_node.add_child_task(task_node)
+                # Create a Task node with the generated distillate and bottoms
+                task_node = Task(f"{distillate}/{bottoms}", light_key=light_key, heavy_key=heavy_key)
+
+                # Generate the subtrees for both distillate and bottoms
+                distillate_state = self._generate_tree(distillate)
+                bottoms_state = self._generate_tree(bottoms)
+
+                # Add distillate and bottoms as children to the task node
+                task_node.add_child_state(distillate_state, dist=True)
+                task_node.add_child_state(bottoms_state, bottoms=True)
+
+                # Add the task as a child task to the state node
+                state_node.add_child_task(task_node)
 
         return state_node
 
@@ -606,63 +623,63 @@ class stn:
         istrip = strip.copy()
         return {key: istrip[key] for key in istates if key in istrip}
 
-    def _generate_light_key(self, tasks):
+    def _generate_light_key(self, node, result=None):
         """
-        generates a dictionary of tasks with the values being the light key component in a given separation
+        Generates a dictionary of tasks with the values being the light key component in a given separation.
 
         Builds the index set LK_t = {i is the light key component in separation task t}
-        e.g. LK_{AB/C} = B
+        e.g. LK_{AB/C} = A
 
         Args
         ----------
-        tasks : list
-            list of all separation tasks in a network
+        node : State or Task
+            The root node of the tree or subtree
+        result : dict
+            The dictionary to store the mapping. Defaults to None.
 
         Returns
         -------
-        dict
-            dictionary with tasks as keys and single species as values.
+        result : dict
+            dictionary with tasks as keys and the light key component as values.
         """
-        result = {}
-        for task in tasks:
-            if '/' in task:
-                split_index = task.index('/')
-                if split_index > 0:
-                    result[task] = task[split_index - 1]
-                else:
-                    result[task] = None  # Handle edge case where '/' is the first character
-            else:
-                result[task] = None  # Handle edge case where no '/' is present
+        if result is None:
+            result = {}
+
+        if isinstance(node, Task):
+            result[node.task] = node.light_key
+
+        for child in node.children:
+            self._generate_light_key(child, result)
 
         return result
 
-    def _generate_heavy_key(self, tasks):
+    def _generate_heavy_key(self, node, result=None):
         """
-        generates a dictionary of tasks with the values being the heavy key component in a given separation
+        Generates a dictionary of tasks with the values being the heavy key component in a given separation.
 
         Builds the index set HK_t = {i is the heavy key component in separation task t}
         e.g. HK_{AB/C} = C
 
         Args
         ----------
-        tasks : list
-            list of all separation tasks in a network
+        node : State or Task
+            The root node of the tree or subtree
+        result : dict
+            The dictionary to store the mapping. Defaults to None.
 
         Returns
         -------
-        dict
-            dictionary with tasks as keys and single species as values.
+        result : dict
+            dictionary with tasks as keys and the heavy key component as values.
         """
-        result = {}
-        for task in tasks:
-            if '/' in task:
-                split_index = task.index('/')
-                if split_index > 0:
-                    result[task] = task[split_index + 1]
-                else:
-                    result[task] = None  # Handle edge case where '/' is the first character
-            else:
-                result[task] = None  # Handle edge case where no '/' is present
+        if result is None:
+            result = {}
+
+        if isinstance(node, Task):
+            result[node.task] = node.heavy_key
+
+        for child in node.children:
+            self._generate_heavy_key(child, result)
 
         return result
 
@@ -681,16 +698,20 @@ class stn:
 
         # Create a dictionary that maps upper case letters to array indices
         species = string.ascii_uppercase
-        sepecies_to_index = {letter: index for index, letter in enumerate(species)}
+        species_to_index = {letter: index for index, letter in enumerate(species)}
 
         for task in tasks:
-            # Calculate the number of letters excluding the '/' to determine the number of splits
-            num_splits = len(task.replace('/', '')) - 1
+            # Remove '/' and then remove duplicate letters while preserving the order
+            unique_species = ''.join(sorted(set(task.replace('/', '')), key=task.index))
+
+            # Calculate the number of splits
+            num_splits = len(unique_species) - 1
             light_species = task[0]
-            light_index = sepecies_to_index[light_species]
+            light_index = species_to_index[light_species]
 
             # Assign the corresponding roots to the task
             task_roots[task] = tuple(roots[light_index:light_index + num_splits])
+
         return task_roots
 
     def generate_tree(self):
@@ -736,8 +757,8 @@ class stn:
         self.IRECs = self._generate_intermediate_rectifying(self.RECTs, self.ISTATE)
         self.ISTRIPs = self._generate_intermediate_stripping(self.STRIPs, self.ISTATE)
 
-        self.LK = self._generate_light_key(self.TASKS)
-        self.HK = self._generate_heavy_key(self.TASKS)
+        self.LK = self._generate_light_key(self.tree)
+        self.HK = self._generate_heavy_key(self.tree)
         self.r = self._generate_underwood_roots(self.n)
         self.RUA = self._generate_active_roots(self.TASKS, self.r)
 
@@ -817,8 +838,8 @@ class stn:
 
 if __name__ == "__main__":
 
-    n = 3  # specify the number of components in the feed mixture
-    network = stn(n)
+    n = 4  # specify the number of components in the feed mixture
+    network = stn_nonconsecutive(n)
     network.generate_tree()
     network.print_tree()
     network.generate_index_sets()

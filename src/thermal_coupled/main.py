@@ -20,6 +20,7 @@ from utils import (
     get_model_type,
     print_constraint_type)
 from superstructure.stn import stn
+from superstructure.stn_nonconsecutive import stn_nonconsecutive
 from thermal_coupled.therm_dist import build_model
 
 
@@ -31,7 +32,7 @@ data_file_name = '4_comp_hydrocarbon_1.xlsx'
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn(n)
+network_superstructure = stn_nonconsecutive(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
