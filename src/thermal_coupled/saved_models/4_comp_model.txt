@@ -27,7 +27,7 @@
     IREC_m : IREC_m = {task t that produces intermediate state m from a rectifying section}
         Size=3, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
-         AB :     1 :    Any :    2 : {'AB/C', 'AB/CD'}
+         AB :     1 :    Any :    2 : {'AB/CD', 'AB/C'}
         ABC :     1 :    Any :    1 : {'ABC/D',}
          BC :     1 :    Any :    1 : {'BC/D',}
     ISTATE : ISTATE = {m | m is an intermediate state}
@@ -39,7 +39,7 @@
         Key : Dimen : Domain : Size : Members
          BC :     1 :    Any :    1 : {'A/BC',}
         BCD :     1 :    Any :    1 : {'A/BCD',}
-         CD :     1 :    Any :    2 : {'B/CD', 'AB/CD'}
+         CD :     1 :    Any :    2 : {'AB/CD', 'B/CD'}
     LK : light key (LK) component in a give separation task
         Size=10, Index=TASKS, Ordered=Insertion
         Key   : Dimen : Domain : Size : Members
@@ -63,13 +63,13 @@
         Size=3, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           B :     1 :    Any :    1 : {'A/B',}
-          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
-          D :     1 :    Any :    3 : {'ABC/D', 'C/D', 'BC/D'}
+          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
+          D :     1 :    Any :    3 : {'BC/D', 'C/D', 'ABC/D'}
     RECT_s : RECT_s = {Tasks t that produces state s by a rectifying section}
         Size=6, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           A :     1 :    Any :    3 : {'A/BC', 'A/BCD', 'A/B'}
-         AB :     1 :    Any :    2 : {'AB/C', 'AB/CD'}
+         AB :     1 :    Any :    2 : {'AB/CD', 'AB/C'}
         ABC :     1 :    Any :    1 : {'ABC/D',}
           B :     1 :    Any :    2 : {'B/CD', 'B/C'}
          BC :     1 :    Any :    1 : {'BC/D',}
@@ -101,21 +101,21 @@
           B :     1 :    Any :    1 : {'A/B',}
          BC :     1 :    Any :    1 : {'A/BC',}
         BCD :     1 :    Any :    1 : {'A/BCD',}
-          C :     1 :    Any :    2 : {'B/C', 'AB/C'}
-         CD :     1 :    Any :    2 : {'B/CD', 'AB/CD'}
-          D :     1 :    Any :    3 : {'ABC/D', 'C/D', 'BC/D'}
+          C :     1 :    Any :    2 : {'AB/C', 'B/C'}
+         CD :     1 :    Any :    2 : {'AB/CD', 'B/CD'}
+          D :     1 :    Any :    3 : {'BC/D', 'C/D', 'ABC/D'}
     ST_s : ST_s = {tasks t that are able to produce state s}
         Size=9, Index=STATES, Ordered=Insertion
         Key : Dimen : Domain : Size : Members
           A :     1 :    Any :    3 : {'A/BC', 'A/BCD', 'A/B'}
-         AB :     1 :    Any :    2 : {'AB/C', 'AB/CD'}
+         AB :     1 :    Any :    2 : {'AB/CD', 'AB/C'}
         ABC :     1 :    Any :    1 : {'ABC/D',}
-          B :     1 :    Any :    3 : {'B/CD', 'B/C', 'A/B'}
+          B :     1 :    Any :    3 : {'B/CD', 'A/B', 'B/C'}
          BC :     1 :    Any :    2 : {'A/BC', 'BC/D'}
         BCD :     1 :    Any :    1 : {'A/BCD',}
-          C :     1 :    Any :    3 : {'B/C', 'C/D', 'AB/C'}
-         CD :     1 :    Any :    2 : {'B/CD', 'AB/CD'}
-          D :     1 :    Any :    3 : {'ABC/D', 'C/D', 'BC/D'}
+          C :     1 :    Any :    3 : {'C/D', 'AB/C', 'B/C'}
+         CD :     1 :    Any :    2 : {'AB/CD', 'B/CD'}
+          D :     1 :    Any :    3 : {'BC/D', 'C/D', 'ABC/D'}
     TASKS : TASKS {t|t is a separation task}
         Size=1, Index=None, Ordered=Insertion
         Key  : Dimen : Domain : Size : Members
@@ -780,10 +780,10 @@
         None :   0.0 : CAPEX - (column_cost[A/B] + column_cost[A/BC] + column_cost[A/BCD] + column_cost[AB/C] + column_cost[AB/CD] + column_cost[ABC/D] + column_cost[B/C] + column_cost[B/CD] + column_cost[BC/D] + column_cost[C/D] + final_reboiler_cost[A] + final_condenser_cost[A] + final_reboiler_cost[B] + final_condenser_cost[B] + final_reboiler_cost[C] + final_condenser_cost[C] + final_reboiler_cost[D] + final_condenser_cost[D] + inter_reboiler_cost[AB] + inter_condenser_cost[AB] + inter_reboiler_cost[ABC] + inter_condenser_cost[ABC] + inter_reboiler_cost[BC] + inter_condenser_cost[BC] + inter_reboiler_cost[BCD] + inter_condenser_cost[BCD] + inter_reboiler_cost[CD] + inter_condenser_cost[CD]) :   0.0 :   True
     component_mb_between_cols : Size=20, Index=STATES*COMP, Active=True
         Key          : Lower : Body                                : Upper : Active
-         ('AB', 'A') :   0.0 : F[A,A/B] - (D[A,AB/C] + D[A,AB/CD]) :   0.0 :   True
-         ('AB', 'B') :   0.0 : F[B,A/B] - (D[B,AB/C] + D[B,AB/CD]) :   0.0 :   True
-         ('AB', 'C') :   0.0 : F[C,A/B] - (D[C,AB/C] + D[C,AB/CD]) :   0.0 :   True
-         ('AB', 'D') :   0.0 : F[D,A/B] - (D[D,AB/C] + D[D,AB/CD]) :   0.0 :   True
+         ('AB', 'A') :   0.0 : F[A,A/B] - (D[A,AB/CD] + D[A,AB/C]) :   0.0 :   True
+         ('AB', 'B') :   0.0 : F[B,A/B] - (D[B,AB/CD] + D[B,AB/C]) :   0.0 :   True
+         ('AB', 'C') :   0.0 : F[C,A/B] - (D[C,AB/CD] + D[C,AB/C]) :   0.0 :   True
+         ('AB', 'D') :   0.0 : F[D,A/B] - (D[D,AB/CD] + D[D,AB/C]) :   0.0 :   True
         ('ABC', 'A') :   0.0 :  F[A,A/BC] + F[A,AB/C] - D[A,ABC/D] :   0.0 :   True
         ('ABC', 'B') :   0.0 :  F[B,A/BC] + F[B,AB/C] - D[B,ABC/D] :   0.0 :   True
         ('ABC', 'C') :   0.0 :  F[C,A/BC] + F[C,AB/C] - D[C,ABC/D] :   0.0 :   True
@@ -796,10 +796,10 @@
         ('BCD', 'B') :   0.0 :  F[B,B/CD] + F[B,BC/D] - B[B,A/BCD] :   0.0 :   True
         ('BCD', 'C') :   0.0 :  F[C,B/CD] + F[C,BC/D] - B[C,A/BCD] :   0.0 :   True
         ('BCD', 'D') :   0.0 :  F[D,B/CD] + F[D,BC/D] - B[D,A/BCD] :   0.0 :   True
-         ('CD', 'A') :   0.0 : F[A,C/D] - (B[A,B/CD] + B[A,AB/CD]) :   0.0 :   True
-         ('CD', 'B') :   0.0 : F[B,C/D] - (B[B,B/CD] + B[B,AB/CD]) :   0.0 :   True
-         ('CD', 'C') :   0.0 : F[C,C/D] - (B[C,B/CD] + B[C,AB/CD]) :   0.0 :   True
-         ('CD', 'D') :   0.0 : F[D,C/D] - (B[D,B/CD] + B[D,AB/CD]) :   0.0 :   True
+         ('CD', 'A') :   0.0 : F[A,C/D] - (B[A,AB/CD] + B[A,B/CD]) :   0.0 :   True
+         ('CD', 'B') :   0.0 : F[B,C/D] - (B[B,AB/CD] + B[B,B/CD]) :   0.0 :   True
+         ('CD', 'C') :   0.0 : F[C,C/D] - (B[C,AB/CD] + B[C,B/CD]) :   0.0 :   True
+         ('CD', 'D') :   0.0 : F[D,C/D] - (B[D,AB/CD] + B[D,B/CD]) :   0.0 :   True
     distillate_comp_mb_global : Size=10, Index=TASKS, Active=True
         Key   : Lower : Body                                                            : Upper : Active
           A/B :   0.0 :           DT[A/B] - (D[A,A/B] + D[B,A/B] + D[C,A/B] + D[D,A/B]) :   0.0 :   True
@@ -838,7 +838,7 @@
         Size=6, Index=STATES, Active=True
         Key : Lower : Body                                                                                                      : Upper : Active
           A :  -Inf : column[A/BC].binary_indicator_var + column[A/BCD].binary_indicator_var + column[A/B].binary_indicator_var :   1.0 :   True
-         AB :  -Inf :                                    column[AB/C].binary_indicator_var + column[AB/CD].binary_indicator_var :   1.0 :   True
+         AB :  -Inf :                                    column[AB/CD].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
         ABC :  -Inf :                                                                        column[ABC/D].binary_indicator_var :   1.0 :   True
           B :  -Inf :                                      column[B/CD].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
          BC :  -Inf :                                                                         column[BC/D].binary_indicator_var :   1.0 :   True
@@ -849,16 +849,16 @@
           B :  -Inf :                                                                          column[A/B].binary_indicator_var :   1.0 :   True
          BC :  -Inf :                                                                         column[A/BC].binary_indicator_var :   1.0 :   True
         BCD :  -Inf :                                                                        column[A/BCD].binary_indicator_var :   1.0 :   True
-          C :  -Inf :                                      column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
-         CD :  -Inf :                                    column[B/CD].binary_indicator_var + column[AB/CD].binary_indicator_var :   1.0 :   True
-          D :  -Inf : column[ABC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[BC/D].binary_indicator_var :   1.0 :   True
+          C :  -Inf :                                      column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
+         CD :  -Inf :                                    column[AB/CD].binary_indicator_var + column[B/CD].binary_indicator_var :   1.0 :   True
+          D :  -Inf : column[BC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[ABC/D].binary_indicator_var :   1.0 :   True
     logic4 : All products must be produced by at least one task
         Size=4, Index=COMP, Active=True
         Key : Lower : Body                                                                                                      : Upper : Active
           A :   1.0 : column[A/BC].binary_indicator_var + column[A/BCD].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
           B :   1.0 :   column[B/CD].binary_indicator_var + column[B/C].binary_indicator_var + column[A/B].binary_indicator_var :  +Inf :   True
-          C :   1.0 :   column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var + column[C/D].binary_indicator_var :  +Inf :   True
-          D :   1.0 : column[ABC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[BC/D].binary_indicator_var :  +Inf :   True
+          C :   1.0 :   column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var + column[C/D].binary_indicator_var :  +Inf :   True
+          D :   1.0 : column[BC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[ABC/D].binary_indicator_var :  +Inf :   True
     logic5 : Pure product i can only be produced by at most 1 rectifying section
         Size=3, Index=COMP, Active=True
         Key : Lower : Body                                                                                                      : Upper : Active
@@ -869,15 +869,15 @@
         Size=3, Index=COMP, Active=True
         Key : Lower : Body                                                                                                      : Upper : Active
           B :  -Inf :                                                                          column[A/B].binary_indicator_var :   1.0 :   True
-          C :  -Inf :                                      column[B/C].binary_indicator_var + column[AB/C].binary_indicator_var :   1.0 :   True
-          D :  -Inf : column[ABC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[BC/D].binary_indicator_var :   1.0 :   True
+          C :  -Inf :                                      column[AB/C].binary_indicator_var + column[B/C].binary_indicator_var :   1.0 :   True
+          D :  -Inf : column[BC/D].binary_indicator_var + column[C/D].binary_indicator_var + column[ABC/D].binary_indicator_var :   1.0 :   True
     logic9 : Size=5, Index=ISTATE, Active=True
         Key : Lower : Body                                                                                                                     : Upper : Active
-         AB :   1.0 : 1 - int_heat_exchanger[AB].binary_indicator_var + column[AB/C].binary_indicator_var + column[AB/CD].binary_indicator_var :  +Inf :   True
+         AB :   1.0 : 1 - int_heat_exchanger[AB].binary_indicator_var + column[AB/CD].binary_indicator_var + column[AB/C].binary_indicator_var :  +Inf :   True
         ABC :   1.0 :                                    1 - int_heat_exchanger[ABC].binary_indicator_var + column[ABC/D].binary_indicator_var :  +Inf :   True
          BC :   1.0 :  1 - int_heat_exchanger[BC].binary_indicator_var + column[A/BC].binary_indicator_var + column[BC/D].binary_indicator_var :  +Inf :   True
         BCD :   1.0 :                                    1 - int_heat_exchanger[BCD].binary_indicator_var + column[A/BCD].binary_indicator_var :  +Inf :   True
-         CD :   1.0 : 1 - int_heat_exchanger[CD].binary_indicator_var + column[B/CD].binary_indicator_var + column[AB/CD].binary_indicator_var :  +Inf :   True
+         CD :   1.0 : 1 - int_heat_exchanger[CD].binary_indicator_var + column[AB/CD].binary_indicator_var + column[B/CD].binary_indicator_var :  +Inf :   True
     opex_def : Size=1, Index=None, Active=True
         Key  : Lower : Body                                                                                                                                                                                                                                                                                                : Upper : Active
         None :   0.0 : OPEX - (12.96*(Qreb[A/B] + Qreb[A/BC] + Qreb[A/BCD] + Qreb[AB/C] + Qreb[AB/CD] + Qreb[ABC/D] + Qreb[B/C] + Qreb[B/CD] + Qreb[BC/D] + Qreb[C/D]) + 43.2*(Qcond[A/B] + Qcond[A/BC] + Qcond[A/BCD] + Qcond[AB/C] + Qcond[AB/CD] + Qcond[ABC/D] + Qcond[B/C] + Qcond[B/CD] + Qcond[BC/D] + Qcond[C/D])) :   0.0 :   True
@@ -892,11 +892,11 @@
         None : 300.0 : FT[A/BCD] + FT[AB/CD] + FT[ABC/D] : 300.0 :   True
     total_mb_between_cols : Size=5, Index=STATES, Active=True
         Key : Lower : Body                             : Upper : Active
-         AB :   0.0 : FT[A/B] - (DT[AB/C] + DT[AB/CD]) :   0.0 :   True
+         AB :   0.0 : FT[A/B] - (DT[AB/CD] + DT[AB/C]) :   0.0 :   True
         ABC :   0.0 :  FT[A/BC] + FT[AB/C] - DT[ABC/D] :   0.0 :   True
          BC :   0.0 :  FT[B/C] - (DT[BC/D] + BT[A/BC]) :   0.0 :   True
         BCD :   0.0 :  FT[B/CD] + FT[BC/D] - BT[A/BCD] :   0.0 :   True
-         CD :   0.0 : FT[C/D] - (BT[B/CD] + BT[AB/CD]) :   0.0 :   True
+         CD :   0.0 : FT[C/D] - (BT[AB/CD] + BT[B/CD]) :   0.0 :   True
 
 6 Disjunct Declarations
     column : Disjunct for column existence
@@ -1899,7 +1899,7 @@
                     C/D :   0.0 : Qcond[C/D]*DT[C/D] - (30.77*D[A,C/D]*Vr[C/D] + 33.19*D[B,C/D]*Vr[C/D] + 35.58*D[C,C/D]*Vr[C/D] + 36.83*D[D,C/D]*Vr[C/D]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                          : Upper : Active
-                    None :   0.0 : area_final_reboiler[C] - (Qreb[B/C] + Qreb[AB/C])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[C] - (Qreb[AB/C] + Qreb[B/C])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[C] - (-0.0710805909*area_final_reboiler[C]**2 + 168.303402*area_final_reboiler[C] + 12871.9934) :   0.0 :   True
@@ -1923,7 +1923,7 @@
             3 Constraint Declarations
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                        : Upper : Active
-                    None :   0.0 : area_final_reboiler[D] - (Qreb[ABC/D] + Qreb[C/D] + Qreb[BC/D])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_final_reboiler[D] - (Qreb[BC/D] + Qreb[C/D] + Qreb[ABC/D])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                : Upper : Active
                     None :   0.0 : final_reboiler_cost[D] - (-0.0710805909*area_final_reboiler[D]**2 + 168.303402*area_final_reboiler[D] + 12871.9934) :   0.0 :   True
@@ -1950,7 +1950,7 @@
             4 Constraint Declarations
                 condenser_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                      : Upper : Active
-                    None :   0.0 : area_intermediate_condenser[AB] - (Qcond[AB/C] + Qcond[AB/CD])*1000/40000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_condenser[AB] - (Qcond[AB/CD] + Qcond[AB/C])*1000/40000 :   0.0 :   True
                 condenser_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                    : Upper : Active
                     None :   0.0 : inter_condenser_cost[AB] - (-0.0533104431*area_intermediate_condenser[AB]**2 + 126.227551*area_intermediate_condenser[AB] + 9653.99504) :   0.0 :   True
@@ -2073,7 +2073,7 @@
                      B/CD :   0.0 :           Qreb[B/CD]*BT[B/CD] - (30.77*B[A,B/CD]*Vr[B/CD] + 33.19*B[B,B/CD]*Vr[B/CD] + 35.58*B[C,B/CD]*Vr[B/CD] + 36.83*B[D,B/CD]*Vr[B/CD]) :   0.0 :   True
                 reboiler_area : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                    : Upper : Active
-                    None :   0.0 : area_intermediate_reboiler[CD] - (Qreb[B/CD] + Qreb[AB/CD])*1000/162000 :   0.0 :   True
+                    None :   0.0 : area_intermediate_reboiler[CD] - (Qreb[AB/CD] + Qreb[B/CD])*1000/162000 :   0.0 :   True
                 reboiler_cost : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                                                                                                                 : Upper : Active
                     None :   0.0 : inter_reboiler_cost[CD] - (-0.0710805909*area_intermediate_reboiler[CD]**2 + 168.303402*area_intermediate_reboiler[CD] + 12871.9934) :   0.0 :   True
@@ -2973,10 +2973,10 @@
                     None :   0.0 : inter_condenser_cost[AB] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                       : Upper : Active
-                    None :   0.0 : Lr[A/B] - Ls[A/B] - (Lr[AB/C] + Lr[AB/CD]) :   0.0 :   True
+                    None :   0.0 : Lr[A/B] - Ls[A/B] - (Lr[AB/CD] + Lr[AB/C]) :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                       : Upper : Active
-                    None :   0.0 : Vr[A/B] - Vs[A/B] - (Vr[AB/C] + Vr[AB/CD]) :   0.0 :   True
+                    None :   0.0 : Vr[A/B] - Vs[A/B] - (Vr[AB/CD] + Vr[AB/C]) :   0.0 :   True
                 inactive_intermediate_condenser : Size=2, Index=IREC_m[AB], Active=True
                     Key   : Lower : Body         : Upper : Active
                      AB/C :   0.0 :  Qcond[AB/C] :   0.0 :   True
@@ -3117,10 +3117,10 @@
                     None :   0.0 : inter_condenser_cost[CD] :   0.0 :   True
                 inactive_heat_exchanger_mb_liquid : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                     : Upper : Active
-                    None :   0.0 : Lr[C/D] - Ls[C/D] + Ls[B/CD] + Ls[AB/CD] :   0.0 :   True
+                    None :   0.0 : Lr[C/D] - Ls[C/D] + Ls[AB/CD] + Ls[B/CD] :   0.0 :   True
                 inactive_heat_exchanger_mb_vapor : Size=1, Index=None, Active=True
                     Key  : Lower : Body                                     : Upper : Active
-                    None :   0.0 : Vr[C/D] - Vs[C/D] + Vs[B/CD] + Vs[AB/CD] :   0.0 :   True
+                    None :   0.0 : Vr[C/D] - Vs[C/D] + Vs[AB/CD] + Vs[B/CD] :   0.0 :   True
                 inactive_intermediate_reboiler : Size=2, Index=ISTRIP_m[CD], Active=True
                     Key   : Lower : Body        : Upper : Active
                     AB/CD :   0.0 : Qreb[AB/CD] :   0.0 :   True
@@ -3184,28 +3184,28 @@
     logic11 : Connectivity relations e.g. A/B implies AB/C
         Size=7, Index=STATES*TASKS, Active=True
         Key             : Body                                                                                   : Active
-          ('AB', 'A/B') : column[A/B].indicator_var --> column[AB/C].indicator_var ∨ column[AB/CD].indicator_var :   True
+          ('AB', 'A/B') : column[A/B].indicator_var --> column[AB/CD].indicator_var ∨ column[AB/C].indicator_var :   True
         ('ABC', 'A/BC') :                             column[A/BC].indicator_var --> column[ABC/D].indicator_var :   True
         ('ABC', 'AB/C') :                             column[AB/C].indicator_var --> column[ABC/D].indicator_var :   True
           ('BC', 'B/C') :  column[B/C].indicator_var --> column[A/BC].indicator_var ∨ column[BC/D].indicator_var :   True
         ('BCD', 'B/CD') :                             column[B/CD].indicator_var --> column[A/BCD].indicator_var :   True
         ('BCD', 'BC/D') :                             column[BC/D].indicator_var --> column[A/BCD].indicator_var :   True
-          ('CD', 'C/D') : column[C/D].indicator_var --> column[B/CD].indicator_var ∨ column[AB/CD].indicator_var :   True
+          ('CD', 'C/D') : column[C/D].indicator_var --> column[AB/CD].indicator_var ∨ column[B/CD].indicator_var :   True
     logic7 : If a final product is produced by exactly one contribution, the heat exchanger associated with
                                  this product must be selected
         Size=4, Index=COMP, Active=True
         Key : Body                                                                                                                                         : Active
           A : (exactly(1: [column[A/BC].indicator_var, column[A/BCD].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[A].indicator_var :   True
           B :   (exactly(1: [column[B/CD].indicator_var, column[B/C].indicator_var, column[A/B].indicator_var])) --> final_heat_exchanger[B].indicator_var :   True
-          C :   (exactly(1: [column[C/D].indicator_var, column[B/C].indicator_var, column[AB/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
-          D : (exactly(1: [column[ABC/D].indicator_var, column[C/D].indicator_var, column[BC/D].indicator_var])) --> final_heat_exchanger[D].indicator_var :   True
+          C :   (exactly(1: [column[C/D].indicator_var, column[AB/C].indicator_var, column[B/C].indicator_var])) --> final_heat_exchanger[C].indicator_var :   True
+          D : (exactly(1: [column[BC/D].indicator_var, column[C/D].indicator_var, column[ABC/D].indicator_var])) --> final_heat_exchanger[D].indicator_var :   True
     logic8 : If a given final state is produced by 2 tasks,
                                  then there is no heat exchanger associated with that state
         Size=4, Index=COMP, Active=True
         Key : Body                                                                                                                            : Active
           A : column[A/BC].indicator_var ∧ column[A/BCD].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[A].indicator_var :   True
           B :   column[B/CD].indicator_var ∧ column[B/C].indicator_var ∧ column[A/B].indicator_var --> ~final_heat_exchanger[B].indicator_var :   True
-          C :   column[C/D].indicator_var ∧ column[B/C].indicator_var ∧ column[AB/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
-          D : column[ABC/D].indicator_var ∧ column[C/D].indicator_var ∧ column[BC/D].indicator_var --> ~final_heat_exchanger[D].indicator_var :   True
+          C :   column[C/D].indicator_var ∧ column[AB/C].indicator_var ∧ column[B/C].indicator_var --> ~final_heat_exchanger[C].indicator_var :   True
+          D : column[BC/D].indicator_var ∧ column[C/D].indicator_var ∧ column[ABC/D].indicator_var --> ~final_heat_exchanger[D].indicator_var :   True
 
 87 Declarations: FEED COMP TASKS STATES FS_F TS_s ST_s ISTATE PRE_i PST_i RECT_s STRIP_s LK HK IREC_m ISTRIP_m ROOTS RUA FT F DT D BT B Vr Lr Vs Ls V_max rud z column_cost cost_per_tray area_final_reboiler area_final_condenser area_intermediate_reboiler area_intermediate_condenser final_condenser_cost final_reboiler_cost inter_condenser_cost inter_reboiler_cost Ntray height Area Diameter Vol Qreb Qcond CAPEX OPEX F0 F0_comp rec_comp alpha PPM rho_V Hvap system_feed_total_mb system_feed_component_mb total_mb_between_cols component_mb_between_cols feed_comp_mb_global distillate_comp_mb_global bottoms_comp_mb_global column no_column column_no_column final_heat_exchanger no_final_heat_exchanger final_heat_exchange_no_final_heat_exchange int_heat_exchanger no_int_heat_exchanger int_heat_exchange_no_final_heat_exchange logic1 logic2 logic3 logic4 logic5 logic6 logic7 logic8 logic9 logic10 logic11 capex_def opex_def obj

@@ -10,6 +10,18 @@ The requirements are listed in the requirements.txt file. To install them, run t
 pip install -r requirements.txt
 ```
 
+# Setup and install
+
+Download or clone the package from the Github repo [sns_modeling](https://github.com/pfauk/sns_modeling). In a terminal, navigate to the directory location and install the package by running: 
+
+```
+pip install -e . 
+```
+
+**Important**: this package requires an installed version of Gurobi to solve the MIQCP model. It is possible to pip install Gurobi from the Python Package Index (PyPI). However, the free version comes with a trial license that will only be able to solve models of a smaller size (2,000 variables or constraints).
+
+
+
 # Problem Data
 
 Data for a specific problems can be entered into Excel sheets. The ```src/data``` directory contains example sheets of how to structure the input data.
