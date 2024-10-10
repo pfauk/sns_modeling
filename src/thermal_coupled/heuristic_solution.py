@@ -21,18 +21,18 @@ from utils import (
     print_constraint_type)
 from superstructure.stn import stn
 from superstructure.stn_nonconsecutive import stn_nonconsecutive
-from thermal_coupled.therm_dist import build_model
+from thermal_coupled.therm_dist import build_model, solve_model
 
 
 # specify number of components and data file name
-n = 4
-data_file_name = '4_comp_hydrocarbon_1.xlsx'
+n = 3
+data_file_name = '3_comp_hydrocarbon.xlsx'
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn_nonconsecutive(n)
+network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
@@ -48,44 +48,13 @@ print('Mixture species data')
 print('================================================================')
 print(mixture_data.species_df)
 
-print()
-print(f'Model type before transformation: {get_model_type(model)}')
+solve_model(model)
 
-# saving the pyomo model to a file
-# save_model_to_file(model, '3_comp_model')
 
-# SOLUTION
-# ================================================
-pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
-
-# applying Big-M transformation
-mbigm = pyo.TransformationFactory('gdp.bigm')
-
-mbigm.apply_to(model)
-
-print()
-print(f'Model type after transformation: {get_model_type(model)}')
-
-# MODEL ANALYSIS
-# =================================================================
-
-print()
-print('Model size after transformation:')
-print(build_model_size_report(model))
-
-# solving model
-solver = pyo.SolverFactory('gurobi')
-
-# Gurobi solver options
-solver.options = {'NumericFocus': 2,
-                  'nonConvex': 2}
-
-results = solver.solve(model, tee=True)
-
-# Log infeasible constraints if any
-logging.basicConfig(level=logging.INFO)
-log_infeasible_constraints(model)
-find_infeasible_constraints(model)
+# # Log infeasible constraints if any
+# logging.basicConfig(level=logging.INFO)
+# log_infeasible_constraints(model)
+# find_infeasible_constraints(model)
 
 # SOLUTION OUTPUT
 # =================================================================

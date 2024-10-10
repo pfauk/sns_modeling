@@ -1516,3 +1516,85 @@ def build_model(stn, data)->pyo.ConcreteModel:
     m.obj = pyo.Objective(expr= CRF * m.CAPEX + m.OPEX, sense=pyo.minimize)
 
     return m
+
+def solve_model(model):
+    """Implements heuristic decomposition solution for network model from Caballero, J. A., & Grossmann, I. E. (2004)
+    
+    Algorithm description:
+    1. Fix all intermediate heat exchangers to an initial value (i.e. False)
+    2. P1k: Solve model and extract the values of separation tasks and final product heat exchangers
+    3. P2k: Fix tasks and final product heat exchanger values, unfix intermediate heat exchangers, solve model
+    4. Compare objective values P2k < tolernace * P2k - 1 
+
+    Args:
+        model (pyo.ConcreteModel): input model should be the GDP Pyomo Concrete Model (before transformation)
+    """
+
+    k = 1  # initialzie iterator
+    epsilon = 0.9  # some tolerance for the iterative solution
+
+    # 1. fix the Boolean variables associated with intermediate variables heat exchanger disjuncts to be False
+    for s in model.ISTATE:
+        model.int_heat_exchanger[s].indicator_var.fix(False)
+        model.no_int_heat_exchanger[s].indicator_var.fix(True)
+
+    # Transformation of model and solution
+    pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+
+    mbigm = pyo.TransformationFactory('gdp.bigm')
+    mbigm.apply_to(model)
+
+
+    # 2. P1k: Solve model and extract out values for separation tasks and final product heat exchangers
+    solver = pyo.SolverFactory('gurobi')
+
+    # solver.options = {'NumericFocus': 2,
+    #                   'nonConvex': 2}
+    
+    P1k_results = solver.solve(model, tee=True)
+    
+    # get the values for separation tasks and final product heat exchangers from solution
+    separation_tasks = {t: model.column[t].indicator_var.value for t in model.TASKS}
+    final_exchangers = {i: model.final_heat_exchanger[i].indicator_var.value for i in model.COMP}
+
+    # fix the sequence of separation tasks and final product heat exchangers
+    for t, value in separation_tasks.items():
+        model.column[t].indicator_var.fix(value)
+        
+    for i, value in final_exchangers.items():
+        model.final_heat_exchanger[i].indicator_var.fix(value)
+
+    # P2k: Unfix heat exchangers and solve model
+    for s in model.ISTATE:
+        model.int_heat_exchanger[s].indicator_var.unfix()
+        model.no_int_heat_exchanger[s].indicator_var.unfix()
+    
+    P2K_results = solver.solve(model, tee=True)
+    
+    return model, P2K_results
+
+
+def add_binary_cut(model, k):
+    """Function to add a binary cut for the intermediate heat exchangers of the model
+
+    Args:
+        model (pyo.ConcreteModel): _description_
+        solution (_type_): _description_
+        k (int): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    constraint_name = f"binary_cut_{k}"
+
+    # get the value of current solu
+    solution = {s: model.int_heat_exchanger[s].binary_indicator_var.value for s in model.ISTATE}
+
+    def binary_cut_rule(m):
+        
+        
+        return sum(
+            (1 - m.int_heat_exchanger[s].binary_indicator_var) if solution[s] >= 0.5 else m.int_heat_exchanger[s].binary_indicator_var
+            for s in m.ISTATE) >= 1
+
+    setattr(model, constraint_name, pyo.Constraint(rule=binary_cut_rule))
