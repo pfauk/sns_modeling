@@ -21,7 +21,6 @@ from utils import (
     print_constraint_type)
 from superstructure.stn import stn
 from superstructure.stn_nonconsecutive import stn_nonconsecutive
-from thermal_coupled.therm_dist import solve_model
 from thermal_coupled.therm_dist_scaled import build_model
 
 
@@ -37,6 +36,7 @@ network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
+# doing stuff with model scaling for solution
 model, scaled_model = build_model(network_superstructure, mixture_data)
 
 print()
@@ -49,16 +49,60 @@ print('Mixture species data')
 print('================================================================')
 print(mixture_data.species_df)
 
-solve_model(scaled_model)
+print()
+print(f'Model type before transformation: {get_model_type(model)}')
 
+# model.pprint()
+# print('\n================================================================')
+# scaled_model.pprint()
 
-# # Log infeasible constraints if any
-# logging.basicConfig(level=logging.INFO)
-# log_infeasible_constraints(model)
-# find_infeasible_constraints(model)
+# saving the pyomo model to a file
+# save_model_to_file(model, '3_comp_model')
+
+# SOLUTION
+# ================================================
+pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+pyo.TransformationFactory('core.logical_to_linear').apply_to(scaled_model)
+
+# applying Big-M transformation
+mbigm = pyo.TransformationFactory('gdp.bigm')
+
+# apply Big-M transformation to both scaled and unscaled models
+mbigm.apply_to(model)
+mbigm.apply_to(scaled_model)
+
+print()
+print(f'Model type after transformation: {get_model_type(model)}')
+
+# MODEL ANALYSIS
+# =================================================================
+
+print()
+print('Model size after transformation:')
+print(build_model_size_report(model))
+
+# solving model
+solver = pyo.SolverFactory('gurobi')
+
+# Gurobi solver options
+solver.options = {'nonConvex': 2,
+                  'NumericFocus':2,}
+
+results_unscaled= solver.solve(model, tee=True)
+results_scaled= solver.solve(scaled_model, tee=True)
+
+# propagate solution of scaled model back to the unscaled model
+pyo.TransformationFactory('core.scale_model').propagate_solution(scaled_model, model)
+
+# Log infeasible constraints if any
+logging.basicConfig(level=logging.INFO)
+log_infeasible_constraints(model)
+find_infeasible_constraints(model)
 
 # SOLUTION OUTPUT
 # =================================================================
+
+# solution comparison for both scaled and unscaled models
 pprint_network(model)
 
 # uncomment below line to save the solution output to a txt file

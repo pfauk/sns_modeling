@@ -1513,9 +1513,32 @@ def build_model(stn, data)->pyo.ConcreteModel:
     # testing superstructure variations by fixing some things as true or false
     # m.column['A/BC'].indicator_var.fix(True)
 
-    m.obj = pyo.Objective(expr= (CRF * m.CAPEX + m.OPEX) / 10000, sense=pyo.minimize)
+    m.obj = pyo.Objective(expr= CRF * m.CAPEX + m.OPEX, sense=pyo.minimize)
 
-    return m
+    # PROBLEM SCALING
+    # ================================================
+    m.scaling_factor = pyo.Suffix(direction=pyo.Suffix.EXPORT)
+    
+    # define scaling factors for variables with larger bounds
+    # m.scaling_factor[m.column_cost] = 1e-5
+    # m.scaling_factor[m.cost_per_tray] = 1e-5
+    # m.scaling_factor[m.area_final_reboiler] = 1e-4
+    # m.scaling_factor[m.area_final_condenser] = 1e-4
+    # m.scaling_factor[m.area_intermediate_reboiler] = 1e-4
+    # m.scaling_factor[m.Vol] = 1e-4
+    # m.scaling_factor[m.Qreb] = 1e-2
+    # m.scaling_factor[m.Qcond] = 1e-2
+    m.scaling_factor[m.final_condenser_cost] = 1e-7
+    m.scaling_factor[m.final_reboiler_cost] = 1e-7
+    m.scaling_factor[m.inter_condenser_cost] = 1e-7
+    m.scaling_factor[m.inter_reboiler_cost] = 1e-7
+    m.scaling_factor[m.CAPEX] = 1e-8
+    m.scaling_factor[m.OPEX] = 1e-8
+    
+    # create a new scaled model
+    scaled_model = pyo.TransformationFactory('core.scale_model').create_using(m)
+
+    return m, scaled_model
 
 def solve_model(model):
     """Implements heuristic decomposition solution for network model from Caballero, J. A., & Grossmann, I. E. (2004)
