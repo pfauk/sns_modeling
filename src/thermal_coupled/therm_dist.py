@@ -1548,7 +1548,8 @@ def solve_model(model):
     solver = pyo.SolverFactory('gurobi') 
 
     solver.options = {'nonConvex': 2,
-                      'NumericFocus': 2,}
+                      'NumericFocus': 2,
+                      'MIPgap': 2e-3}
     
     P1k_results = solver.solve(model, tee=True)
     

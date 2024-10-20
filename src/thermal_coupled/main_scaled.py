@@ -6,6 +6,7 @@ to import from
 """
 
 import logging
+import os
 import pyomo.environ as pyo
 from pyomo.util.infeasible import log_infeasible_constraints, find_infeasible_constraints
 from pyomo.util.model_size import build_model_size_report
@@ -25,8 +26,9 @@ from thermal_coupled.therm_dist_scaled import build_model
 
 
 # specify number of components and data file name
-n = 3
-data_file_name = '3_comp_test.xlsx'
+n = 4
+
+data_file_name = os.path.join('poster_problem', '4_comp_linear_hydrocarbons.xlsx')
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
@@ -84,11 +86,12 @@ print(build_model_size_report(model))
 # solving model
 solver = pyo.SolverFactory('gurobi')
 
+# 'NumericFocus':2,
 # Gurobi solver options
 solver.options = {'nonConvex': 2,
-                  'NumericFocus':2,}
+                  'NumericFocus':2}
 
-results_unscaled= solver.solve(model, tee=True)
+# results_unscaled= solver.solve(model, tee=True)
 results_scaled= solver.solve(scaled_model, tee=True)
 
 # propagate solution of scaled model back to the unscaled model

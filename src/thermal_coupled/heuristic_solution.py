@@ -26,14 +26,14 @@ from thermal_coupled.therm_dist_scaled import build_model
 
 
 # specify number of components and data file name
-n = 3
-data_file_name = '3_comp_test.xlsx'
+n = 5
+data_file_name = '5_comp_test.xlsx'
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn(n)
+network_superstructure = stn_nonconsecutive(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
