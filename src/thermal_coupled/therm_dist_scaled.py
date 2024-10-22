@@ -38,6 +38,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
     
     # for use in manual scaling of cost coefficients for model to aid in computational performance
     if scale:
+    # order of magnitude of scaling for m.CAPEX and all the capital costing should be the same
         scaling_factors = {
             'column_cost': 1e-3,
             'cost_per_tray': 1e-3,
@@ -46,7 +47,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
             'inter_condenser_cost': 1e-3,
             'inter_reboiler_cost': 1e-3,
             'CAPEX': 1e-3,
-            'OPEX': 1e-3}
+            'OPEX': 1e-2}
     else:
         scaling_factors = {
             'column_cost': 1,
@@ -110,7 +111,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
     N = 30  # estimated lifetime of equipment in years
 
     # capital recovery factor: function of interest rate and lifetime of equipment
-    CRF = (i * (1 + i) ** N) / ((1 + i) ** N - 1)
+    m.CRF = pyo.Param(initialize=(i * (1 + i) ** N) / ((1 + i) ** N - 1))
 
     # INDEX SETS
     # ================================================
@@ -262,6 +263,24 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
         initialize=F0/(2*N)
     )
 
+    # heat flow rates for heat exchangers
+    m.Qreb = pyo.Var(
+        m.TASKS,
+        doc="reboiler heat duty for column t [10^3 kJ/hr]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7),
+        initialize=1e3,
+    )
+
+    m.Qcond = pyo.Var(
+        m.TASKS,
+        doc="condenser heat duty for column t [10^3 kJ/hr]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7),
+        initialize=1e3,
+    )
+
+    # Underwood Roots
     m.rud = pyo.Var(
         m.TASKS,
         m.ROOTS,
@@ -307,22 +326,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
             root = index[1]
             m.z[(comp, task, root)].set_value(value)
 
-    # Column costing and sizing variables
-    m.column_cost = pyo.Var(
-        m.TASKS,
-        doc="Capital cost of column t [$]",
-        within=pyo.NonNegativeReals,
-        bounds=(0, 1e7 * scaling_factors['column_cost']),
-        initialize=1e3
-    )
-    m.cost_per_tray = pyo.Var(
-        m.TASKS,
-        doc="Capital cost of each tray for column t [$]",
-        within=pyo.NonNegativeReals,
-        bounds=(0, 1e7 * scaling_factors['cost_per_tray']),
-        initialize=1e3
-    )
-
+    # Column and Heat Exchanger Sizing variables
     m.area_final_reboiler = pyo.Var(
         m.COMP,
         doc="heat exchange area of reboiler associated with final product [m^2]",
@@ -353,38 +357,6 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
         within=pyo.NonNegativeReals,
         bounds=(0, 1e6),
         initialize=100
-    )
-
-    m.final_condenser_cost = pyo.Var(
-        m.COMP,
-        doc="Capital cost of heat exchanger associated with final product i [$]",
-        within=pyo.NonNegativeReals,
-        bounds=(0, 1e8 * scaling_factors['final_condenser_cost']),
-        initialize=100
-    )
-
-    m.final_reboiler_cost = pyo.Var(
-        m.COMP,
-        doc="Capital cost of heat exchanger associated with final product i [$]",
-        within=pyo.NonNegativeReals,
-        bounds=(0, 1e8 * scaling_factors['final_reboiler_cost']),
-        initialize=1e3
-    )
-
-    m.inter_condenser_cost = pyo.Var(
-        m.ISTATE,
-        doc="Capital cost of heat exchanger associated with intermediate state s [$]",
-        within=pyo.NonNegativeReals,
-        bounds=(0, 1e8 * scaling_factors['inter_condenser_cost']),
-        initialize=1e3
-    )
-
-    m.inter_reboiler_cost = pyo.Var(
-        m.ISTATE,
-        doc="Capital cost of heat exchanger associated with intermediate state s [$]",
-        within=pyo.NonNegativeReals,
-        bounds=(0, 1e8 * scaling_factors['inter_reboiler_cost']),
-        initialize=1e3
     )
 
     m.Ntray = pyo.Var(
@@ -427,35 +399,167 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
         initialize=100,
     )
 
-    m.Qreb = pyo.Var(
+    # Unscaled costing variables
+    m.column_cost = pyo.Var(
         m.TASKS,
-        doc="reboiler heat duty for column t [10^3 kJ/hr]",
+        doc="Capital cost of column t [$]",
         within=pyo.NonNegativeReals,
         bounds=(0, 1e7),
-        initialize=1e3,
+        initialize=1e3
+    )
+    
+    m.cost_per_tray = pyo.Var(
+        m.TASKS,
+        doc="Capital cost of each tray for column t [$]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7),
+        initialize=1e3
+    )
+    
+    m.final_condenser_cost = pyo.Var(
+        m.COMP,
+        doc="Capital cost of heat exchanger associated with final product i [$]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7),
+        initialize=100
     )
 
-    m.Qcond = pyo.Var(
-        m.TASKS,
-        doc="condenser heat duty for column t [10^3 kJ/hr]",
+    m.final_reboiler_cost = pyo.Var(
+        m.COMP,
+        doc="Capital cost of heat exchanger associated with final product i [$]",
         within=pyo.NonNegativeReals,
         bounds=(0, 1e7),
-        initialize=1e3,
+        initialize=1e3
+    )
+    
+    m.inter_condenser_cost = pyo.Var(
+        m.ISTATE,
+        doc="Capital cost of heat exchanger associated with intermediate state s [$]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7),
+        initialize=1e3
+    )
+
+    m.inter_reboiler_cost = pyo.Var(
+        m.ISTATE,
+        doc="Capital cost of heat exchanger associated with intermediate state s [$]",
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7),
+        initialize=1e3
     )
 
     m.CAPEX = pyo.Var(
         doc="Total capital expense as sum of bare module purchase prices",
         within=pyo.NonNegativeReals,
-        bounds=(0, 1e10 * scaling_factors['CAPEX']),
+        bounds=(0, 1e9),
         initialize=1e3,
     )
 
     m.OPEX = pyo.Var(
         doc="Total system operating expenses as sum of reboiler and condenser expenses",
         within=pyo.NonNegativeReals,
-        bounds=(0, 1e10 * scaling_factors['OPEX']),
+        bounds=(0, 1e9),
         initialize=1e3,
     )
+    
+    # Scaling of cost variables to improve problem computational performance
+    # is scale flag is True, then upper bounds of the scaled cost variables are adjusted by scaling factors
+    m.column_cost_scaled = pyo.Var(
+        m.TASKS,
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7 * scaling_factors['column_cost']),
+        initialize=1e3
+    )
+    
+    m.cost_per_tray_scaled = pyo.Var(
+        m.TASKS,
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7 * scaling_factors['cost_per_tray']),
+        initialize=1e3
+    )
+    
+    m.final_condenser_cost_scaled = pyo.Var(
+        m.COMP,
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7 * scaling_factors['final_condenser_cost']),
+        initialize=100
+    )
+    
+    m.final_reboiler_cost_scaled = pyo.Var(
+        m.COMP,
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7 * scaling_factors['final_reboiler_cost']),
+        initialize=1e3
+    )
+    
+    m.inter_condenser_cost_scaled = pyo.Var(
+        m.ISTATE,
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7 * scaling_factors['inter_condenser_cost']),
+        initialize=1e3
+    )
+    
+    m.inter_reboiler_cost_scaled = pyo.Var(
+        m.ISTATE,
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e7 * scaling_factors['inter_reboiler_cost']),
+        initialize=1e3
+    )
+    
+    m.CAPEX_scaled = pyo.Var(
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e9 * scaling_factors['CAPEX']),
+        initialize=1e3
+    )
+    
+    m.OPEX_scaled = pyo.Var(
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e9 * scaling_factors['OPEX']),
+        initialize=1e3
+    )
+        
+    m.obj_unscaled = pyo.Var(
+        within=pyo.NonNegativeReals,
+        bounds=(0, 1e9),
+        initialize=1e4
+    )
+    
+    # Linking constraints for scaled and unscaled cost variables
+    @m.Constraint(m.TASKS)
+    def link_column_cost(m, t):
+        return m.column_cost[t] == m.column_cost_scaled[t] / scaling_factors['column_cost']
+    
+    @m.Constraint(m.TASKS)
+    def link_cost_per_tray(m, t):
+        return m.cost_per_tray[t] == m.cost_per_tray_scaled[t] / scaling_factors['cost_per_tray']
+    
+    @m.Constraint(m.COMP)
+    def link_final_condenser_cost(m, i):
+        return m.final_condenser_cost[i] == m.final_condenser_cost_scaled[i] / scaling_factors['final_condenser_cost']
+    
+    @m.Constraint(m.COMP)
+    def link_final_reboiler_cost(m, i):
+        return m.final_reboiler_cost[i] == m.final_reboiler_cost_scaled[i] / scaling_factors['final_reboiler_cost']
+    
+    @m.Constraint(m.ISTATE)
+    def link_inter_condenser_cost(m, s):
+        return m.inter_condenser_cost[s] == m.inter_condenser_cost_scaled[s] / scaling_factors['inter_condenser_cost']
+    
+    @m.Constraint(m.ISTATE)
+    def link_inter_reboiler_cost(m, s):
+        return m.inter_reboiler_cost[s] == m.inter_reboiler_cost_scaled[s] / scaling_factors['inter_reboiler_cost']
+    
+    @m.Constraint()
+    def link_CAPEX(m):
+        return m.CAPEX == m.CAPEX_scaled / scaling_factors['CAPEX']
+    
+    @m.Constraint()
+    def link_OPEX(m):
+        return m.OPEX == m.OPEX_scaled / scaling_factors['OPEX']
+
+    @m.Constraint()
+    def link_Objective(m):
+        return m.obj_unscaled == m.CRF * m.CAPEX + m.OPEX
 
     # PARAMETERS
     # ================================================
@@ -655,13 +759,15 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
                 return m.B[(i, t)] == m.F[(i, t)]
             else:
                 return pyo.Constraint.Skip
-            
+        
+        # set maximum vapor flow for a column as: V_max[t] = max{V_r[t], V_s[t]}
         @column.Constraint()
-        def max_vapor_flow(_):
-            if pyo.value(m.Vr[t]) > pyo.value(m.Vs[t]):
-                return m.V_max == m.Vr[t]
-            else:
-                return m.V_max[t] == m.Vs[t]
+        def max_vapor_flow1(_):
+            return m.V_max[t] >= m.Vr[t]
+
+        @column.Constraint()
+        def max_vapor_flow2(_):
+            return m.V_max[t] >= m.Vs[t]
 
     def _build_mass_balance_no_column(m: pyo.ConcreteModel, t: str, nocolumn: Disjunct) -> None:
         """Apply total and component mass balance constraints to inactive column disjuncts.
@@ -981,7 +1087,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
         @column.Constraint()
         def cost_tray(_):
             # empirical cost correlation for capital cost of each tray as function of area
-            return m.cost_per_tray[t] == scaling_factors['cost_per_tray'] * (571.1 + 406.8 * m.Area[t] + 38 * m.Area[t] ** 2)
+            return m.cost_per_tray_scaled[t] == scaling_factors['cost_per_tray'] * (571.1 + 406.8 * m.Area[t] + 38 * m.Area[t] ** 2)
 
         @column.Constraint()
         def column_cost(_):
@@ -990,21 +1096,21 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
             CEPCI_2020 = 596.2
             inflation_ratio = CEPCI_2020 / CEPCI_2004
 
-            Cost_trays = m.cost_per_tray[t] * m.Ntray[t]
+            Cost_trays = m.cost_per_tray_scaled[t] * m.Ntray[t]
             CP = 603.8 * m.Vol[t] + 5307
             Cost_shell = CP * (2.50 + 1.72)
 
-            return m.column_cost[t] == scaling_factors['column_cost'] * ((Cost_shell + Cost_trays) * inflation_ratio)
+            return m.column_cost_scaled[t] == scaling_factors['column_cost'] * (Cost_shell + Cost_trays) * inflation_ratio
 
         @no_column.Constraint()
         def no_column_cost(_):
             # set total cost to zero for inactive column
-            return m.column_cost[t] == 0
+            return m.column_cost_scaled[t] == 0
 
         @no_column.Constraint()
         def no_column_tray_cost(_):
             # set the per tray cost to zero for inactive column
-            return m.cost_per_tray[t] == 0
+            return m.cost_per_tray_scaled[t] == 0
 
     # calling functions to build constraints for active and inactive column disjuncts
     # =================================================================
@@ -1140,7 +1246,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
                 """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
                 # parameters for a polynomial fit
                 condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
-                return (m.final_condenser_cost[i] == scaling_factors['final_condenser_cost'] * (condenser_params[0] * m.area_final_condenser[i]**2
+                return (m.final_condenser_cost_scaled[i] == scaling_factors['final_condenser_cost'] * (condenser_params[0] * m.area_final_condenser[i]**2
                                                                     + condenser_params[1] * m.area_final_condenser[i]
                                                                     + condenser_params[2])) 
 
@@ -1158,7 +1264,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
                 # parameters for a polynomial fit
                 reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
                 
-                return (m.final_reboiler_cost[i] == scaling_factors['final_reboiler_cost'] * (reboiler_params[0] * m.area_final_reboiler[i]**2
+                return (m.final_reboiler_cost_scaled[i] == scaling_factors['final_reboiler_cost'] * (reboiler_params[0] * m.area_final_reboiler[i]**2
                                                             + reboiler_params[1] * m.area_final_reboiler[i]
                                                             + reboiler_params[2]))
 
@@ -1175,12 +1281,12 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
         @no_heat_exchanger.Constraint()
         def inactive_reboiler_cost(_):
             """For an inactive reboiler, set capital cost to zero"""
-            return m.final_reboiler_cost[i] == 0
+            return m.final_reboiler_cost_scaled[i] == 0
 
         @no_heat_exchanger.Constraint()
         def inactive_condenser_cost(_):
             """For an inactive condenser, set capital cost to zero"""
-            return m.final_condenser_cost[i] == 0
+            return m.final_condenser_cost_scaled[i] == 0
 
     # # calling functions to build constraints for active and inactive final product heat exchanger disjuncts
     for i in m.COMP:
@@ -1197,7 +1303,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
     # intermediate state heat exchanger disjunctions are indexed by ISTATE [e.g. AB, BC]
     @m.Disjunction(m.ISTATE,
                    doc="Intermediate product heat exchanger exists or does not")
-    def int_heat_exchange_no_final_heat_exchange(m, i):
+    def int_heat_exchange_no_int_heat_exchange(m, i):
         return [m.int_heat_exchanger[i], m.no_int_heat_exchanger[i]]
 
     def _build_intermediate_product_heat_exchanger(m: pyo.ConcreteModel, s: str, heat_exchanger: Disjunct, no_heat_exchanger: Disjunct) -> None:
@@ -1250,7 +1356,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
             @heat_exchanger.Constraint(strip_tasks)
             def int_reboiler_heat_duty(_, t):
                 """Task condenser heat duty based on enthalpy of vaporization and rectifying section vapor flow rate"""
-                return m.Qreb[t] * m.BT[t] == sum(m.Hvap[i] * m.B[(i, t)] * m.Vr[t] for i in m.COMP)
+                return m.Qreb[t] * m.BT[t] == sum(m.Hvap[i] * m.B[(i, t)] * m.Vs[t] for i in m.COMP)
 
             @no_heat_exchanger.Constraint(strip_tasks)
             def inactive_intermediate_reboiler(_, t):
@@ -1341,7 +1447,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
                 """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
                 # parameters for a polynomial fit to an empirical cost correlation
                 condenser_params = [-5.33104431e-02,  1.26227551e+02,  9.65399504e+03]
-                return (m.inter_condenser_cost[s] == scaling_factors['inter_condenser_cost'] * (condenser_params[0] * m.area_intermediate_condenser[s]**2
+                return (m.inter_condenser_cost_scaled[s] == scaling_factors['inter_condenser_cost'] * (condenser_params[0] * m.area_intermediate_condenser[s]**2
                                                                     + condenser_params[1] * m.area_intermediate_condenser[s]
                                                                     + condenser_params[2]))
 
@@ -1358,7 +1464,7 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
                 """Using a quadratic fit for cost correlation to get problem to be an MIQCP"""
                 # parameters for a polynomial fit
                 reboiler_params = [-7.10805909e-02,  1.68303402e+02,  1.28719934e+04]
-                return (m.inter_reboiler_cost[s] == scaling_factors['inter_reboiler_cost'] * (reboiler_params[0] * m.area_intermediate_reboiler[s]**2
+                return (m.inter_reboiler_cost_scaled[s] == scaling_factors['inter_reboiler_cost'] * (reboiler_params[0] * m.area_intermediate_reboiler[s]**2
                                                             + reboiler_params[1] * m.area_intermediate_reboiler[s]
                                                             + reboiler_params[2]))
         @no_heat_exchanger.Constraint()
@@ -1374,12 +1480,12 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
         @no_heat_exchanger.Constraint()
         def inactive_condenser_cost(_):
             """For an inactive condenser, set capital cost to zero"""
-            return m.inter_condenser_cost[s] == 0
+            return m.inter_condenser_cost_scaled[s] == 0
 
         @no_heat_exchanger.Constraint()
         def inactive_reboiler_cost(_):
             """For an inactive reboiler, set capital cost to zero"""
-            return m.inter_reboiler_cost[s] == 0
+            return m.inter_reboiler_cost_scaled[s] == 0
 
     # calling functions to build constraints for active and inactive intermediate product heat exchanger disjuncts
     for s in m.ISTATE:
@@ -1522,22 +1628,19 @@ def build_model(stn, data, scale=False)->pyo.ConcreteModel:
     # ================================================
     @m.Constraint()
     def capex_def(m):
-        return (m.CAPEX == sum(m.column_cost[t] for t in m.TASKS) +
-                sum(m.final_reboiler_cost[i] + m.final_condenser_cost[i] for i in m.COMP) +
-                sum(m.inter_reboiler_cost[s] + m.inter_condenser_cost[s] for s in m.ISTATE))
+        return (m.CAPEX_scaled == sum(m.column_cost_scaled[t] for t in m.TASKS) +
+                sum(m.final_reboiler_cost_scaled[i] + m.final_condenser_cost_scaled[i] for i in m.COMP) +
+                sum(m.inter_reboiler_cost_scaled[s] + m.inter_condenser_cost_scaled[s] for s in m.ISTATE))
 
     @m.Constraint()
     def opex_def(m):
-        return m.OPEX == scaling_factors['OPEX'] * (C_cw * op_time * sum(m.Qreb[t] for t in m.TASKS) + C_h * op_time * sum(m.Qcond[t] for t in m.TASKS))
+        return m.OPEX_scaled == scaling_factors['OPEX'] * (C_cw * op_time * sum(m.Qreb[t] for t in m.TASKS) + C_h * op_time * sum(m.Qcond[t] for t in m.TASKS))
 
     # OBJECTIVE
     # ================================================
     # multiply sum of bare module capital expenses by capital recovery factor (CRF) to get annualized cost
 
-    # testing superstructure variations by fixing some things as true or false
-    # m.column['A/BC'].indicator_var.fix(True)
-
-    m.obj = pyo.Objective(expr= CRF * m.CAPEX + m.OPEX, sense=pyo.minimize)
+    m.obj = pyo.Objective(expr= m.CRF * m.CAPEX_scaled + m.OPEX_scaled, sense=pyo.minimize)
 
     return m, scaling_factors
 

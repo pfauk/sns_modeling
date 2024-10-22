@@ -27,9 +27,9 @@ from thermal_coupled.therm_dist_scaled import build_model
 
 
 # specify number of components and data file name
-n = 4
+n = 3
 
-data_file_name = os.path.join('poster_problem', '4_comp_linear_hydrocarbons.xlsx')
+data_file_name = os.path.join('poster_problem', '3_comp_linear_hydrocarbons.xlsx')
 
 # data_file_name = '6_comp_test.xlsx'
 
@@ -42,7 +42,8 @@ network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
 # function call returns the Pyomo model object and a dictionary of scaling factors for the cost coefficients
-model, scaling_factors = build_model(network_superstructure, mixture_data, scale=True)
+model, scaling_factors = build_model(
+    network_superstructure, mixture_data, scale=False)
 
 print()
 print('Inlet data')
@@ -94,9 +95,9 @@ results_scaled = solver.solve(model, tee=True)
 original_results = recover_original(model, scaling_factors)
 
 # Log infeasible constraints if any
-logging.basicConfig(level=logging.INFO)
-log_infeasible_constraints(model)
-find_infeasible_constraints(model)
+# logging.basicConfig(level=logging.INFO)
+# log_infeasible_constraints(model)
+# find_infeasible_constraints(model)
 
 # SOLUTION OUTPUT
 # =================================================================

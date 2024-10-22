@@ -19,7 +19,7 @@ class Column:
         # initialization of Boolean varibale for if the column is active
         self.active = pyo.value(mdl.column[t].indicator_var)
         self.col_index = str(t)
-        self.obj = pyo.value(mdl.obj())
+        self.obj = pyo.value(mdl.obj_unscaled)
         self.cost = pyo.value(mdl.column_cost[t])
 
         # initialization of total flows
@@ -303,7 +303,7 @@ def pprint_network(mdl):
     print(mdl.name)
     print('*All Flow Units in [kmol/hr]*')
     print()
-    print(f'System Objective: ${mdl.obj():,.2f}')
+    print(f'System Objective: ${pyo.value(mdl.obj_unscaled):,.2f}')
     print()
     print(f'CAPEX: ${pyo.value(mdl.CAPEX):,.2f}')
     print(f'OPEX: ${pyo.value(mdl.OPEX):,.2f}')
