@@ -766,6 +766,28 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
             return 'NLP'
 
 
+def recover_original(model:pyo.ConcreteModel, scaling_factors:dict)->dict:
+    """Function that takes a Pyomo model object with scaling factors and rescales
+    decision variables to original values
+
+    Args:
+        model (Pyomo.ConcreteModel): pyomo concrete model object
+        scaling_factors (dict): scaling factors for decision variables in Pyomo model
+
+    Returns:
+        dict: rescaled values
+    """
+    results = {}
+    for var_name, scale in scaling_factors.items():
+        var = getattr(model, var_name, None)
+        if var is not None:
+            if var.is_indexed():
+                results[var_name] = {idx: pyo.value(var[idx]) / scale for idx in var}
+            else:
+                results[var_name] = pyo.value(var) / scale
+    return results
+
+
 
 if __name__ == "__main__":
     hydrocarbon_data = Data('3_comp.xlsx')

@@ -22,7 +22,7 @@ from utils import (
     print_constraint_type)
 from superstructure.stn import stn
 from superstructure.stn_nonconsecutive import stn_nonconsecutive
-from thermal_coupled.therm_dist_scaled import build_model
+from thermal_coupled.therm_dist_scaled_test import build_model
 
 
 # specify number of components and data file name
