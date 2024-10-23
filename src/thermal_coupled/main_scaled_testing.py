@@ -23,7 +23,7 @@ from utils import (
     recover_original)
 from superstructure.stn import stn
 from superstructure.stn_nonconsecutive import stn_nonconsecutive
-from thermal_coupled.therm_dist_scaled import build_model
+from thermal_coupled.therm_dist import build_model
 
 
 # specify number of components and data file name
@@ -37,13 +37,13 @@ data_file_name = os.path.join('poster_problem', '3_comp_linear_hydrocarbons.xlsx
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn(n)
+network_superstructure = stn_nonconsecutive(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
 # function call returns the Pyomo model object and a dictionary of scaling factors for the cost coefficients
 model, scaling_factors = build_model(
-    network_superstructure, mixture_data, scale=False)
+    network_superstructure, mixture_data, scale=True)
 
 print()
 print('Inlet data')
@@ -83,10 +83,10 @@ print(build_model_size_report(model))
 # solving model
 solver = pyo.SolverFactory('gurobi')
 
-# 'NumericFocus':2,
 # Gurobi solver options
 solver.options = {'nonConvex': 2,
-                  'NumericFocus': 2}
+                  'NumericFocus': 2,
+                  'MIPGap': 1e-4}
 
 # results_unscaled= solver.solve(model, tee=True)
 results_scaled = solver.solve(model, tee=True)
