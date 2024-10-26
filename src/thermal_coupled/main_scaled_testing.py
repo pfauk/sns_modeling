@@ -89,16 +89,9 @@ solver.options = {'nonConvex': 2,
                   'NumericFocus': 2,
                   'MIPGap': 1e-4}
 
-# results_unscaled= solver.solve(model, tee=True)
-results_scaled = solver.solve(model, tee=True)
 
-# propagate solution of scaled model back to the unscaled model
-original_results = recover_original(model, scaling_factors)
+results = solver.solve(model, tee=True)
 
-# Log infeasible constraints if any
-# logging.basicConfig(level=logging.INFO)
-# log_infeasible_constraints(model)
-# find_infeasible_constraints(model)
 
 # SOLUTION OUTPUT
 # =================================================================
