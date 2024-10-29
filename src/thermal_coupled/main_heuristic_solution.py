@@ -6,10 +6,11 @@ to import from
 """
 
 import logging
+import os
 import pyomo.environ as pyo
 from pyomo.util.infeasible import log_infeasible_constraints, find_infeasible_constraints
 from pyomo.util.model_size import build_model_size_report
-from idaes.core.util.model_statistics import  report_statistics
+from idaes.core.util.model_statistics import report_statistics
 from utils import (
     Data,
     get_model_type,
@@ -18,26 +19,31 @@ from utils import (
     save_model_to_file,
     save_solution_to_file,
     get_model_type,
-    print_constraint_type)
+    print_constraint_type,
+    recover_original)
 from superstructure.stn import stn
 from superstructure.stn_nonconsecutive import stn_nonconsecutive
-from thermal_coupled.therm_dist import solve_model
-from thermal_coupled.therm_dist_scaled_test import build_model
+from thermal_coupled.therm_dist import build_model, solve_model
 
 
 # specify number of components and data file name
 n = 5
-data_file_name = '5_comp_test.xlsx'
+
+data_file_name = os.path.join('test_problems', '5_comp_linear_hydrocarbons.xlsx')
+
+# data_file_name = '6_comp_alkanes.xlsx'
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn_nonconsecutive(n)
+network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
-model, scaled_model = build_model(network_superstructure, mixture_data)
+# function call returns the Pyomo model object and a dictionary of scaling factors for the cost coefficients
+model, scaling_factors = build_model(
+    network_superstructure, mixture_data, scale=True)
 
 print()
 print('Inlet data')
@@ -49,16 +55,50 @@ print('Mixture species data')
 print('================================================================')
 print(mixture_data.species_df)
 
-solve_model(scaled_model)
+print()
+print(f'Model type before transformation: {get_model_type(model)}')
 
 
-# # Log infeasible constraints if any
-# logging.basicConfig(level=logging.INFO)
-# log_infeasible_constraints(model)
-# find_infeasible_constraints(model)
+# development of heuristic solution
+solved_model, results = solve_model(model)
+
+# SOLUTION
+# ================================================
+# pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+
+
+# # applying Big-M transformation
+# mbigm = pyo.TransformationFactory('gdp.bigm')
+
+# # apply Big-M transformation to both scaled and unscaled models
+# mbigm.apply_to(model)
+
+# print()
+# print(f'Model type after transformation: {get_model_type(model)}')
+
+# # MODEL ANALYSIS
+# # =================================================================
+
+# print()
+# print('Model size after transformation:')
+# print(build_model_size_report(model))
+
+# # solving model
+# solver = pyo.SolverFactory('gurobi')
+
+# # Gurobi solver options
+# solver.options = {'nonConvex': 2,
+#                   'NumericFocus': 2,
+#                   'MIPGap': 1e-3}
+
+
+# results = solver.solve(model, tee=True)
+
 
 # SOLUTION OUTPUT
 # =================================================================
+
+# solution comparison for both scaled and unscaled models
 pprint_network(model)
 
 # uncomment below line to save the solution output to a txt file
@@ -78,4 +118,3 @@ for s in model.ISTATE:
 print()
 for k in model.TASKS:
     print(f'Task ({k}): {pyo.value(model.column[k].indicator_var)}')
-    

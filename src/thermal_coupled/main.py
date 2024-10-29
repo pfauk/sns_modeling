@@ -19,27 +19,31 @@ from utils import (
     save_model_to_file,
     save_solution_to_file,
     get_model_type,
-    print_constraint_type)
+    print_constraint_type,
+    recover_original)
 from superstructure.stn import stn
 from superstructure.stn_nonconsecutive import stn_nonconsecutive
-from thermal_coupled.therm_dist_scaled_test import build_model
+from thermal_coupled.therm_dist import build_model, solve_model
 
 
 # specify number of components and data file name
 n = 4
 
-data_file_name = os.path.join('poster_problem', '3_comp_linear_hydrocarbons.xlsx')
+data_file_name = os.path.join('test_problems', '4_comp_linear_hydrocarbons.xlsx')
+
+# data_file_name = '6_comp_alkanes.xlsx'
 
 # import problem data for system and relevant species to data object
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn(n)
+network_superstructure = stn_nonconsecutive(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
-# doing stuff with model scaling for solution
-model, scaled_model = build_model(network_superstructure, mixture_data)
+# function call returns the Pyomo model object and a dictionary of scaling factors for the cost coefficients
+model, scaling_factors = build_model(
+    network_superstructure, mixture_data, scale=True)
 
 print()
 print('Inlet data')
@@ -54,16 +58,15 @@ print(mixture_data.species_df)
 print()
 print(f'Model type before transformation: {get_model_type(model)}')
 
-# saving the pyomo model to a file
-# save_model_to_file(model, '3_comp_model')
-
 # SOLUTION
 # ================================================
 pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
 
+
 # applying Big-M transformation
 mbigm = pyo.TransformationFactory('gdp.bigm')
 
+# apply Big-M transformation to both scaled and unscaled models
 mbigm.apply_to(model)
 
 print()
@@ -81,17 +84,15 @@ solver = pyo.SolverFactory('gurobi')
 
 # Gurobi solver options
 solver.options = {'nonConvex': 2,
-                  'NumericFocus': 2, }
+                  'NumericFocus': 2,
+                  'MIPGap': 1e-3}
 
 results = solver.solve(model, tee=True)
 
-# Log infeasible constraints if any
-logging.basicConfig(level=logging.INFO)
-log_infeasible_constraints(model)
-find_infeasible_constraints(model)
-
 # SOLUTION OUTPUT
 # =================================================================
+
+# solution comparison for both scaled and unscaled models
 pprint_network(model)
 
 # uncomment below line to save the solution output to a txt file
@@ -102,13 +103,11 @@ pprint_network(model)
 print()
 
 for i in model.COMP:
-    print(f'Final heat exchanger active: {i} {
-          pyo.value(model.final_heat_exchanger[i].indicator_var)}')
+    print(f'Final heat exchanger active: {i} {pyo.value(model.final_heat_exchanger[i].indicator_var)}')
 
 print()
 for s in model.ISTATE:
-    print(f'Intermediate heat exchanger active: {s} {
-          pyo.value(model.int_heat_exchanger[s].indicator_var)}')
+    print(f'Intermediate heat exchanger active: {s} {pyo.value(model.int_heat_exchanger[s].indicator_var)}')
 
 print()
 for k in model.TASKS:

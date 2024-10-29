@@ -1604,28 +1604,37 @@ def solve_model(model):
         model (pyo.ConcreteModel): input model should be the GDP Pyomo Concrete Model (before transformation)
     """
 
-    k = 1  # initialzie iterator
-    tolerance = 0.80  # some tolerance for the iterative solution
+    k = 1  # initialize iterator
+    tolerance = 0.95  # tolerance level for convergence
 
-    # intialize objective variables for looping
+    # initialize objective variables for looping
     P2k_objective_last = 0
-    P2k_objective_current = 1
+    P2k_objective_current = 0
     binary_cut_constraints = []
 
-    while P2k_objective_current > tolerance * P2k_objective_last:
+    # do model transformation from GDP to MIQCP
+    pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+    mbigm = pyo.TransformationFactory('gdp.bigm')
+    mbigm.apply_to(model)
+    
+    # instantiate solver with Gurobi
+    solver = pyo.SolverFactory('gurobi', tee=True)
+
+    while True:
 
         # 1. fix the Boolean variables associated with intermediate variables heat exchanger disjuncts to be False
+        # Ensure that the sequence of separation tasks and final product heat exchangers are unfixed
         for s in model.ISTATE:
             model.int_heat_exchanger[s].binary_indicator_var.fix(0)
             model.no_int_heat_exchanger[s].binary_indicator_var.fix(1)
+        
+        for t in model.TASKS:
+            model.column[t].binary_indicator_var.unfix()
 
-        # 2. P1k: Tranforrm and solve model and extract out values for separation tasks and final product heat exchangers
-        pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
+        for i in model.COMP:
+            model.final_heat_exchanger[i].binary_indicator_var.unfix()
 
-        mbigm = pyo.TransformationFactory('gdp.bigm')
-        mbigm.apply_to(model)
-
-        solver = pyo.SolverFactory('gurobi', tee=True)
+        # 2. P1k: Solve model and extract out values for separation tasks and final product heat exchangers
 
         solver.options = {'nonConvex': 2,
                         'NumericFocus': 2,
@@ -1633,7 +1642,9 @@ def solve_model(model):
 
         P1k_results = solver.solve(model, tee=True)
         P1k_objective = pyo.value(model.obj_unscaled)
-        
+
+        # print out network
+        # =================================================================        
         print()
         for i in model.COMP:
             print(f'Final heat exchanger active: {i} {pyo.value(model.final_heat_exchanger[i].indicator_var)}')
@@ -1643,7 +1654,9 @@ def solve_model(model):
             print(f'Intermediate heat exchanger active: {s} {pyo.value(model.int_heat_exchanger[s].indicator_var)}')
 
         print()
-        for k in model.TASKS:print(f'Task ({k}): {pyo.value(model.column[k].indicator_var)}')
+        for t in model.TASKS:
+            print(f'Task ({t}): {pyo.value(model.column[t].indicator_var)}')
+        # =================================================================
 
         # get the values for separation tasks and final product heat exchangers from solution
         separation_tasks = {t: model.column[t].binary_indicator_var.value for t in model.TASKS}
@@ -1661,9 +1674,27 @@ def solve_model(model):
             model.int_heat_exchanger[s].binary_indicator_var.unfix()
             model.no_int_heat_exchanger[s].binary_indicator_var.unfix()
 
+        solver.options = {'nonConvex': 2,
+                          'NumericFocus': 2,
+                          'MIPgap': 2e-3}
+
         P2k_results = solver.solve(model, tee=True)
         P2k_objective_last = P2k_objective_current
         P2k_objective_current = pyo.value(model.obj_unscaled)
+        
+        # print out network
+        # =================================================================        
+        print()
+        for i in model.COMP:
+            print(f'Final heat exchanger active: {i} {pyo.value(model.final_heat_exchanger[i].indicator_var)}')
+
+        print()
+        for s in model.ISTATE:
+            print(f'Intermediate heat exchanger active: {s} {pyo.value(model.int_heat_exchanger[s].indicator_var)}')
+
+        print()
+        for t in model.TASKS:print(f'Task ({t}): {pyo.value(model.column[t].indicator_var)}')
+        # =================================================================
         
         intermediate_exchangers = {i: model.int_heat_exchanger[i].binary_indicator_var.value for i in model.ISTATE}
         
@@ -1672,17 +1703,36 @@ def solve_model(model):
         print(f'Current iteration objective: {P2k_objective_current}')
         print('================================================================\n')
         
+        # Check termination conditions
+        # Termination 1.
+        if P2k_objective_current < tolerance * P2k_objective_last:
+            print(f"1. Terminating heuristic solution. Current objective value: {P2k_objective_current}")
+            break
+        
+        # Termination 2. No significant improvement
+        if abs(P2k_objective_current - P2k_objective_last) < 100:
+            print(f"2. Terminating heuristic solution. Current objective value: {P2k_objective_current}")
+            break
+        
+        if k > 1 and P2k_objective_current > P2k_objective_last:
+            print(f"3. Terminating heuristic solution. Current objective value: {P2k_objective_current}")
+            break
+        
         # 6. Add binary cut to prohibit the current configuration if iteration continues
         if P2k_objective_current > tolerance * P2k_objective_last:
             def binary_cut_rule(m):
                 return sum(
-                    (1 - model.column[t].binary_indicator_var if separation_tasks[t] == 1 else model.column[t].binary_indicator_var)
-                    + (1 - model.final_heat_exchanger[i].binary_indicator_var if final_exchangers[i] == 1 else model.final_heat_exchanger[i].binary_indicator_var)
-                    for t in model.TASKS for i in model.COMP
-                ) >= 1
+                    (1 - model.column[t].indicator_var.get_associated_binary() if separation_tasks[t] else model.column[t].indicator_var.get_associated_binary())
+                    for t in model.TASKS) \
+                + sum((1 - model.final_heat_exchanger[i].indicator_var.get_associated_binary()
+                       if final_exchangers[i] else model.final_heat_exchanger[i].indicator_var.get_associated_binary()) for i in model.COMP) \
+                + sum((1 - model.int_heat_exchanger[s].indicator_var.get_associated_binary()
+                       if intermediate_exchangers[s] else model.int_heat_exchanger[s].indicator_var.get_associated_binary()) for s in model.ISTATE) \
+                           >= 1
+            # Add the binary cut constraint to the model
             binary_cut_constraints.append(model.add_component(f"binary_cut_{k}", pyo.Constraint(rule=binary_cut_rule)))
 
-            # Increment
+            # Increment the iteration counter
             k += 1
 
     return model, P2k_results
