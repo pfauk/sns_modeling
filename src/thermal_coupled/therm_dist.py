@@ -1643,21 +1643,6 @@ def solve_model(model):
         P1k_results = solver.solve(model, tee=True)
         P1k_objective = pyo.value(model.obj_unscaled)
 
-        # print out network
-        # =================================================================        
-        print()
-        for i in model.COMP:
-            print(f'Final heat exchanger active: {i} {pyo.value(model.final_heat_exchanger[i].indicator_var)}')
-
-        print()
-        for s in model.ISTATE:
-            print(f'Intermediate heat exchanger active: {s} {pyo.value(model.int_heat_exchanger[s].indicator_var)}')
-
-        print()
-        for t in model.TASKS:
-            print(f'Task ({t}): {pyo.value(model.column[t].indicator_var)}')
-        # =================================================================
-
         # get the values for separation tasks and final product heat exchangers from solution
         separation_tasks = {t: model.column[t].binary_indicator_var.value for t in model.TASKS}
         final_exchangers = {i: model.final_heat_exchanger[i].binary_indicator_var.value for i in model.COMP}
@@ -1680,28 +1665,8 @@ def solve_model(model):
 
         P2k_results = solver.solve(model, tee=True)
         P2k_objective_last = P2k_objective_current
-        P2k_objective_current = pyo.value(model.obj_unscaled)
-        
-        # print out network
-        # =================================================================        
-        print()
-        for i in model.COMP:
-            print(f'Final heat exchanger active: {i} {pyo.value(model.final_heat_exchanger[i].indicator_var)}')
-
-        print()
-        for s in model.ISTATE:
-            print(f'Intermediate heat exchanger active: {s} {pyo.value(model.int_heat_exchanger[s].indicator_var)}')
-
-        print()
-        for t in model.TASKS:print(f'Task ({t}): {pyo.value(model.column[t].indicator_var)}')
-        # =================================================================
         
         intermediate_exchangers = {i: model.int_heat_exchanger[i].binary_indicator_var.value for i in model.ISTATE}
-        
-        print('================================================================')
-        print(f'Last iteration objective: {P2k_objective_last}')
-        print(f'Current iteration objective: {P2k_objective_current}')
-        print('================================================================\n')
         
         # Check termination conditions
         # Termination 1.
