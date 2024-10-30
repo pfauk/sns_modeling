@@ -1502,10 +1502,15 @@ def build_model(stn, data, scale=False) -> pyo.ConcreteModel:
         else:
             return pyo.Constraint.Skip
 
+    @m.Constraint()
+    def logic7(m,
+                 doc ="Thermal coupling constraint"):
+        return sum(m.int_heat_exchanger[i].binary_indicator_var for i in m.ISTATE) >= 1
+
     @m.LogicalConstraint(m.COMP,
                          doc="""If a final product is produced by exactly one contribution, the heat exchanger associated with
                          this product must be selected""")
-    def logic7(m, i):
+    def logic8(m, i):
         # getting lists of boolean variables for column disjuncts that could produce the final state i
         if i in m.PRE_i:
             bool_vars_rectifying = [m.column[t].indicator_var for t in m.PRE_i[i]]
@@ -1524,7 +1529,7 @@ def build_model(stn, data, scale=False) -> pyo.ConcreteModel:
     @m.LogicalConstraint(m.COMP,
                          doc="""If a given final state is produced by 2 tasks,
                          then there is no heat exchanger associated with that state""")
-    def logic8(m, i):
+    def logic9(m, i):
         if i in m.PRE_i:
             bool_vars_rectifying = [m.column[t].indicator_var for t in m.PRE_i[i]]
         else:
@@ -1540,12 +1545,12 @@ def build_model(stn, data, scale=False) -> pyo.ConcreteModel:
     # Intermediate heat exchanger logic: cannot have a heat exchanger for an intermediate state if the state is not produced by a task
 
     @m.Constraint(m.ISTATE)
-    def logic9(m, s):
+    def logic10(m, s):
         return (1 - m.int_heat_exchanger[s].binary_indicator_var + sum(m.column[t].binary_indicator_var for t in m.ST_s[s]) >= 1)
 
     @m.LogicalConstraint(m.STATES, m.TASKS,
                          doc="""Connectivity relations e.g. Existence of task AB/C implies A/B""")
-    def logic10(m, s, t):
+    def logic11(m, s, t):
         if s in m.ST_s and s in m.TS_s:
             tasks = list(m.ST_s[s])
             if t in tasks:
@@ -1558,7 +1563,7 @@ def build_model(stn, data, scale=False) -> pyo.ConcreteModel:
 
     @m.LogicalConstraint(m.STATES, m.TASKS,
                          doc="""Connectivity relations e.g. A/B implies AB/C""")
-    def logic11(m, s, t):
+    def logic12(m, s, t):
         if s in m.TS_s and s in m.ST_s:
             tasks = list(m.TS_s[s])
             if t in tasks:
@@ -1627,6 +1632,7 @@ def solve_model(model):
         for s in model.ISTATE:
             model.int_heat_exchanger[s].binary_indicator_var.fix(0)
             model.no_int_heat_exchanger[s].binary_indicator_var.fix(1)
+        model.logic7.deactivate()
         
         for t in model.TASKS:
             model.column[t].binary_indicator_var.unfix()
@@ -1658,6 +1664,7 @@ def solve_model(model):
         for s in model.ISTATE:
             model.int_heat_exchanger[s].binary_indicator_var.unfix()
             model.no_int_heat_exchanger[s].binary_indicator_var.unfix()
+        model.logic7.activate()
 
         solver.options = {'nonConvex': 2,
                           'NumericFocus': 2,
@@ -1665,6 +1672,7 @@ def solve_model(model):
 
         P2k_results = solver.solve(model, tee=True)
         P2k_objective_last = P2k_objective_current
+        P2k_objective_current = pyo.value(model.obj_unscaled)
         
         intermediate_exchangers = {i: model.int_heat_exchanger[i].binary_indicator_var.value for i in model.ISTATE}
         

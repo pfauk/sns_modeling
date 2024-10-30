@@ -27,9 +27,9 @@ from thermal_coupled.therm_dist import build_model, solve_model
 
 
 # specify number of components and data file name
-n = 5
+n = 4
 
-data_file_name = os.path.join('test_problems', '5_comp_linear_hydrocarbons.xlsx')
+data_file_name = os.path.join('notebook_examples', '4_comp_linear_hydrocarbons.xlsx')
 
 # data_file_name = '6_comp_alkanes.xlsx'
 
