@@ -42,8 +42,7 @@ network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
 # function call returns the Pyomo model object and a dictionary of scaling factors for the cost coefficients
-model, scaling_factors = build_model(
-    network_superstructure, mixture_data, scale=True)
+model, scaling_factors = build_model(network_superstructure, mixture_data, scale=True)
 
 print()
 print('Inlet data')
@@ -62,59 +61,9 @@ print(f'Model type before transformation: {get_model_type(model)}')
 # development of heuristic solution
 solved_model, results = solve_model(model)
 
-# SOLUTION
-# ================================================
-# pyo.TransformationFactory('core.logical_to_linear').apply_to(model)
-
-
-# # applying Big-M transformation
-# mbigm = pyo.TransformationFactory('gdp.bigm')
-
-# # apply Big-M transformation to both scaled and unscaled models
-# mbigm.apply_to(model)
-
-# print()
-# print(f'Model type after transformation: {get_model_type(model)}')
-
-# # MODEL ANALYSIS
-# # =================================================================
-
-# print()
-# print('Model size after transformation:')
-# print(build_model_size_report(model))
-
-# # solving model
-# solver = pyo.SolverFactory('gurobi')
-
-# # Gurobi solver options
-# solver.options = {'nonConvex': 2,
-#                   'NumericFocus': 2,
-#                   'MIPGap': 1e-3}
-
-
-# results = solver.solve(model, tee=True)
-
-
-# SOLUTION OUTPUT
-# =================================================================
-
-# solution comparison for both scaled and unscaled models
 pprint_network(model)
 
 # uncomment below line to save the solution output to a txt file
 # save_solution_to_file(model, '4_comp_solution_2')
 
 # save_model_to_file(model, '3_comp_pyomo_model_solution')
-
-print()
-
-for i in model.COMP:
-    print(f'Final heat exchanger active: {i} {pyo.value(model.final_heat_exchanger[i].indicator_var)}')
-
-print()
-for s in model.ISTATE:
-    print(f'Intermediate heat exchanger active: {s} {pyo.value(model.int_heat_exchanger[s].indicator_var)}')
-
-print()
-for k in model.TASKS:
-    print(f'Task ({k}): {pyo.value(model.column[k].indicator_var)}')

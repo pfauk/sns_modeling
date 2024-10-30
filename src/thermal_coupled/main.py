@@ -37,13 +37,12 @@ data_file_name = os.path.join('test_problems', '4_comp_linear_hydrocarbons.xlsx'
 mixture_data = Data(data_file_name)
 
 # build state-task network superstrucutre and associated index sets
-network_superstructure = stn_nonconsecutive(n)
+network_superstructure = stn(n)
 network_superstructure.generate_tree()
 network_superstructure.generate_index_sets()
 
 # function call returns the Pyomo model object and a dictionary of scaling factors for the cost coefficients
-model, scaling_factors = build_model(
-    network_superstructure, mixture_data, scale=True)
+model, scaling_factors = build_model(network_superstructure, mixture_data, scale=True)
 
 print()
 print('Inlet data')
