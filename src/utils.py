@@ -9,6 +9,7 @@ from pyomo.gdp import Disjunct
 import numpy as np
 from typing import Tuple, Dict
 
+
 class Column:
     """Class to encapuslate data for a given column (separation task) for easier display.
     Columns are indexed by the set m.TASKS, which represents all possible separation tasks
@@ -154,7 +155,8 @@ class IntHeatExchanger:
             if self.active_rec_tasks and not self.active_strip_tasks:
                 self.is_condenser = True
                 self.cost = pyo.value(mdl.inter_condenser_cost[s])
-                self.exchanger_area = pyo.value(mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
+                self.exchanger_area = pyo.value(
+                    mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
                 condenser_duty = pyo.value(sum(mdl.Qcond[t] for t in active_rec_tasks))
             else:
                 self.is_condenser = False
@@ -163,7 +165,8 @@ class IntHeatExchanger:
             if self.active_strip_tasks and not self.active_rec_tasks:
                 self.is_reboiler = True
                 self.cost = mdl.inter_reboiler_cost[s]
-                self.exchanger_area = pyo.value(mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
+                self.exchanger_area = pyo.value(
+                    mdl.area_intermediate_reboiler[s]) + pyo.value(mdl.area_intermediate_condenser[s])
                 reboiler_duty = pyo.value(sum(mdl.Qreb[t] for t in active_strip_tasks))
             else:
                 self.is_reboiler = False
@@ -191,6 +194,7 @@ class IntHeatExchanger:
                 print(f'Capital cost of condenser: ${self.cost:,.2f}')
                 print(f'Exchanger area: {self.exchanger_area:,.2f} [m^2]')
                 print(f'Heat Duty: {self.heat_duty:,.1f} [10^3 kJ/hr]')
+
 
 class FinalHeatExchanger:
     """Class to encapsulate data for final product heat exchanger for easier display.
@@ -281,6 +285,7 @@ def pprint_column(mdl, k):
     column = Column(mdl, k)
     column.display_complete_col()
 
+
 def pprint_network(mdl):
     """Function takes an input of a distillation network modeled as a pyomo object and outputs the solution
     Args:
@@ -367,6 +372,7 @@ def pprint_network(mdl):
     for s in active_inter_heat_exchanger.keys():
         active_inter_heat_exchanger[s].display_exchanger()
 
+
 def pprint_tasks(mdl):
     """Function displays all separations tasks and if they are active / inactive"""
     print()
@@ -400,16 +406,18 @@ def save_solution_to_file(mdl, file_name, dir_path=None):
 
     full_path = os.path.join(directory, file_name)
 
-    # use utf-8 encoding instead of standard Windows cp1252
-    with open(full_path, 'w', encoding='utf-8') as f:
-        # Redirect stdout to file
-        sys.stdout = f
-        pprint_network(mdl)
-
-    # Reset stdout to its default value
-    sys.stdout = sys.__stdout__
+    # Save stdout, redirect to file, then reset
+    original_stdout = sys.stdout
+    try:
+        with open(full_path, 'w', encoding='utf-8') as f:
+            sys.stdout = f
+            mdl.pprint()
+    finally:
+        # Always restore stdout even if an error occurs
+        sys.stdout = original_stdout
 
     return None
+
 
 def save_model_to_file(mdl, file_name, dir_path=None):
     """
@@ -436,20 +444,23 @@ def save_model_to_file(mdl, file_name, dir_path=None):
     full_path = os.path.join(directory, file_name)
 
     # use utf-8 encoding instead of standard Windows cp1252 for output to handle logical characters
-    with open(full_path, 'w', encoding='utf-8') as f:
-        # Redirect stdout to file
-        sys.stdout = f
-        mdl.pprint()
-
-    # Reset stdout to its default value
-    sys.stdout = sys.__stdout__
+    original_stdout = sys.stdout
+    try:
+        with open(full_path, 'w', encoding='utf-8') as f:
+            sys.stdout = f
+            mdl.pprint()
+    finally:
+        # Always restore stdout even if an error occurs
+        sys.stdout = original_stdout
 
     return None
+
 
 class Data:
     """
     Class to hold problem data for input to a build_model() function.
     """
+
     def __init__(self, file_name: str, dir_path: str = None):
         base_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -480,10 +491,12 @@ class Data:
         self.rec = dict(zip(self.species_df['index'], self.species_df['Recovery']))
 
         # Calculate bounds and initialization for Underwood roots and intermediate variable (z)
-        self.root_upper_bounds, self.root_lower_bounds, self.root_initial = self.calculate_root_bounds(self.relative_volatility)
-        self.z_upper_bounds, self.z_lower_bounds, self.z_initial = self.calculate_intermediate_bounds(self.relative_volatility)
-        
-    def calculate_root_bounds(self, alpha:dict) -> Tuple[dict, dict, dict]:
+        self.root_upper_bounds, self.root_lower_bounds, self.root_initial = self.calculate_root_bounds(
+            self.relative_volatility)
+        self.z_upper_bounds, self.z_lower_bounds, self.z_initial = self.calculate_intermediate_bounds(
+            self.relative_volatility)
+
+    def calculate_root_bounds(self, alpha: dict) -> Tuple[dict, dict, dict]:
         """Calculate the bounds and initialization for Underwood roots based on relative volatilites
 
         Args:
@@ -495,19 +508,19 @@ class Data:
         """
         root_upper_bounds = {}
         root_lower_bounds = {}
-        root_initial = {}    
-        
+        root_initial = {}
+
         n_components = len(alpha)
         alpha_values = list(alpha.values())
-        
+
         for i in range(n_components - 1):
             root_upper_bounds[f'r{i+1}'] = alpha_values[i] - 0.01
             root_lower_bounds[f'r{i+1}'] = alpha_values[i+1] + 0.01
             root_initial[f'r{i+1}'] = (alpha_values[i] + alpha_values[i+1]) / 2
-            
+
         return root_upper_bounds, root_lower_bounds, root_initial
-    
-    def calculate_intermediate_bounds(self, alpha:dict) -> Tuple[dict, dict, dict]:
+
+    def calculate_intermediate_bounds(self, alpha: dict) -> Tuple[dict, dict, dict]:
         """Calculate the bounds and initialization for intermediate variable (z) used in reformulation of Underwood equations
 
         Args:
@@ -520,22 +533,24 @@ class Data:
         z_upper_bounds = {}
         z_lower_bounds = {}
         z_initial = {}
-        
+
         n_components = len(alpha)
         components = list(alpha.keys())
-        
+
         root_upper_bounds, root_lower_bounds, root_initial = self.calculate_root_bounds(alpha)
-        
+
         # calculating bounds for intermediate variable (z) using bounds from Underwood roots
         for i in components:
             for r in range(1, n_components):
                 z_upper_bounds[(i, f'r{r}')] = 1 / (alpha[i] - root_upper_bounds[f'r{r}'])
                 z_lower_bounds[(i, f'r{r}')] = 1 / (alpha[i] - root_lower_bounds[f'r{r}'])
                 z_initial[(i, f'r{r}')] = (z_upper_bounds[(i, f'r{r}')] + z_lower_bounds[(i, f'r{r}')]) / 2
-    
+
         return z_upper_bounds, z_lower_bounds, z_initial
 
 # utility functions to examine model type
+
+
 def get_var_type(model: pyo.ConcreteModel) -> dict:
     """returns the domain of each variable in a Pyomo model 
 
@@ -555,9 +570,10 @@ def get_var_type(model: pyo.ConcreteModel) -> dict:
 
     return variables
 
+
 def get_constraint_type(model: pyo.ConcreteModel) -> dict:
     """returns the equation type of the constraints in a Pyomo model.
-    
+
     Constraints can be: linear, quadratic, nth degree polynomial, or nonlinear
 
     Args:
@@ -587,9 +603,10 @@ def get_constraint_type(model: pyo.ConcreteModel) -> dict:
 
     return constraints
 
+
 def get_objective_type(model: pyo.ConcreteModel) -> str:
     """returns the equation type of the objective function in a Pyomo model.
-    
+
     Objective can be: linear, quadratic, nth degree polynomial, or nonlinear
 
     Args:
@@ -618,10 +635,10 @@ def print_constraint_type(model: pyo.ConcreteModel) -> None:
     """displays constraints in model based on type of equation
 
     Constraints can be: linear, quadratic, nth degree polynomial, or nonlinear
-    
+
     Args:
         model (pyo.ConcreteModel): Pyomo model object
-    
+
     Returns:
         None: prints constraints and returns None
     """
@@ -696,7 +713,8 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
     """
 
     # domains of discrete variables in a Pyomo model
-    integer_vars = {'Integers', 'Binary', 'NegativeIntegers', 'PositiveIntegers', 'NonPositiveIntegers', 'NonNegativeIntegers'}
+    integer_vars = {'Integers', 'Binary', 'NegativeIntegers',
+                    'PositiveIntegers', 'NonPositiveIntegers', 'NonNegativeIntegers'}
 
     var_types = {'Continuous': False, 'Discrete': False}
     constraint_types = {'Linear': False, 'Quadratic': False, 'Nonlinear': False}
@@ -739,13 +757,12 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
                 return 'MILP'
             elif var_types['Discrete'] is True and var_types['Continuous'] is False:
                 return 'IP'
-            
+
         if constraint_types['Quadratic'] is True and constraint_types['Nonlinear'] is False:
             if var_types['Continuous'] is True and var_types['Discrete'] is False:
                 return 'QCP'
             elif var_types['Discrete'] is True and var_types['Continuous'] is True:
                 return 'MIQCP'
-            
 
     if objective == 'Quadratic':
 
@@ -754,7 +771,7 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
                 return 'QP'
             elif var_types['Discrete'] is True:
                 return 'MIQP'
-        
+
         if constraint_types['Quadratic'] is True and constraint_types['Nonlinear'] is False:
             if var_types['Continuous'] is True and var_types['Discrete'] is False:
                 return 'QCQP'
@@ -766,7 +783,7 @@ def get_model_type(model: pyo.ConcreteModel) -> str:
             return 'NLP'
 
 
-def recover_original(model:pyo.ConcreteModel, scaling_factors:dict)->dict:
+def recover_original(model: pyo.ConcreteModel, scaling_factors: dict) -> dict:
     """Function that takes a Pyomo model object with scaling factors and rescales
     decision variables to original values
 
@@ -786,7 +803,6 @@ def recover_original(model:pyo.ConcreteModel, scaling_factors:dict)->dict:
             else:
                 results[var_name] = pyo.value(var) / scale
     return results
-
 
 
 if __name__ == "__main__":

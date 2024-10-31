@@ -1,0 +1,193 @@
+
+================================
+NETWORK OVERVIEW
+================================
+4 Component GDP Distillation Model
+*All Flow Units in [kmol/hr]*
+
+System Objective: $1,340,041.86
+
+CAPEX: $6,039,029.41
+OPEX: $803,610.38
+
+System Feed Total: ABCD (300.0 [kmol/hr])
+Feed A 30.0
+Feed B 75.0
+Feed C 120.0
+Feed D 75.0
+
+Active Separation Tasks
+================================
+A/BCD
+B/CD
+C/D
+
+Column A/BCD:
+Column cost $2,891,056.82
+Number of trays: 32.0
+Column height: 65.4 [m]
+Column diameter: 4.0 [m^2]
+================================
+Feed flow (FT): 300.0000
+Distillate (DT): 31.3500
+Bottoms (BT): 268.6500
+
+Column B/CD:
+Column cost $2,744,189.95
+Number of trays: 24.0
+Column height: 54.8 [m]
+Column diameter: 4.3 [m^2]
+================================
+Feed flow (FT): 268.6500
+Distillate (DT): 75.0675
+Bottoms (BT): 193.5825
+
+Column C/D:
+Column cost $224,596.88
+Number of trays: 20.0
+Column height: 17.7 [m]
+Column diameter: 2.0 [m^2]
+================================
+Feed flow (FT): 193.5825
+Distillate (DT): 117.3405
+Bottoms (BT): 76.2420
+
+================================
+DETAILED NETWORK VIEW
+================================
+
+
+================================
+Separation task A/BCD is active
+
+Total Flows for Column A/BCD [kmol/hr]:
+Feed flow (FT): 300.0000
+Distillate (DT): 31.3500
+Bottoms (BT): 268.6500
+
+================================
+Component Flows for Column A/BCD
+Feed Component Flows:
+Feed (A): 30.0000
+Feed (B): 75.0000
+Feed (C): 120.0000
+Feed (D): 75.0000
+
+Distillate Component Flows:
+Distillate (A): 29.1000
+Distillate (B): 2.2500
+Distillate (C): 0.0000
+Distillate (D): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 0.9000
+Bottoms (B): 72.7500
+Bottoms (C): 120.0000
+Bottoms (D): 75.0000
+
+Internal Flows of Column
+Vr 63.84
+Lr 32.49
+Vs 1.118e+03
+Ls 1.387e+03
+
+================================
+Separation task B/CD is active
+
+Total Flows for Column B/CD [kmol/hr]:
+Feed flow (FT): 268.6500
+Distillate (DT): 75.0675
+Bottoms (BT): 193.5825
+
+================================
+Component Flows for Column B/CD
+Feed Component Flows:
+Feed (A): 0.9000
+Feed (B): 72.7500
+Feed (C): 120.0000
+Feed (D): 75.0000
+
+Distillate Component Flows:
+Distillate (A): 0.9000
+Distillate (B): 70.5675
+Distillate (C): 3.6000
+Distillate (D): 0.0000
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 2.1825
+Bottoms (C): 116.4000
+Bottoms (D): 75.0000
+
+Internal Flows of Column
+Vr 146.7
+Lr 71.59
+Vs 1.265e+03
+Ls 1.458e+03
+
+================================
+Separation task C/D is active
+
+Total Flows for Column C/D [kmol/hr]:
+Feed flow (FT): 193.5825
+Distillate (DT): 117.3405
+Bottoms (BT): 76.2420
+
+================================
+Component Flows for Column C/D
+Feed Component Flows:
+Feed (A): 0.0000
+Feed (B): 2.1825
+Feed (C): 116.4000
+Feed (D): 75.0000
+
+Distillate Component Flows:
+Distillate (A): 0.0000
+Distillate (B): 2.1825
+Distillate (C): 112.9080
+Distillate (D): 2.2500
+
+Bottoms Component Flows:
+Bottoms (A): 0.0000
+Bottoms (B): 0.0000
+Bottoms (C): 3.4920
+Bottoms (D): 72.7500
+
+Internal Flows of Column
+Vr 281.6
+Lr 164.3
+Vs 281.6
+Ls 357.9
+
+================================
+HEAT EXCHANGERS
+================================
+
+Final Product Heat Exchangers
+
+Final Product A has associated condenser
+Capital cost of condenser: $15,396.55
+Exchanger area: 46.40 [m^2]
+Heat Duty: 1,856.1 [10^3 kJ/hr]
+
+Final Product B has associated condenser
+Capital cost of condenser: $23,649.62
+Exchanger area: 116.62 [m^2]
+Heat Duty: 4,664.8 [10^3 kJ/hr]
+
+Final Product C has associated condenser
+Capital cost of condenser: $37,117.77
+Exchanger area: 242.39 [m^2]
+Heat Duty: 9,695.4 [10^3 kJ/hr]
+
+Final Product D has associated reboiler
+Capital cost of reboiler: $23,352.26
+Exchanger area: 64.00 [m^2]
+Heat Duty: 10,368.0 [10^3 kJ/hr]
+
+Intermediate Product Heat Exchangers
+
+State CD has associated reboiler
+Capital cost of reboiler: $53,925.58
+Exchanger area: 276.13 [m^2]
+Heat Duty: 44,732.7 [10^3 kJ/hr]
